@@ -1,7 +1,7 @@
 use ludo_core::{Seat, Viewer};
 use riichienv_core::hand_evaluator::HandEvaluator;
 use riichienv_core::shanten::calculate_shanten;
-use riichienv_core::types::MeldType;
+use riichienv_core::types::{Meld, MeldType};
 use serde::Serialize;
 
 use crate::{State, Tile};
@@ -42,6 +42,8 @@ pub struct View {
     pub help: Option<Help>,
     /// My answer to the current call window is recorded; others are deciding.
     pub answered: bool,
+    /// The last finished hand, until the next one ends.
+    pub last_hand: Option<HandResult>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize)]
@@ -93,10 +95,79 @@ pub struct Help {
     pub waits: Vec<Tile>,
 }
 
-fn tiles(ids: &[u8]) -> Vec<Tile> {
+pub(crate) fn tiles(ids: &[u8]) -> Vec<Tile> {
     let mut out: Vec<Tile> = ids.iter().map(|&id| Tile::from_id(id)).collect();
     out.sort();
     out
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
+pub enum DrawKind {
+    /// The wall ran out.
+    Exhaustive,
+    /// Kyuushu kyuuhai: nine different terminals or honors declared.
+    NineTerminals,
+    /// Four winds, four riichi, four kans…
+    Abortive,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct YakuName {
+    pub name: String,
+    pub name_ja: String,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WinView {
+    pub seat: Seat,
+    /// Who dealt in (ron); `None` for tsumo.
+    pub from: Option<Seat>,
+    /// Concealed tiles including the winning tile, sorted.
+    pub hand: Vec<Tile>,
+    pub melds: Vec<MeldView>,
+    pub win_tile: Tile,
+    pub yaku: Vec<YakuName>,
+    pub han: u32,
+    pub fu: u32,
+    /// Hand value paid by the others (honba included, riichi sticks excluded).
+    pub points: u32,
+    pub yakuman: bool,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HandResult {
+    /// 1 for the first hand of the game.
+    pub number: u32,
+    pub wins: Vec<WinView>,
+    /// `Some` when nobody won.
+    pub draw: Option<DrawKind>,
+    /// Score change of each seat (riichi sticks included).
+    pub deltas: Vec<i32>,
+    /// Revealed when a winner was in riichi.
+    pub ura_indicators: Vec<Tile>,
+}
+
+pub(crate) fn meld_views(melds: &[Meld], owner: u8) -> Vec<MeldView> {
+    melds
+        .iter()
+        .map(|m| MeldView {
+            kind: match m.meld_type {
+                MeldType::Chi => MeldKind::Chi,
+                MeldType::Pon => MeldKind::Pon,
+                MeldType::Daiminkan => MeldKind::Daiminkan,
+                MeldType::Ankan => MeldKind::Ankan,
+                MeldType::Kakan => MeldKind::Kakan,
+            },
+            tiles: tiles(&m.tiles),
+            from: u8::try_from(m.from_who)
+                .ok()
+                .filter(|&w| w < 4 && w != owner)
+                .map(Seat),
+        })
+        .collect()
 }
 
 impl View {
@@ -138,24 +209,7 @@ impl View {
                             riichi: player.discard_is_riichi.get(j).copied().unwrap_or(false),
                         })
                         .collect(),
-                    melds: player
-                        .melds
-                        .iter()
-                        .map(|m| MeldView {
-                            kind: match m.meld_type {
-                                MeldType::Chi => MeldKind::Chi,
-                                MeldType::Pon => MeldKind::Pon,
-                                MeldType::Daiminkan => MeldKind::Daiminkan,
-                                MeldType::Ankan => MeldKind::Ankan,
-                                MeldType::Kakan => MeldKind::Kakan,
-                            },
-                            tiles: tiles(&m.tiles),
-                            from: u8::try_from(m.from_who)
-                                .ok()
-                                .filter(|&w| w < 4 && w != p)
-                                .map(Seat),
-                        })
-                        .collect(),
+                    melds: meld_views(&player.melds, p),
                 }
             })
             .collect();
@@ -193,6 +247,7 @@ impl View {
             },
             help,
             answered: me.is_some_and(|m| s.answers.contains_key(&m)),
+            last_hand: s.last_hand.clone(),
         }
     }
 }

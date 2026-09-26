@@ -2,6 +2,7 @@
 //! Rules and what ludo adds: RULES.md.
 
 mod action;
+mod scoring;
 mod state;
 pub mod testing;
 mod tile;
@@ -10,7 +11,10 @@ mod view;
 pub use action::Action;
 pub use state::State;
 pub use tile::Tile;
-pub use view::{DiscardView, Help, MeldKind, MeldView, PlayerView, RoundView, View, Wind};
+pub use view::{
+    DiscardView, DrawKind, HandResult, Help, MeldKind, MeldView, PlayerView, RoundView, View,
+    WinView, Wind, YakuName,
+};
 
 use ludo_core::{Game, GameMeta, Illegal, Outcome, Pending, Seat, Viewer};
 use serde::{Deserialize, Serialize};

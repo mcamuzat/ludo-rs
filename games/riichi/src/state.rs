@@ -9,6 +9,9 @@ use riichienv_core::state::GameState;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::action::{self, Action};
+use crate::scoring;
+use crate::view::{DrawKind, HandResult};
+use crate::Tile;
 
 /// riichienv's game mode 2: hanchan (East and South, Mahjong Soul extension).
 const HANCHAN: u8 = 2;
@@ -54,6 +57,9 @@ pub struct State {
     /// Answers received for the current decision, not yet given to the engine.
     pub(crate) answers: BTreeMap<Seat, Action>,
     pub(crate) inner: GameState,
+    /// Not saved: the replay recomputes them.
+    pub(crate) hands_played: u32,
+    pub(crate) last_hand: Option<HandResult>,
 }
 
 /// What is saved: the engine is rebuilt by replaying it.
@@ -78,6 +84,27 @@ impl State {
             history: History::default(),
             answers: BTreeMap::new(),
             inner,
+            hands_played: 0,
+            last_hand: None,
+        }
+    }
+
+    pub fn hands_played(&self) -> u32 {
+        self.hands_played
+    }
+
+    /// Who let the tile go and which tile, while players may call it (a
+    /// discard, or the tile added to a kan for chankan).
+    pub(crate) fn claim_source(&self) -> Option<(u8, u8)> {
+        if !self.in_claim_window() {
+            return None;
+        }
+        match &self.inner.pending_kan {
+            Some((pid, kan)) => kan
+                .tile
+                .or(kan.consume_tiles.first().copied())
+                .map(|t| (*pid, t)),
+            None => self.inner.last_discard,
         }
     }
 
@@ -144,11 +171,45 @@ impl State {
                 .expect("answers are validated");
             engine_actions.insert(seat.0, e);
         }
+        // The engine forgets a hand's result once the next hand starts: read it now.
+        let hand = self.hand_key();
+        let scores = self.scores();
+        let wins = scoring::preview(&self.inner, self.claim_source(), &step);
+        let ura = if wins
+            .iter()
+            .any(|w| self.inner.players[w.seat.index()].riichi_declared)
+        {
+            scoring::ura_indicators(&self.inner)
+        } else {
+            Vec::new()
+        };
+        let exhausted = self.inner.wall.drawable_count == 0;
+        let nine_terminals = step.iter().any(|(_, a)| *a == Action::KyushuKyuhai);
+
         self.inner.step(&engine_actions);
         if let Some(e) = self.inner.last_error.take() {
             panic!("riichienv refused validated answers {step:?}: {e}");
         }
         self.history.push(step);
+
+        if self.inner.is_done || self.hand_key() != hand {
+            self.hands_played += 1;
+            let after = self.scores();
+            let draw = wins.is_empty().then_some(if nine_terminals {
+                DrawKind::NineTerminals
+            } else if exhausted {
+                DrawKind::Exhaustive
+            } else {
+                DrawKind::Abortive
+            });
+            self.last_hand = Some(HandResult {
+                number: self.hands_played,
+                wins,
+                draw,
+                deltas: (0..4).map(|i| after[i] - scores[i]).collect(),
+                ura_indicators: ura.into_iter().map(Tile::from_id).collect(),
+            });
+        }
     }
 
     fn replay(saved: Saved) -> Result<Self, String> {
