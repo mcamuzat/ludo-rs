@@ -4,9 +4,10 @@ import { gameUi } from "../games/registry";
 interface Props {
   catalog: GameMeta[] | null;
   error: string | null;
+  onPick(game: GameMeta): void;
 }
 
-export function Home({ catalog, error }: Props) {
+export function Home({ catalog, error, onPick }: Props) {
   const games = (catalog ?? []).filter((g) => gameUi(g.id));
   return (
     <main className="home">
@@ -20,6 +21,9 @@ export function Home({ catalog, error }: Props) {
             <p>
               {g.minPlayers === g.maxPlayers ? g.minPlayers : `${g.minPlayers}–${g.maxPlayers}`} joueurs
             </p>
+            <button className="primary" onClick={() => onPick(g)}>
+              Jouer
+            </button>
           </li>
         ))}
       </ul>
