@@ -144,7 +144,8 @@ pub struct HandResult {
     pub wins: Vec<WinView>,
     /// `Some` when nobody won.
     pub draw: Option<DrawKind>,
-    /// Score change of each seat (riichi sticks included).
+    /// Score change of each seat at the settlement (the winner collects the
+    /// riichi sticks; a declarer's stick was paid when declaring).
     pub deltas: Vec<i32>,
     /// Revealed when a winner was in riichi.
     pub ura_indicators: Vec<Tile>,

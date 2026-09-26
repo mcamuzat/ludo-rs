@@ -227,6 +227,7 @@ name = "ludo-registry"
 version = "0.1.0"
 dependencies = [
  "ludo-core",
+ "riichi",
  "serde_json",
  "yavalath",
 ]

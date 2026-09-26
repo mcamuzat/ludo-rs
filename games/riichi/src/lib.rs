@@ -3,6 +3,7 @@
 
 mod action;
 mod determinize;
+mod heuristics;
 mod scoring;
 mod state;
 pub mod testing;
@@ -73,17 +74,7 @@ impl Game for Riichi {
 
     /// Final ranking by score; ties go to the earlier seat (Mahjong Soul).
     fn outcome(s: &State) -> Option<Outcome> {
-        if !s.inner.is_done {
-            return None;
-        }
-        let scores = s.scores();
-        let mut order: Vec<usize> = (0..4).collect();
-        order.sort_by_key(|&i| (std::cmp::Reverse(scores[i]), i));
-        let mut ranks = vec![0u8; 4];
-        for (rank, &seat) in order.iter().enumerate() {
-            ranks[seat] = rank as u8;
-        }
-        Some(Outcome::Ranked(ranks))
+        s.inner.is_done.then(|| standings(s.scores()))
     }
 
     /// Pass a call; otherwise discard the drawn tile; otherwise the first
@@ -119,4 +110,15 @@ impl Game for Riichi {
             _ => Pending::none(),
         }
     }
+}
+
+/// Ranking by score; ties go to the earlier seat (Mahjong Soul).
+pub(crate) fn standings(scores: [i32; 4]) -> Outcome {
+    let mut order: Vec<usize> = (0..4).collect();
+    order.sort_by_key(|&i| (std::cmp::Reverse(scores[i]), i));
+    let mut ranks = vec![0u8; 4];
+    for (rank, &seat) in order.iter().enumerate() {
+        ranks[seat] = rank as u8;
+    }
+    Outcome::Ranked(ranks)
 }

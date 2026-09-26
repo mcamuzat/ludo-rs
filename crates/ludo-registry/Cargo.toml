@@ -8,6 +8,7 @@ license.workspace = true
 [dependencies]
 ludo-core.workspace = true
 yavalath.workspace = true
+riichi.workspace = true
 
 [dev-dependencies]
 serde_json.workspace = true

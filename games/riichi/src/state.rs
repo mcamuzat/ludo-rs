@@ -113,7 +113,6 @@ impl State {
     }
 
     /// Identifies the hand being played: it changes when a hand ends.
-    #[allow(dead_code)] // used by the AI (heuristics.rs)
     pub(crate) fn hand_key(&self) -> (u8, u8, u8) {
         (
             self.inner.round_wind,

@@ -3,8 +3,9 @@
 use ludo_core::{AnyGame, GameEntry, LudoError};
 
 static YAVALATH: GameEntry<yavalath::Yavalath> = GameEntry::new();
+static RIICHI: GameEntry<riichi::Riichi> = GameEntry::new();
 
-pub static GAMES: &[&dyn AnyGame] = &[&YAVALATH];
+pub static GAMES: &[&dyn AnyGame] = &[&YAVALATH, &RIICHI];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {
     ludo_core::find(GAMES, id)
