@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/ludo-core", "crates/ludo-registry", "games/yavalath"]
+members = ["crates/ludo-core", "crates/ludo-registry", "crates/ludo-cli", "games/yavalath"]
 resolver = "2"
 
 [workspace.package]

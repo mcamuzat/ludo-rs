@@ -1,0 +1,15 @@
+[package]
+name = "ludo-cli"
+description = "Terminal tools: list games, AI arena, play against the AI"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "ludo"
+path = "src/main.rs"
+
+[dependencies]
+ludo-core.workspace = true
+ludo-registry.workspace = true
+serde_json.workspace = true
