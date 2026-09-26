@@ -4,7 +4,7 @@ use std::io::{self, BufRead, Write};
 use std::str::FromStr;
 use std::time::{Instant, SystemTime, UNIX_EPOCH};
 
-use ludo_core::ai::{Level, Search};
+use ludo_core::ai::Level;
 use ludo_core::{AnyGame, Seat, Viewer};
 use serde_json::Value;
 
@@ -72,9 +72,15 @@ fn arena(id: &str, games: u32, a: Level, b: Level, players: u8) -> Result<(), St
             .map_err(|e| e.to_string())?;
         while let Some(&seat) = m.pending().first() {
             let lvl = if seat == a_seat { a } else { b };
-            let search = Search::counted(lvl, (u64::from(g) << 32) | u64::from(m.rev()));
             let action = game
-                .ai_move(m.state_json(), seat, &search, &|| 0.0)
+                .ai_move(
+                    m.state_json(),
+                    seat,
+                    lvl,
+                    false,
+                    (u64::from(g) << 32) | u64::from(m.rev()),
+                    &|| 0.0,
+                )
                 .map_err(|e| e.to_string())?;
             m.apply_json(seat, action).map_err(|e| e.to_string())?;
         }
@@ -141,9 +147,15 @@ fn play(id: &str, players: u8, lvl: Level) -> Result<(), String> {
             };
             m.apply_json(me, action).map_err(|e| e.to_string())?;
         } else {
-            let search = Search::timed(lvl, seed ^ u64::from(m.rev()));
             let action = game
-                .ai_move(m.state_json(), seat, &search, &now)
+                .ai_move(
+                    m.state_json(),
+                    seat,
+                    lvl,
+                    true,
+                    seed ^ u64::from(m.rev()),
+                    &now,
+                )
                 .map_err(|e| e.to_string())?;
             println!("siège {} joue {action}", seat.0);
             m.apply_json(seat, action).map_err(|e| e.to_string())?;

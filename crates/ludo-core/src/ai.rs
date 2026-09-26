@@ -17,21 +17,18 @@ pub enum Level {
 }
 
 impl Level {
-    /// Budget in the browser.
-    pub fn millis(self) -> u32 {
-        match self {
+    /// The platform's default budget: 100 / 1000 / 3000 ms in the browser,
+    /// 100 / 1000 / 3000 iterations for the CLI and tests.
+    pub fn default_budget(self, timed: bool) -> Budget {
+        let amount = match self {
             Level::Easy => 100,
             Level::Medium => 1000,
             Level::Hard => 3000,
-        }
-    }
-
-    /// Reproducible budget for the CLI and tests.
-    pub fn iterations(self) -> u32 {
-        match self {
-            Level::Easy => 100,
-            Level::Medium => 1000,
-            Level::Hard => 3000,
+        };
+        if timed {
+            Budget::Millis(amount)
+        } else {
+            Budget::Iterations(amount)
         }
     }
 
@@ -52,23 +49,16 @@ pub enum Budget {
 
 #[derive(Clone, Copy, Debug)]
 pub struct Search {
-    pub budget: Budget,
+    /// `None`: the rollout policy alone.
+    pub budget: Option<Budget>,
     pub blunder: f64,
     pub seed: u64,
 }
 
 impl Search {
-    pub fn timed(level: Level, seed: u64) -> Self {
+    pub fn for_game<G: Heuristics>(level: Level, timed: bool, seed: u64) -> Self {
         Self {
-            budget: Budget::Millis(level.millis()),
-            blunder: level.blunder(),
-            seed,
-        }
-    }
-
-    pub fn counted(level: Level, seed: u64) -> Self {
-        Self {
-            budget: Budget::Iterations(level.iterations()),
+            budget: G::budget(level, timed),
             blunder: level.blunder(),
             seed,
         }
@@ -77,8 +67,6 @@ impl Search {
 
 /// UCB exploration constant, for rewards in [0, 1].
 const EXPLORATION: f64 = 0.7;
-/// Simulations longer than this use `Heuristics::evaluate` when it answers.
-const EVALUATE_AFTER: u32 = 200;
 /// The clock is read every this many iterations.
 const CLOCK_EVERY: u32 = 16;
 
@@ -124,6 +112,15 @@ pub fn choose<G: Game + Determinize + Heuristics>(
     if search.blunder > 0.0 && rng.gen_bool(search.blunder) {
         return Ok(legal.choose(&mut rng).expect("non-empty").clone());
     }
+    let Some(budget) = search.budget else {
+        // Policy alone, on what `seat` can see.
+        let seen = if G::meta().hidden_info {
+            G::determinize(state, seat, &mut rng)
+        } else {
+            state.clone()
+        };
+        return Ok(G::rollout_action(&seen, seat, &mut rng));
+    };
     let mut tree = vec![Node {
         action: None,
         mover: seat,
@@ -138,7 +135,7 @@ pub fn choose<G: Game + Determinize + Heuristics>(
     loop {
         iterate::<G>(&mut tree, state, seat, &mut rng);
         done += 1;
-        let stop = match search.budget {
+        let stop = match budget {
             Budget::Iterations(n) => done >= n,
             Budget::Millis(ms) => {
                 done.is_multiple_of(CLOCK_EVERY) && now_ms() - start >= f64::from(ms)
@@ -230,7 +227,7 @@ fn iterate<G: Game + Determinize + Heuristics>(
         G::apply(&mut sim, mover, &action).expect("legal action");
         current = best;
     }
-    let rewards = rollout::<G>(sim, rng);
+    let rewards = rollout::<G>(root, sim, rng);
     let mut node = Some(current);
     while let Some(i) = node {
         tree[i].visits += 1;
@@ -239,16 +236,17 @@ fn iterate<G: Game + Determinize + Heuristics>(
     }
 }
 
-fn rollout<G: Game + Heuristics>(mut sim: G::State, rng: &mut SmallRng) -> Vec<f64> {
-    let mut steps = 0u32;
+fn rollout<G: Game + Heuristics>(
+    root: &G::State,
+    mut sim: G::State,
+    rng: &mut SmallRng,
+) -> Vec<f64> {
     loop {
         if let Some(outcome) = G::outcome(&sim) {
             return outcome.rewards();
         }
-        if steps >= EVALUATE_AFTER {
-            if let Some(estimate) = G::evaluate(&sim) {
-                return estimate;
-            }
+        if let Some(estimate) = G::evaluate(root, &sim) {
+            return estimate;
         }
         let seat = *G::pending(&sim)
             .0
@@ -256,7 +254,6 @@ fn rollout<G: Game + Heuristics>(mut sim: G::State, rng: &mut SmallRng) -> Vec<f
             .expect("an unfinished game has a pending seat");
         let action = G::rollout_action(&sim, seat, rng);
         G::apply(&mut sim, seat, &action).expect("rollout_action returns a legal action");
-        steps += 1;
     }
 }
 
@@ -265,7 +262,11 @@ mod tests {
     use std::cell::Cell;
 
     use super::*;
+    use rand::rngs::SmallRng;
+    use rand::SeedableRng;
+
     use crate::testgames::{Choice, HighCard, HighCardState, Nim, NimConfig};
+    use crate::Heuristics;
 
     fn no_clock() -> f64 {
         0.0
@@ -273,7 +274,7 @@ mod tests {
 
     fn counted(iterations: u32, seed: u64) -> Search {
         Search {
-            budget: Budget::Iterations(iterations),
+            budget: Some(Budget::Iterations(iterations)),
             blunder: 0.0,
             seed,
         }
@@ -347,7 +348,7 @@ mod tests {
         };
         let s = Nim::new(&NimConfig { pile: 20 }, 2, 0);
         let search = Search {
-            budget: Budget::Millis(50),
+            budget: Some(Budget::Millis(50)),
             blunder: 0.0,
             seed: 0,
         };
@@ -358,7 +359,7 @@ mod tests {
     fn a_blunder_is_still_legal() {
         let s = Nim::new(&NimConfig { pile: 10 }, 2, 0);
         let search = Search {
-            budget: Budget::Iterations(10),
+            budget: Some(Budget::Iterations(10)),
             blunder: 1.0,
             seed: 4,
         };
@@ -370,5 +371,41 @@ mod tests {
     fn a_seat_without_decision_is_an_error() {
         let s = Nim::new(&NimConfig { pile: 10 }, 2, 0);
         assert!(choose::<Nim>(&s, Seat(1), &counted(10, 0), &no_clock).is_err());
+    }
+
+    #[test]
+    fn evaluate_cuts_endless_simulations() {
+        use crate::testgames::{Counter, CounterState};
+        let s = CounterState { n: 0 };
+        let search = Search {
+            budget: Some(Budget::Iterations(50)),
+            blunder: 0.0,
+            seed: 1,
+        };
+        assert!(choose::<Counter>(&s, Seat(0), &search, &no_clock).is_ok());
+    }
+
+    #[test]
+    fn no_budget_means_the_rollout_policy_alone() {
+        let s = Nim::new(&NimConfig { pile: 10 }, 2, 0);
+        let search = Search {
+            budget: None,
+            blunder: 0.0,
+            seed: 7,
+        };
+        let expected = Nim::rollout_action(&s, Seat(0), &mut SmallRng::seed_from_u64(7));
+        assert_eq!(
+            choose::<Nim>(&s, Seat(0), &search, &no_clock).unwrap(),
+            expected
+        );
+    }
+
+    #[test]
+    fn default_budgets_follow_the_level() {
+        let s = Search::for_game::<Nim>(Level::Hard, true, 3);
+        assert_eq!(s.budget, Some(Budget::Millis(3000)));
+        let s = Search::for_game::<Nim>(Level::Easy, false, 3);
+        assert_eq!(s.budget, Some(Budget::Iterations(100)));
+        assert_eq!(s.blunder, 0.15);
     }
 }

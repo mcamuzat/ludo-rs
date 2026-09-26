@@ -42,6 +42,7 @@ impl Game for Nim {
             min_players: 2,
             max_players: 4,
             hidden_info: false,
+            clock: true,
         }
     }
 
@@ -90,6 +91,9 @@ impl Game for Nim {
         s.winner
             .map(|w| Outcome::Ranked((0..s.players).map(|i| u8::from(i != w.0)).collect()))
     }
+    fn timeout_action(s: &NimState, seat: Seat) -> Option<u8> {
+        Self::pending(s).contains(seat).then_some(1)
+    }
 }
 
 impl Determinize for Nim {
@@ -103,6 +107,122 @@ impl Heuristics for Nim {
         *Self::legal_actions(s, seat)
             .choose(rng)
             .expect("pending seat has a move")
+    }
+}
+
+/// A game that never ends: seat 0 keeps incrementing. Only an `evaluate`
+/// cutoff lets a simulation stop.
+pub struct Counter;
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CounterState {
+    pub n: u32,
+}
+
+impl Game for Counter {
+    type State = CounterState;
+    type Action = u8;
+    type View = CounterState;
+    type Config = ();
+
+    fn meta() -> GameMeta {
+        GameMeta {
+            id: "counter",
+            name: "Counter",
+            min_players: 1,
+            max_players: 1,
+            hidden_info: false,
+            clock: false,
+        }
+    }
+    fn new(_config: &(), _players: u8, _seed: u64) -> CounterState {
+        CounterState { n: 0 }
+    }
+    fn pending(_s: &CounterState) -> Pending {
+        Pending::one(Seat(0))
+    }
+    fn legal_actions(_s: &CounterState, seat: Seat) -> Vec<u8> {
+        if seat == Seat(0) {
+            vec![1, 2]
+        } else {
+            Vec::new()
+        }
+    }
+    fn apply(s: &mut CounterState, seat: Seat, a: &u8) -> Result<(), Illegal> {
+        if seat != Seat(0) || !(1..=2).contains(a) {
+            return Err(Illegal::new("coup interdit"));
+        }
+        s.n += u32::from(*a);
+        Ok(())
+    }
+    fn view(s: &CounterState, _viewer: Viewer) -> CounterState {
+        s.clone()
+    }
+    fn outcome(_s: &CounterState) -> Option<Outcome> {
+        None
+    }
+}
+
+impl Determinize for Counter {
+    fn determinize<R: Rng + ?Sized>(
+        s: &CounterState,
+        _observer: Seat,
+        _rng: &mut R,
+    ) -> CounterState {
+        s.clone()
+    }
+}
+
+impl Heuristics for Counter {
+    fn rollout_action<R: Rng + ?Sized>(_s: &CounterState, _seat: Seat, rng: &mut R) -> u8 {
+        rng.gen_range(1..=2)
+    }
+    fn evaluate(root: &CounterState, sim: &CounterState) -> Option<Vec<f64>> {
+        (sim.n >= root.n + 5).then(|| vec![1.0])
+    }
+}
+
+/// Nim whose timeout action is illegal once the pile is below 3.
+pub struct BadClock;
+
+impl Game for BadClock {
+    type State = NimState;
+    type Action = u8;
+    type View = NimState;
+    type Config = ();
+
+    fn meta() -> GameMeta {
+        GameMeta {
+            id: "badclock",
+            ..Nim::meta()
+        }
+    }
+    fn new(_config: &(), players: u8, seed: u64) -> NimState {
+        Nim::new(&NimConfig::default(), players, seed)
+    }
+    fn pending(s: &NimState) -> Pending {
+        Nim::pending(s)
+    }
+    fn legal_actions(s: &NimState, seat: Seat) -> Vec<u8> {
+        Nim::legal_actions(s, seat)
+    }
+    fn apply(s: &mut NimState, seat: Seat, a: &u8) -> Result<(), Illegal> {
+        Nim::apply(s, seat, a)
+    }
+    fn view(s: &NimState, viewer: Viewer) -> NimState {
+        Nim::view(s, viewer)
+    }
+    fn outcome(s: &NimState) -> Option<Outcome> {
+        Nim::outcome(s)
+    }
+    fn timeout_action(s: &NimState, seat: Seat) -> Option<u8> {
+        Nim::pending(s).contains(seat).then_some(3)
+    }
+}
+
+impl Determinize for BadClock {
+    fn determinize<R: Rng + ?Sized>(s: &NimState, _observer: Seat, _rng: &mut R) -> NimState {
+        s.clone()
     }
 }
 
@@ -153,6 +273,7 @@ impl Game for HighCard {
             min_players: 2,
             max_players: 4,
             hidden_info: true,
+            clock: false,
         }
     }
 
@@ -313,6 +434,13 @@ impl Determinize for Leaky {
 mod nim_tests {
     use super::*;
     use crate::{Game, Outcome, Seat};
+
+    #[test]
+    fn nim_times_out_by_taking_one() {
+        let s = Nim::new(&NimConfig { pile: 4 }, 2, 0);
+        assert_eq!(Nim::timeout_action(&s, Seat(0)), Some(1));
+        assert_eq!(Nim::timeout_action(&s, Seat(1)), None);
+    }
 
     #[test]
     fn taking_the_last_stone_wins() {

@@ -160,6 +160,7 @@ impl Game for Yavalath {
             min_players: 2,
             max_players: 3,
             hidden_info: false,
+            clock: false,
         }
     }
 

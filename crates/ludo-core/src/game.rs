@@ -6,6 +6,8 @@ use rand::Rng;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 
+use crate::ai::{Budget, Level};
+
 /// A place at the table, numbered from 0.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -32,6 +34,8 @@ pub struct GameMeta {
     pub min_players: u8,
     pub max_players: u8,
     pub hidden_info: bool,
+    /// The game provides `timeout_action`: online play may use a clock.
+    pub clock: bool,
 }
 
 /// Seats that must decide now. Several seats when the game waits for
@@ -132,6 +136,19 @@ pub trait Game: 'static {
     fn view(s: &Self::State, viewer: Viewer) -> Self::View;
     /// `Some` exactly when `pending` is empty.
     fn outcome(s: &Self::State) -> Option<Outcome>;
+
+    /// What the host plays for `seat` when its time runs out. `None` when the
+    /// game has no clock or `seat` has nothing to decide.
+    fn timeout_action(_s: &Self::State, _seat: Seat) -> Option<Self::Action> {
+        None
+    }
+
+    /// The pending seats `viewer` may know about (a subset of `pending`
+    /// that always contains `viewer` when it is pending). Games where being
+    /// asked is itself information (who can call a discard) narrow it.
+    fn visible_pending(s: &Self::State, _viewer: Viewer) -> Pending {
+        Self::pending(s)
+    }
 }
 
 pub trait Determinize: Game {
@@ -146,9 +163,16 @@ pub trait Heuristics: Game {
     /// A legal action for `seat` (which is pending), better than uniform random.
     fn rollout_action<R: Rng + ?Sized>(s: &Self::State, seat: Seat, rng: &mut R) -> Self::Action;
 
-    /// Per-seat estimate in [0, 1] used to cut long simulations.
-    fn evaluate(_s: &Self::State) -> Option<Vec<f64>> {
+    /// Per-seat estimate in [0, 1] that ends a simulation early. Asked at every
+    /// simulated step, with the state the search started from.
+    fn evaluate(_root: &Self::State, _sim: &Self::State) -> Option<Vec<f64>> {
         None
+    }
+
+    /// Search budget for `level` (`timed`: in the browser, else reproducible
+    /// iterations). `None`: play the rollout policy alone, without search.
+    fn budget(level: Level, timed: bool) -> Option<Budget> {
+        Some(level.default_budget(timed))
     }
 }
 

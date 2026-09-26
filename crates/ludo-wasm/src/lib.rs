@@ -4,7 +4,7 @@
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 
-use ludo_core::ai::{Level, Search};
+use ludo_core::ai::Level;
 use ludo_core::{AnyMatch, LudoError, Outcome, Seat, Viewer};
 use serde_json::Value;
 use wasm_bindgen::prelude::*;
@@ -137,9 +137,15 @@ pub fn ai_move(
     let level: Level = serde_json::from_value(Value::from(level))
         .map_err(|_| JsError::new(&format!("Niveau inconnu : {level}.")))?;
     let game = ludo_registry::find(game_id).map_err(err)?;
-    let search = Search::timed(level, seed.into());
     let action = game
-        .ai_move(parse(state)?, Seat(seat), &search, &js_sys::Date::now)
+        .ai_move(
+            parse(state)?,
+            Seat(seat),
+            level,
+            true,
+            seed.into(),
+            &js_sys::Date::now,
+        )
         .map_err(err)?;
     Ok(text(&action))
 }

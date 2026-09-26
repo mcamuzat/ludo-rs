@@ -7,7 +7,7 @@ use serde::de::DeserializeOwned;
 use serde::Serialize;
 use serde_json::Value;
 
-use crate::ai::{self, Search};
+use crate::ai::{self, Level, Search};
 use crate::{
     Determinize, Game, GameMeta, Heuristics, Illegal, Match, MatchLog, Outcome, Seat, Viewer,
 };
@@ -55,6 +55,8 @@ pub trait AnyMatch {
     fn outcome(&self) -> Option<Outcome>;
     fn state_json(&self) -> Value;
     fn log_json(&self) -> Value;
+    fn visible_pending(&self, viewer: Viewer) -> Vec<Seat>;
+    fn timeout_action_json(&self, seat: Seat) -> Option<Value>;
 }
 
 impl<G: Game> AnyMatch for Match<G> {
@@ -94,6 +96,14 @@ impl<G: Game> AnyMatch for Match<G> {
     fn log_json(&self) -> Value {
         to_json(self.log())
     }
+
+    fn visible_pending(&self, viewer: Viewer) -> Vec<Seat> {
+        G::visible_pending(self.state(), viewer).0
+    }
+
+    fn timeout_action_json(&self, seat: Seat) -> Option<Value> {
+        G::timeout_action(self.state(), seat).map(|a| to_json(&a))
+    }
 }
 
 pub trait AnyGame: Sync {
@@ -110,7 +120,9 @@ pub trait AnyGame: Sync {
         &self,
         state: Value,
         seat: Seat,
-        search: &Search,
+        level: Level,
+        timed: bool,
+        seed: u64,
         now_ms: &dyn Fn() -> f64,
     ) -> Result<Value, LudoError>;
 }
@@ -158,11 +170,14 @@ impl<G: Game + Determinize + Heuristics> AnyGame for GameEntry<G> {
         &self,
         state: Value,
         seat: Seat,
-        search: &Search,
+        level: Level,
+        timed: bool,
+        seed: u64,
         now_ms: &dyn Fn() -> f64,
     ) -> Result<Value, LudoError> {
         let state: G::State = from_json(state)?;
-        Ok(to_json(&ai::choose::<G>(&state, seat, search, now_ms)?))
+        let search = Search::for_game::<G>(level, timed, seed);
+        Ok(to_json(&ai::choose::<G>(&state, seat, &search, now_ms)?))
     }
 }
 
@@ -179,7 +194,6 @@ mod tests {
     use serde_json::json;
 
     use super::*;
-    use crate::ai::Level;
     use crate::testgames::Nim;
 
     static NIM: GameEntry<Nim> = GameEntry::new();
@@ -242,13 +256,19 @@ mod tests {
         let game = find(GAMES, "nim").unwrap();
         let mut m = game.new_match(Value::Null, 2, 1).unwrap();
         let action = game
-            .ai_move(
-                m.state_json(),
-                Seat(0),
-                &Search::counted(Level::Easy, 5),
-                &|| 0.0,
-            )
+            .ai_move(m.state_json(), Seat(0), Level::Easy, false, 5, &|| 0.0)
             .unwrap();
         m.apply_json(Seat(0), action).unwrap();
+    }
+
+    #[test]
+    fn timeout_and_visible_pending_through_json() {
+        let m = find(GAMES, "nim")
+            .unwrap()
+            .new_match(Value::Null, 2, 1)
+            .unwrap();
+        assert_eq!(m.timeout_action_json(Seat(0)), Some(json!(1)));
+        assert_eq!(m.timeout_action_json(Seat(1)), None);
+        assert_eq!(m.visible_pending(Viewer::Seat(Seat(1))), vec![Seat(0)]);
     }
 }

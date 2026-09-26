@@ -6,7 +6,7 @@ use rand::{Rng, SeedableRng};
 use serde::Serialize;
 use serde_json::Value;
 
-use crate::{replay, Determinize, Game, Match, MatchLog, Outcome, Seat, Viewer};
+use crate::{replay, Determinize, Game, Match, MatchLog, Outcome, Pending, Seat, Viewer};
 
 fn json<T: Serialize + ?Sized>(value: &T) -> Value {
     serde_json::to_value(value).expect("engine types serialize to JSON")
@@ -29,7 +29,12 @@ pub fn check<G: Game + Determinize>(config: &G::Config, players: u8, games: usiz
                 outcome.is_some(),
                 "partie {g}, coup {step} : `pending` vide ⇔ `outcome` défini"
             );
-            check_serde::<G>(s, g, step);
+            // Reading a state back may replay the whole game: sample it.
+            if step < 20 || step.is_multiple_of(25) {
+                check_serde::<G>(s, g, step);
+            }
+            check_visible_pending::<G>(s, &pending, players, g, step);
+            check_timeouts::<G>(s, &pending, g, step);
             if G::meta().hidden_info {
                 check_hidden::<G>(s, players, &mut rng, g, step);
             }
@@ -88,6 +93,47 @@ fn check_serde<G: Game>(s: &G::State, g: usize, step: usize) {
     );
 }
 
+fn check_visible_pending<G: Game>(
+    s: &G::State,
+    pending: &Pending,
+    players: u8,
+    g: usize,
+    step: usize,
+) {
+    for seat in (0..players).map(Seat) {
+        let visible = G::visible_pending(s, Viewer::Seat(seat));
+        assert!(
+            visible.0.iter().all(|&x| pending.contains(x)),
+            "partie {g}, coup {step} : `visible_pending` du siège {} contient un siège qui n'est pas en attente",
+            seat.0
+        );
+        if pending.contains(seat) {
+            assert!(
+                visible.contains(seat),
+                "partie {g}, coup {step} : le siège {} ne se voit pas en attente",
+                seat.0
+            );
+        }
+    }
+}
+
+fn check_timeouts<G: Game>(s: &G::State, pending: &Pending, g: usize, step: usize) {
+    for &seat in &pending.0 {
+        match G::timeout_action(s, seat) {
+            Some(action) => assert!(
+                G::legal_actions(s, seat).contains(&action),
+                "partie {g}, coup {step} : l'action par défaut {action:?} du siège {} est illégale",
+                seat.0
+            ),
+            None => assert!(
+                !G::meta().clock,
+                "partie {g}, coup {step} : le jeu a un chrono mais pas d'action par défaut pour le siège {}",
+                seat.0
+            ),
+        }
+    }
+}
+
 fn check_hidden<G: Game + Determinize>(
     s: &G::State,
     players: u8,
@@ -103,6 +149,12 @@ fn check_hidden<G: Game + Determinize>(
                 json(&G::view(&d, Viewer::Seat(seat))),
                 expected,
                 "partie {g}, coup {step} : la vue du siège {} dépend de données cachées",
+                seat.0
+            );
+            assert_eq!(
+                G::visible_pending(&d, Viewer::Seat(seat)),
+                G::visible_pending(s, Viewer::Seat(seat)),
+                "partie {g}, coup {step} : l'attente visible du siège {} dépend de données cachées",
                 seat.0
             );
         }
@@ -147,6 +199,12 @@ fn check_log<G: Game>(m: &Match<G>, g: usize) {
 mod tests {
     use super::check;
     use crate::testgames::{HighCard, Leaky, Nim, NimConfig};
+
+    #[test]
+    #[should_panic(expected = "action par défaut")]
+    fn an_illegal_timeout_action_is_caught() {
+        check::<crate::testgames::BadClock>(&(), 2, 5, 4);
+    }
 
     #[test]
     fn nim_conforms() {
