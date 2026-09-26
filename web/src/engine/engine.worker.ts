@@ -39,6 +39,7 @@ serve<EngineRequest>(init(), (req) => {
           viewer,
           view: JSON.parse(wasm.view(h, viewer)),
           legalActions: viewer === null ? [] : JSON.parse(wasm.legalActions(h, viewer)),
+          pending: Array.from(wasm.visiblePending(h, viewer)),
         })),
       };
       return snapshot;
@@ -47,5 +48,7 @@ serve<EngineRequest>(init(), (req) => {
       return JSON.parse(wasm.exportState(current()));
     case "exportLog":
       return JSON.parse(wasm.exportLog(current()));
+    case "timeoutAction":
+      return JSON.parse(wasm.timeoutAction(current(), req.seat));
   }
 });

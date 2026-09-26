@@ -35,6 +35,11 @@ export class EngineClient {
     return this.rpc.call<unknown>({ kind: "exportLog" });
   }
 
+  /** The action the host plays when `seat`'s time runs out, or null. */
+  timeoutAction(seat: Seat) {
+    return this.rpc.call<unknown | null>({ kind: "timeoutAction", seat });
+  }
+
   dispose() {
     this.rpc.dispose();
   }

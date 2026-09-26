@@ -9,6 +9,7 @@ export interface GameMeta {
   minPlayers: number;
   maxPlayers: number;
   hiddenInfo: boolean;
+  clock: boolean;
 }
 
 /** One viewer's share of a snapshot (`viewer: null` = spectator). */
@@ -16,6 +17,15 @@ export interface SeatView {
   viewer: Seat | null;
   view: unknown;
   legalActions: unknown[];
+  /** The pending seats this viewer may know about. */
+  pending: Seat[];
+}
+
+/** Time left for a seat's current decision, when it was sent. */
+export interface SeatClockView {
+  seat: Seat;
+  baseMs: number;
+  bankMs: number;
 }
 
 /** The game after an action, for every viewer at once. */
@@ -34,6 +44,7 @@ export interface Update {
   legalActions: unknown[];
   pending: Seat[];
   outcome: number[] | null;
+  clocks: SeatClockView[];
 }
 
 export type EngineRequest =
@@ -43,7 +54,8 @@ export type EngineRequest =
   | { kind: "apply"; seat: Seat; action: unknown }
   | { kind: "snapshot"; viewers: (Seat | null)[] }
   | { kind: "exportState" }
-  | { kind: "exportLog" };
+  | { kind: "exportLog" }
+  | { kind: "timeoutAction"; seat: Seat };
 
 export interface AiRequest {
   gameId: string;
@@ -53,8 +65,15 @@ export interface AiRequest {
   seed: number;
 }
 
-export function updateFor(s: Snapshot, viewer: Seat | null): Update {
+export function updateFor(s: Snapshot, viewer: Seat | null, clocks: SeatClockView[] = []): Update {
   const seen = s.views.find((v) => v.viewer === viewer);
   if (!seen) throw new Error(`Pas de vue pour ${viewer === null ? "le spectateur" : `le siège ${viewer}`}.`);
-  return { rev: s.rev, view: seen.view, legalActions: seen.legalActions, pending: s.pending, outcome: s.outcome };
+  return {
+    rev: s.rev,
+    view: seen.view,
+    legalActions: seen.legalActions,
+    pending: seen.pending,
+    outcome: s.outcome,
+    clocks: clocks.filter((c) => seen.pending.includes(c.seat)),
+  };
 }

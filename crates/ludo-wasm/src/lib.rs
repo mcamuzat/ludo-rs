@@ -149,3 +149,17 @@ pub fn ai_move(
         .map_err(err)?;
     Ok(text(&action))
 }
+
+#[wasm_bindgen(js_name = visiblePending)]
+pub fn visible_pending(handle: u32, seat: Option<u8>) -> Result<Vec<u8>, JsError> {
+    let viewer = seat.map_or(Viewer::Spectator, |s| Viewer::Seat(Seat(s)));
+    with_match(handle, |m| {
+        Ok(m.visible_pending(viewer).into_iter().map(|s| s.0).collect())
+    })
+}
+
+/// The action the host plays when `seat`'s time runs out (JSON, `null` if none).
+#[wasm_bindgen(js_name = timeoutAction)]
+pub fn timeout_action(handle: u32, seat: u8) -> Result<String, JsError> {
+    with_match(handle, |m| Ok(text(&m.timeout_action_json(Seat(seat)))))
+}
