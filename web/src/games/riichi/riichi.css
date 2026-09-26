@@ -1,0 +1,59 @@
+.riichi { display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; }
+.riichi-table {
+  display: grid;
+  grid-template-columns: 150px 220px 150px;
+  grid-template-rows: 150px 220px 150px;
+  grid-template-areas: ". top ." "left center right" ". bottom .";
+  background: color-mix(in srgb, var(--accent) 18%, var(--card));
+  border-radius: 12px;
+  padding: 6px;
+}
+.area { display: flex; align-items: center; justify-content: center; }
+.area-bottom { grid-area: bottom; }
+.area-top { grid-area: top; }
+.area-left { grid-area: left; }
+.area-right { grid-area: right; }
+.pond { display: flex; flex-wrap: wrap; width: 144px; gap: 0; align-content: flex-start; }
+.pond-right { transform: rotate(-90deg); }
+.pond-top { transform: rotate(180deg); }
+.pond-left { transform: rotate(90deg); }
+.center { grid-area: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: var(--card); border-radius: 10px; margin: 20px; font-size: 0.9rem; }
+.center .round { font-size: 1.4rem; font-weight: 700; }
+.tile { position: relative; display: inline-block; flex: none; border-radius: 3px; box-shadow: 0 1px 2px rgb(0 0 0 / 35%); margin: 1px; }
+.tile img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.tile .face { inset: 8% 10%; width: 80%; height: 84%; }
+.tile-sm { width: 24px; height: 32px; }
+.tile-md { width: 33px; height: 44px; }
+.tile-lg { width: 45px; height: 60px; }
+.tile.sideways { transform: rotate(90deg); margin: 0 4px; }
+.tile.dim { opacity: 0.55; }
+.tile.clickable { cursor: pointer; }
+.tile.clickable:hover { transform: translateY(-6px); }
+.seats-row { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
+.seat-label { font-size: 0.9rem; }
+.seat-label .concealed { display: flex; margin-top: 2px; }
+.seat-label .concealed .tile { width: 12px; height: 16px; box-shadow: none; opacity: 0.75; }
+.riichi-stick { color: var(--danger); font-weight: 600; }
+.melds { display: inline-flex; gap: 6px; margin-left: 8px; }
+.meld { display: inline-flex; }
+.my-area { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.my-hand { display: flex; align-items: flex-end; flex-wrap: wrap; justify-content: center; }
+.my-hand .drawn { margin-left: 12px; }
+.calls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; min-height: 40px; }
+.calls button { display: inline-flex; align-items: center; gap: 4px; }
+.help { display: flex; gap: 8px; align-items: center; color: var(--muted); }
+.hand-result {
+  position: absolute; top: 40px; left: 50%; transform: translateX(-50%);
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px;
+  box-shadow: 0 8px 30px rgb(0 0 0 / 25%); z-index: 10; min-width: 320px; max-width: 95vw;
+}
+.hand-result h3 { margin: 4px 0 8px; }
+.hand-result .yaku { margin: 6px 0; padding-left: 18px; }
+.hand-result .ja { color: var(--muted); margin-left: 6px; }
+.hand-result .deltas { list-style: none; padding: 0; display: flex; gap: 14px; flex-wrap: wrap; }
+@media (max-width: 560px) {
+  .riichi-table { grid-template-columns: 100px 150px 100px; grid-template-rows: 100px 150px 100px; }
+  .pond { width: 100px; }
+  .tile-sm { width: 18px; height: 24px; }
+  .tile-lg { width: 30px; height: 40px; }
+}

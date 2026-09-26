@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 import type { Seat } from "../engine/types";
+import { RiichiBoard } from "./riichi/Board";
 import { YavalathBoard } from "./yavalath/Board";
 
 /** What every game board receives. It displays and submits; it computes nothing. */
@@ -18,7 +19,10 @@ export interface GameUi {
 }
 
 /** Adding a game: one entry here (and one in crates/ludo-registry). */
-export const GAME_UIS: GameUi[] = [{ id: "yavalath", Board: YavalathBoard }];
+export const GAME_UIS: GameUi[] = [
+  { id: "yavalath", Board: YavalathBoard },
+  { id: "riichi", Board: RiichiBoard },
+];
 
 export function gameUi(id: string): GameUi | undefined {
   return GAME_UIS.find((g) => g.id === id);
