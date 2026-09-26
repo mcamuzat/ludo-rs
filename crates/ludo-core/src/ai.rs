@@ -140,7 +140,9 @@ pub fn choose<G: Game + Determinize + Heuristics>(
         done += 1;
         let stop = match search.budget {
             Budget::Iterations(n) => done >= n,
-            Budget::Millis(ms) => done % CLOCK_EVERY == 0 && now_ms() - start >= f64::from(ms),
+            Budget::Millis(ms) => {
+                done.is_multiple_of(CLOCK_EVERY) && now_ms() - start >= f64::from(ms)
+            }
         };
         if stop {
             break;
