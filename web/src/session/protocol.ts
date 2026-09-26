@@ -30,10 +30,13 @@ function isObject(data: unknown): data is Record<string, unknown> {
 export function parseGuestMessage(data: unknown): GuestMessage | null {
   if (!isObject(data)) return null;
   switch (data.type) {
-    case "hello":
+    case "hello": {
       if (typeof data.protocol !== "number" || typeof data.name !== "string") return null;
-      if (data.seatToken !== undefined && typeof data.seatToken !== "string") return null;
-      return { type: "hello", protocol: data.protocol, name: data.name, seatToken: data.seatToken };
+      // PeerJS's binary encoding turns an absent (undefined) token into null.
+      const seatToken = data.seatToken ?? undefined;
+      if (seatToken !== undefined && typeof seatToken !== "string") return null;
+      return { type: "hello", protocol: data.protocol, name: data.name, seatToken };
+    }
     case "action":
       if (!Number.isInteger(data.rev) || !("action" in data)) return null;
       return { type: "action", rev: data.rev as number, action: data.action };

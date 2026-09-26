@@ -34,6 +34,15 @@ describe("parseGuestMessage", () => {
     });
     expect(parseGuestMessage({ type: "ping", t: 12 })).toEqual({ type: "ping", t: 12 });
   });
+
+  it("reads a null token as no token (PeerJS's binary encoding turns undefined into null)", () => {
+    expect(parseGuestMessage({ type: "hello", protocol: 1, name: "Ana", seatToken: null })).toEqual({
+      type: "hello",
+      protocol: 1,
+      name: "Ana",
+      seatToken: undefined,
+    });
+  });
 });
 
 describe("parseHostMessage", () => {

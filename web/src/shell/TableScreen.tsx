@@ -1,7 +1,9 @@
 import { useSyncExternalStore } from "react";
 import type { GameMeta, Update } from "../engine/types";
 import { gameUi } from "../games/registry";
+import { HostSession } from "../session/host";
 import type { SeatInfo, Session, SessionState } from "../session/session";
+import { HostLobby } from "./HostLobby";
 
 interface Props {
   session: Session;
@@ -21,6 +23,9 @@ export function TableScreen({ session, games, onLeave }: Props) {
       </div>
       {state.error && <p className="error">{state.error}</p>}
       {state.status && <p className="status">{state.status}</p>}
+      {state.notice && <p className="notice">{state.notice}</p>}
+      {state.phase === "lobby" &&
+        (session instanceof HostSession ? <HostLobby session={session} state={state} /> : <GuestLobby state={state} />)}
       {state.phase === "playing" && <Playing session={session} state={state} />}
     </main>
   );
@@ -46,7 +51,6 @@ function Playing({ session, state }: { session: Session; state: SessionState }) 
           }}
         />
       )}
-      {state.notice && <p className="notice">{state.notice}</p>}
       {update?.outcome && (
         <div className="end">
           <strong>Partie terminée.</strong>{" "}
@@ -77,6 +81,19 @@ function SeatList({ seats, update, me }: { seats: SeatInfo[]; update: Update | n
           </li>
         );
       })}
+    </ol>
+  );
+}
+
+function GuestLobby({ state }: { state: SessionState }) {
+  return (
+    <ol className="seats">
+      {state.seats.map((seat, i) => (
+        <li key={i}>
+          {seat.name}
+          {i === state.me ? " (toi)" : ""}
+        </li>
+      ))}
     </ol>
   );
 }
