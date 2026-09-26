@@ -1,7 +1,8 @@
 //! Tiny games that exercise the platform in tests.
 
+use rand::rngs::SmallRng;
 use rand::seq::SliceRandom;
-use rand::Rng;
+use rand::{Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
 
 use crate::{Determinize, Game, GameMeta, Heuristics, Illegal, Outcome, Pending, Seat, Viewer};
@@ -102,6 +103,209 @@ impl Heuristics for Nim {
         *Self::legal_actions(s, seat)
             .choose(rng)
             .expect("pending seat has a move")
+    }
+}
+
+/// Each seat is dealt one hidden card from 0..=6, then every seat answers
+/// Stay or Fold at the same time. Highest card among stayers wins; folders
+/// tie behind the winner; other stayers finish last. Nobody stays: all tie.
+pub struct HighCard;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum Choice {
+    Stay,
+    Fold,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct HighCardState {
+    pub cards: Vec<u8>,
+    /// Undealt cards, hidden from everyone.
+    pub deck: Vec<u8>,
+    pub answers: Vec<Option<Choice>>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct HighCardView {
+    pub my_card: Option<u8>,
+    pub my_answer: Option<Choice>,
+    pub answered: Vec<bool>,
+    /// Cards and answers, once everyone has answered.
+    pub revealed: Option<(Vec<u8>, Vec<Choice>)>,
+}
+
+impl HighCard {
+    fn finished(s: &HighCardState) -> Option<Vec<Choice>> {
+        s.answers.iter().copied().collect()
+    }
+}
+
+impl Game for HighCard {
+    type State = HighCardState;
+    type Action = Choice;
+    type View = HighCardView;
+    type Config = ();
+
+    fn meta() -> GameMeta {
+        GameMeta {
+            id: "highcard",
+            name: "HighCard",
+            min_players: 2,
+            max_players: 4,
+            hidden_info: true,
+        }
+    }
+
+    fn new(_config: &(), players: u8, seed: u64) -> HighCardState {
+        let mut deck: Vec<u8> = (0..=6).collect();
+        deck.shuffle(&mut SmallRng::seed_from_u64(seed));
+        let cards = deck.split_off(deck.len() - usize::from(players));
+        HighCardState {
+            cards,
+            deck,
+            answers: vec![None; usize::from(players)],
+        }
+    }
+
+    fn pending(s: &HighCardState) -> Pending {
+        Pending(
+            (0..s.answers.len() as u8)
+                .map(Seat)
+                .filter(|x| s.answers[x.index()].is_none())
+                .collect(),
+        )
+    }
+
+    fn legal_actions(s: &HighCardState, seat: Seat) -> Vec<Choice> {
+        match s.answers.get(seat.index()) {
+            Some(None) => vec![Choice::Stay, Choice::Fold],
+            _ => Vec::new(),
+        }
+    }
+
+    fn apply(s: &mut HighCardState, seat: Seat, choice: &Choice) -> Result<(), Illegal> {
+        match s.answers.get_mut(seat.index()) {
+            Some(slot @ None) => {
+                *slot = Some(*choice);
+                Ok(())
+            }
+            _ => Err(Illegal::new("déjà répondu")),
+        }
+    }
+
+    fn view(s: &HighCardState, viewer: Viewer) -> HighCardView {
+        let mine = match viewer {
+            Viewer::Seat(seat) => Some(seat.index()),
+            Viewer::Spectator => None,
+        };
+        HighCardView {
+            my_card: mine.map(|i| s.cards[i]),
+            my_answer: mine.and_then(|i| s.answers[i]),
+            answered: s.answers.iter().map(Option::is_some).collect(),
+            revealed: Self::finished(s).map(|answers| (s.cards.clone(), answers)),
+        }
+    }
+
+    fn outcome(s: &HighCardState) -> Option<Outcome> {
+        let answers = Self::finished(s)?;
+        let n = answers.len();
+        let stayers: Vec<usize> = (0..n).filter(|&i| answers[i] == Choice::Stay).collect();
+        let Some(&best) = stayers.iter().max_by_key(|&&i| s.cards[i]) else {
+            return Some(Outcome::Ranked(vec![0; n]));
+        };
+        let folders = (n - stayers.len()) as u8;
+        Some(Outcome::Ranked(
+            (0..n)
+                .map(|i| match answers[i] {
+                    _ if i == best => 0,
+                    Choice::Fold => 1,
+                    Choice::Stay => 1 + folders,
+                })
+                .collect(),
+        ))
+    }
+}
+
+impl Determinize for HighCard {
+    fn determinize<R: Rng + ?Sized>(
+        s: &HighCardState,
+        observer: Seat,
+        rng: &mut R,
+    ) -> HighCardState {
+        if Self::finished(s).is_some() {
+            return s.clone();
+        }
+        let me = observer.index();
+        let mut pool: Vec<u8> = (0..=6).filter(|&c| c != s.cards[me]).collect();
+        pool.shuffle(rng);
+        let mut d = s.clone();
+        for i in (0..s.cards.len()).filter(|&i| i != me) {
+            d.cards[i] = pool.pop().expect("enough cards");
+            if d.answers[i].is_some() {
+                d.answers[i] = Some(if rng.gen_bool(0.5) {
+                    Choice::Stay
+                } else {
+                    Choice::Fold
+                });
+            }
+        }
+        d.deck = pool;
+        d
+    }
+}
+
+impl Heuristics for HighCard {
+    fn rollout_action<R: Rng + ?Sized>(_s: &HighCardState, _seat: Seat, rng: &mut R) -> Choice {
+        if rng.gen_bool(0.5) {
+            Choice::Stay
+        } else {
+            Choice::Fold
+        }
+    }
+}
+
+/// HighCard with a bug: every view shows every card.
+pub struct Leaky;
+
+impl Game for Leaky {
+    type State = HighCardState;
+    type Action = Choice;
+    type View = (HighCardView, Vec<u8>);
+    type Config = ();
+
+    fn meta() -> GameMeta {
+        GameMeta {
+            id: "leaky",
+            ..HighCard::meta()
+        }
+    }
+    fn new(config: &(), players: u8, seed: u64) -> HighCardState {
+        HighCard::new(config, players, seed)
+    }
+    fn pending(s: &HighCardState) -> Pending {
+        HighCard::pending(s)
+    }
+    fn legal_actions(s: &HighCardState, seat: Seat) -> Vec<Choice> {
+        HighCard::legal_actions(s, seat)
+    }
+    fn apply(s: &mut HighCardState, seat: Seat, a: &Choice) -> Result<(), Illegal> {
+        HighCard::apply(s, seat, a)
+    }
+    fn view(s: &HighCardState, viewer: Viewer) -> Self::View {
+        (HighCard::view(s, viewer), s.cards.clone())
+    }
+    fn outcome(s: &HighCardState) -> Option<Outcome> {
+        HighCard::outcome(s)
+    }
+}
+
+impl Determinize for Leaky {
+    fn determinize<R: Rng + ?Sized>(
+        s: &HighCardState,
+        observer: Seat,
+        rng: &mut R,
+    ) -> HighCardState {
+        HighCard::determinize(s, observer, rng)
     }
 }
 
