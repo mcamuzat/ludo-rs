@@ -1,0 +1,13 @@
+[package]
+name = "ludo-registry"
+description = "The list of games the site and the CLI offer"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ludo-core.workspace = true
+yavalath.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true

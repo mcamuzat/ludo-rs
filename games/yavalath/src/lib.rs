@@ -1,6 +1,7 @@
 //! Yavalath (Cameron Browne / Ludi, 2007). Rules and their sources: RULES.md.
 
 mod board;
+mod heuristics;
 mod view;
 
 pub use board::{all_cells, Board, Cell, Color, Effect, CELL_COUNT, DIRECTIONS, RADIUS};
