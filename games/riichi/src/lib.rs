@@ -2,6 +2,7 @@
 //! Rules and what ludo adds: RULES.md.
 
 mod action;
+mod determinize;
 mod scoring;
 mod state;
 pub mod testing;
