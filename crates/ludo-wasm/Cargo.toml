@@ -1,0 +1,22 @@
+[package]
+name = "ludo-wasm"
+description = "WASM bridge: thin JSON layer over the game registry"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+ludo-core.workspace = true
+ludo-registry.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+# Must match the installed wasm-bindgen CLI exactly (`wasm-bindgen --version`).
+wasm-bindgen = "=0.2.121"
+js-sys = "0.3"
+console_error_panic_hook = "0.1"
+# rand pulls in getrandom 0.2, which needs its "js" backend to compile on
+# wasm32-unknown-unknown (the engine itself only uses seeded generators).
+getrandom = { version = "0.2", features = ["js"] }
