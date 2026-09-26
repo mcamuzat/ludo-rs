@@ -1,0 +1,11 @@
+[package]
+name = "ludo-core"
+description = "Game contract, match log, generic AI and conformance checks"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+rand.workspace = true
+serde.workspace = true
+serde_json.workspace = true

@@ -1,0 +1,26 @@
+[workspace]
+members = ["crates/ludo-core"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[workspace.dependencies]
+rand = { version = "0.8", features = ["small_rng"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ludo-core = { path = "crates/ludo-core" }
+
+[profile.release]
+opt-level = 3
+
+# WASM build: `cargo build --profile wasm-release`.
+[profile.wasm-release]
+inherits = "release"
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
