@@ -366,3 +366,14 @@ Source : le livret officiel nestorgames (règles de Cameron Browne / Ludi),
 - **CI** : `cargo fmt --check`, `cargo clippy --workspace --all-targets -D warnings`,
   `cargo test --workspace`, build WASM, `pnpm build` ; déploiement GitHub
   Pages sur `main`.
+
+## 10. Ajustements faits pendant la planification et l'implémentation
+
+1. **Récompense IA** : part des autres sièges devancés, une égalité comptant pour moitié (un nul vaut 0,5 à 2 joueurs, pas 1).
+2. **`ai_move`** prend un niveau (`Easy`/`Medium`/`Hard`) plutôt qu'un budget en ms, car le niveau fixe aussi la probabilité d'erreur. Budgets CLI : 100 / 1000 / 3000 itérations. Mesuré : Difficile contre Facile = 0,94 (200 parties).
+3. **Conformance** : le refus d'une action hors liste est testé génériquement en faisant jouer un siège qui n'est pas en attente ; les coups hors liste propres à un jeu relèvent de ses tests de règles.
+4. **`Hello`** ne porte pas `game_id` : l'invité ne connaît que le code ; l'hôte envoie le jeu dans `Lobby`, et l'invité refuse un jeu absent de son registre. Un `seatToken` absent n'est pas envoyé, et `null` se lit comme absent (l'encodage binaire de PeerJS transforme `undefined` en `null`).
+5. **Siège « Fermé »** : réalisé par le choix du nombre de joueurs dans le lobby.
+6. **Frontière WASM** : toutes les données passent en chaînes JSON.
+7. **`Heuristics::evaluate`** renvoie `Vec<f64>`.
+8. **`ConfigForm`** : reporté au premier jeu qui a des options (Yavalath n'en a aucune) ; `newMatch` accepte déjà une config JSON.
