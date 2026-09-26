@@ -42,24 +42,41 @@ export class GuestSession extends Session {
   }
 
   private connect() {
-    this.peer?.destroy();
+    // Forget the old peer first: destroying it closes its connection, whose
+    // handlers must not schedule yet another reconnection.
+    const old = this.peer;
+    this.peer = null;
+    this.conn = null;
+    old?.destroy();
     const peer = new Peer();
     this.peer = peer;
     peer.on("open", () => {
+      if (this.peer !== peer) return;
       const conn = peer.connect(PEER_PREFIX + this.code, { reliable: true });
       this.conn = conn;
       conn.on("open", () => {
+        if (this.conn !== conn) return;
         const seatToken = loadGuestToken(this.code);
         this.send({ type: "hello", protocol: PROTOCOL_VERSION, name: this.name, ...(seatToken ? { seatToken } : {}) });
       });
-      conn.on("data", (data) => this.onHostMessage(data));
-      conn.on("close", () => this.lost());
+      conn.on("data", (data) => {
+        if (this.conn === conn) this.onHostMessage(data);
+      });
+      conn.on("close", () => {
+        if (this.conn === conn) this.lost();
+      });
     });
     peer.on("error", (err) => {
+      if (this.peer !== peer) return;
       if (err.type === "peer-unavailable") {
         this.set({ status: "Hôte introuvable : vérifie le code, ou attends son retour…" });
       }
+      // Only the signaling server is gone: the connection to the host keeps working.
+      if (this.conn?.open) return;
       this.lost();
+    });
+    peer.on("disconnected", () => {
+      if (this.peer === peer && !peer.destroyed) peer.reconnect();
     });
   }
 
