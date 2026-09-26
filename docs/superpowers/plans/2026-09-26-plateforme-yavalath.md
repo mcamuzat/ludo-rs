@@ -32,6 +32,7 @@
 3. Conformance : « action hors liste refusée » est testé génériquement en faisant jouer un siège qui n'est pas en attente ; les coups hors liste propres à un jeu (case occupée…) sont couverts par ses tests de règles.
 4. `Hello` ne contient pas `game_id` : l'invité ne connaît que le code ; l'hôte envoie le jeu dans `Lobby`, et l'invité refuse un jeu absent de son registre.
 5. « Fermé » est réalisé par le choix du nombre de joueurs dans le lobby : les sièges au-delà n'existent pas.
+6. Pas de `ConfigForm` par jeu dans ce cycle : Yavalath n'a aucune option ; le formulaire arrivera avec le premier jeu qui en a (le Mahjong). `newMatch` accepte déjà une config JSON.
 
 ## Review Focus
 
@@ -5532,6 +5533,7 @@ Dans `docs/superpowers/specs/2026-09-26-plateforme-yavalath-design.md`, ajouter 
 5. **Siège « Fermé »** : réalisé par le choix du nombre de joueurs dans le lobby.
 6. **Frontière WASM** : toutes les données passent en chaînes JSON.
 7. **`Heuristics::evaluate`** renvoie `Vec<f64>`.
+8. **`ConfigForm`** : reporté au premier jeu qui a des options (Yavalath n'en a aucune) ; `newMatch` accepte déjà une config JSON.
 ```
 
 - [ ] **Step 5: Vérification finale**
