@@ -1,0 +1,14 @@
+[package]
+name = "yavalath"
+description = "Yavalath rules for ludo-rs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ludo-core.workspace = true
+rand.workspace = true
+serde.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
