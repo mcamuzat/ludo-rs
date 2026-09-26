@@ -1,0 +1,49 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f6f3ee;
+  --fg: #1d1b18;
+  --muted: #6b655c;
+  --card: #fffdf9;
+  --accent: #2f6f5e;
+  --line: #d8d0c4;
+  --danger: #b3261e;
+  font-family: system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #1b1a18; --fg: #eeeae3; --muted: #a39c90; --card: #262421; --accent: #6fbfa6; --line: #3d3a35; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); }
+main { max-width: 900px; margin: 0 auto; padding: 16px; }
+h1 { margin: 8px 0 16px; }
+button { font: inherit; padding: 6px 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer; }
+button:disabled { opacity: 0.5; cursor: default; }
+button.primary { background: var(--accent); border-color: var(--accent); color: white; }
+select, input { font: inherit; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--card); color: var(--fg); }
+.error { color: var(--danger); }
+.status, .hint { color: var(--muted); }
+.notice { color: var(--danger); }
+.games { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.game-card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; }
+.game-card button { margin-top: 4px; }
+.game-card h2 { margin: 0 0 4px; font-size: 1.2rem; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+.seats { padding-left: 20px; }
+.seats li { margin: 6px 0; }
+.seats .active { font-weight: 600; }
+.code { font-size: 1.4rem; letter-spacing: 0.15em; }
+.topbar { display: flex; gap: 12px; align-items: center; }
+.topbar h2 { margin: 0; }
+.yavalath { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.legend { list-style: none; padding: 0; display: flex; gap: 16px; flex-wrap: wrap; margin: 0; }
+.legend .active { font-weight: 600; }
+.swatch { display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--muted); margin-right: 6px; vertical-align: -2px; }
+.hexboard { width: min(100%, 560px); height: auto; }
+.hex { fill: var(--card); stroke: var(--line); stroke-width: 1.5; }
+.hex.forced { stroke: var(--danger); stroke-width: 3; }
+.cell.playable { cursor: pointer; }
+.cell.playable:hover .hex { fill: color-mix(in srgb, var(--accent) 25%, var(--card)); }
+.stone { stroke: var(--muted); stroke-width: 1; }
+.stone.in-line { stroke: var(--accent); stroke-width: 4; }
+.last-move { fill: var(--accent); }
+.end { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; margin-top: 12px; }
