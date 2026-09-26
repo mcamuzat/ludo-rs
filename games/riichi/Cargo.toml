@@ -1,0 +1,16 @@
+[package]
+name = "riichi"
+description = "Japanese Riichi Mahjong (Mahjong Soul rules) for ludo-rs, on top of riichienv-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ludo-core.workspace = true
+rand.workspace = true
+serde.workspace = true
+# Full rules engine (Apache-2.0). Pinned: 0.x, upgrades are deliberate.
+riichienv-core = { version = "=0.4.10", default-features = false, features = ["wasm"] }
+
+[dev-dependencies]
+serde_json.workspace = true

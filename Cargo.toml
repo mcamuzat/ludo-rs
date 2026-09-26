@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/ludo-core", "crates/ludo-registry", "crates/ludo-cli", "crates/ludo-wasm", "games/yavalath"]
+members = ["crates/ludo-core", "crates/ludo-registry", "crates/ludo-cli", "crates/ludo-wasm", "games/yavalath", "games/riichi"]
 resolver = "2"
 
 [workspace.package]
@@ -13,6 +13,7 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 ludo-core = { path = "crates/ludo-core" }
 yavalath = { path = "games/yavalath" }
+riichi = { path = "games/riichi" }
 ludo-registry = { path = "crates/ludo-registry" }
 
 [profile.release]
