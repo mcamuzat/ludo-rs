@@ -6,7 +6,7 @@ import { HostSession } from "./session/host";
 import { LocalSession } from "./session/local";
 import type { HostChoice } from "./session/seats";
 import type { Session } from "./session/session";
-import { loadHost, loadName, saveName } from "./session/storage";
+import { clearHost, loadHost, loadName, saveName } from "./session/storage";
 import { Home } from "./shell/Home";
 import { Lobby, type SeatChoice } from "./shell/Lobby";
 import { TableScreen } from "./shell/TableScreen";
@@ -28,6 +28,7 @@ export function App() {
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState(loadName);
   const [screen, setScreen] = useState<Screen>(() => initialScreen(loadName()));
+  const [saved, setSaved] = useState(loadHost);
 
   useEffect(() => {
     loadCatalog().then(setCatalog, (e) => setError(String(e)));
@@ -38,12 +39,12 @@ export function App() {
   const home = () => {
     if (screen.name === "table") screen.session.dispose();
     history.replaceState(null, "", location.pathname);
+    setSaved(loadHost());
     setScreen({ name: "home" });
   };
 
   switch (screen.name) {
-    case "home": {
-      const saved = loadHost();
+    case "home":
       return (
         <Home
           catalog={catalog}
@@ -57,9 +58,12 @@ export function App() {
           onJoin={(code) => open(new GuestSession(code, name))}
           saved={saved}
           onResume={() => saved && open(HostSession.resume(saved))}
+          onAbandon={() => {
+            clearHost();
+            setSaved(null);
+          }}
         />
       );
-    }
     case "lobby":
       return (
         <Lobby

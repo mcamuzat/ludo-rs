@@ -12,9 +12,10 @@ interface Props {
   onJoin(code: string): void;
   saved: SavedHost | null;
   onResume(): void;
+  onAbandon(): void;
 }
 
-export function Home({ catalog, error, name, onName, onPick, onJoin, saved, onResume }: Props) {
+export function Home({ catalog, error, name, onName, onPick, onJoin, saved, onResume, onAbandon }: Props) {
   const [code, setCode] = useState("");
   const games = (catalog ?? []).filter((g) => gameUi(g.id));
   const savedName = saved ? (catalog?.find((g) => g.id === saved.gameId)?.name ?? saved.gameId) : null;
@@ -31,6 +32,7 @@ export function Home({ catalog, error, name, onName, onPick, onJoin, saved, onRe
             Partie hébergée en cours ({savedName}, code {saved.code}).
           </span>
           <button onClick={onResume}>Reprendre</button>
+          <button onClick={onAbandon}>Abandonner</button>
         </div>
       )}
       {error && <p className="error">{error}</p>}

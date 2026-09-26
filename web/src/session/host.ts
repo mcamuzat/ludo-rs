@@ -46,7 +46,11 @@ export class HostSession extends Session {
       this.registry = SeatRegistry.fromJSON(saved.seats);
       this.set({ phase: "playing", gameId, seats: this.registry.info() });
       this.table = this.newTable();
-      this.table.resume(saved.log).catch((e) => this.fail(e));
+      this.table.resume(saved.log).catch((e) => {
+        // A save that cannot be replayed would be offered forever: drop it.
+        clearHost();
+        this.fail(e);
+      });
     } else {
       this.code = newCode();
       this.registry = new SeatRegistry([{ kind: "host", name: hostName.trim() || "Hôte" }, ...others]);
