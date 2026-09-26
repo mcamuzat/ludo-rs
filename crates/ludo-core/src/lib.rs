@@ -1,5 +1,6 @@
 //! The contract every game implements, and what the platform builds on it.
 
+pub mod ai;
 pub mod conformance;
 mod game;
 mod log;
