@@ -4,7 +4,7 @@ import type { Update } from "../engine/types";
 import type { SeatInfo } from "./session";
 
 /** Bumped on any incompatible change: host and guest must match. */
-export const PROTOCOL_VERSION = 1;
+export const PROTOCOL_VERSION = 2;
 
 /** Prefix of PeerJS ids, so a short code doesn't collide with other apps. */
 export const PEER_PREFIX = "ludo-";

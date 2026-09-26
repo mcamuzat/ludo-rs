@@ -1,5 +1,5 @@
-import { useSyncExternalStore } from "react";
-import type { GameMeta, Update } from "../engine/types";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import type { GameMeta, SeatClockView, Update } from "../engine/types";
 import { gameUi } from "../games/registry";
 import { HostSession } from "../session/host";
 import type { SeatInfo, Session, SessionState } from "../session/session";
@@ -32,13 +32,15 @@ export function TableScreen({ session, games, onLeave }: Props) {
 }
 
 function Playing({ session, state }: { session: Session; state: SessionState }) {
+  const update = state.update;
+  // Clocks count down from when the update arrived.
+  const receivedAt = useMemo(() => performance.now(), [update]);
   const ui = state.gameId ? gameUi(state.gameId) : undefined;
   if (state.gameId && !ui) return <p className="error">Jeu inconnu : mets la page à jour.</p>;
-  const update = state.update;
   const Board = ui?.Board;
   return (
     <>
-      <SeatList seats={state.seats} update={update} me={state.me} />
+      <SeatList seats={state.seats} update={update} me={state.me} receivedAt={receivedAt} />
       {update && Board && (
         <Board
           view={update.view}
@@ -65,7 +67,35 @@ function rankLabel(rank: number): string {
   return rank === 0 ? "1er" : `${rank + 1}ᵉ`;
 }
 
-function SeatList({ seats, update, me }: { seats: SeatInfo[]; update: Update | null; me: number | null }) {
+/** Re-renders every `ms` while `active`. */
+function useNow(ms: number, active: boolean): number {
+  const [now, setNow] = useState(() => performance.now());
+  useEffect(() => {
+    if (!active) return;
+    const id = setInterval(() => setNow(performance.now()), ms);
+    return () => clearInterval(id);
+  }, [ms, active]);
+  return now;
+}
+
+function clockLabel(c: SeatClockView, elapsed: number): string {
+  const base = Math.max(0, c.baseMs - elapsed);
+  const bank = Math.max(0, c.bankMs - Math.max(0, elapsed - c.baseMs));
+  return `${Math.ceil(base / 1000)} s + ${Math.ceil(bank / 1000)} s`;
+}
+
+function SeatList({
+  seats,
+  update,
+  me,
+  receivedAt,
+}: {
+  seats: SeatInfo[];
+  update: Update | null;
+  me: number | null;
+  receivedAt: number;
+}) {
+  const now = useNow(250, (update?.clocks.length ?? 0) > 0);
   return (
     <ol className="seats">
       {seats.map((seat, i) => {
@@ -77,6 +107,10 @@ function SeatList({ seats, update, me }: { seats: SeatInfo[]; update: Update | n
             {i === me ? " (toi)" : ""}
             {!seat.connected && seat.kind === "remote" ? " (déconnecté)" : ""}
             {pending ? (seat.kind === "ai" ? " — réfléchit…" : " — à jouer") : ""}
+            {(() => {
+              const c = update?.clocks.find((x) => x.seat === i);
+              return c ? ` — ⏱ ${clockLabel(c, now - receivedAt)}` : "";
+            })()}
             {rank !== undefined ? ` — ${rankLabel(rank)}` : ""}
           </li>
         );

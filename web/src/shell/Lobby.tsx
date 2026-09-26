@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { GameMeta, Level } from "../engine/types";
 import { aiName } from "../session/names";
+import { CLOCK_PRESETS, type ClockSettings } from "../session/clock";
 import type { TableSeat } from "../session/table";
 
 /** What the host picks for each seat after their own. */
@@ -10,7 +11,7 @@ interface Props {
   game: GameMeta;
   onLocal(seats: TableSeat[]): void;
   /** Absent: online play is not offered. */
-  onHost?(choices: SeatChoice[]): void;
+  onHost?(choices: SeatChoice[], clock: ClockSettings | null): void;
   onBack(): void;
 }
 
@@ -19,6 +20,7 @@ const LEVELS: Level[] = ["Easy", "Medium", "Hard"];
 export function Lobby({ game, onLocal, onHost, onBack }: Props) {
   const [players, setPlayers] = useState(game.minPlayers);
   const [choices, setChoices] = useState<SeatChoice[]>(() => Array(game.maxPlayers - 1).fill("Medium"));
+  const [clockId, setClockId] = useState(CLOCK_PRESETS[0].id);
   const others = choices.slice(0, players - 1);
 
   const options: { value: SeatChoice; label: string }[] = [
@@ -68,12 +70,26 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
           </li>
         ))}
       </ol>
+      {onHost && game.clock && (
+        <div className="row">
+          <label htmlFor="clock">Chrono en ligne :</label>
+          <select id="clock" value={clockId} onChange={(e) => setClockId(e.target.value)}>
+            {CLOCK_PRESETS.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <div className="row">
         <button className="primary" disabled={others.includes("open")} onClick={() => onLocal(localSeats())}>
           Jouer sur cet appareil
         </button>
         {onHost && (
-          <button disabled={others.includes("local")} onClick={() => onHost(others)}>
+          <button disabled={others.includes("local")} onClick={() =>
+              onHost(others, game.clock ? (CLOCK_PRESETS.find((p) => p.id === clockId)?.settings ?? null) : null)
+            }>
             Héberger en ligne
           </button>
         )}

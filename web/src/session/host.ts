@@ -13,6 +13,7 @@ import {
 import { SeatRegistry, type HostChoice, type HostSeat } from "./seats";
 import { Session } from "./session";
 import { clearHost, saveHost, type SavedHost } from "./storage";
+import type { ClockSettings } from "./clock";
 import { Table } from "./table";
 
 const HOST_SEAT: Seat = 0;
@@ -38,6 +39,7 @@ export class HostSession extends Session {
     private gameId: string,
     hostName: string,
     others: HostChoice[],
+    private clock: ClockSettings | null,
     saved?: SavedHost,
   ) {
     super();
@@ -45,7 +47,7 @@ export class HostSession extends Session {
       this.code = saved.code;
       this.registry = SeatRegistry.fromJSON(saved.seats);
       this.set({ phase: "playing", gameId, seats: this.registry.info() });
-      this.table = this.newTable();
+      this.table = this.newTable(saved.banks);
       this.table.resume(saved.log).catch((e) => {
         // A save that cannot be replayed would be offered forever: drop it.
         clearHost();
@@ -61,7 +63,7 @@ export class HostSession extends Session {
   }
 
   static resume(saved: SavedHost): HostSession {
-    return new HostSession(saved.gameId, "", [], saved);
+    return new HostSession(saved.gameId, "", [], saved.clock, saved);
   }
 
   hostSeats(): readonly HostSeat[] {
@@ -103,12 +105,17 @@ export class HostSession extends Session {
     this.peer?.destroy();
   }
 
-  private newTable(): Table {
-    return new Table(this.gameId, this.registry.tableSeats(), {
-      onSnapshot: (s) => this.broadcast(s),
-      onLog: (log, s) => this.persist(log, s),
-      onError: (message) => this.set({ notice: message }),
-    });
+  private newTable(banks: [number, number][] = []): Table {
+    return new Table(
+      this.gameId,
+      this.registry.tableSeats(),
+      {
+        onSnapshot: (s) => this.broadcast(s),
+        onLog: (log, s) => this.persist(log, s),
+        onError: (message) => this.set({ notice: message }),
+      },
+      { clock: this.clock, banks },
+    );
   }
 
   private listen() {
@@ -202,6 +209,10 @@ export class HostSession extends Session {
   }
 
   private onHello(conn: DataConnection, msg: Extract<GuestMessage, { type: "hello" }>) {
+    if (this.conns.get(conn) != null) {
+      this.send(conn, { type: "rejected", reason: "Tu es déjà assis.", fatal: false });
+      return;
+    }
     if (msg.protocol !== PROTOCOL_VERSION) {
       this.refuse(conn, `Versions différentes (hôte ${PROTOCOL_VERSION}, toi ${msg.protocol}) : recharge la page.`);
       return;
@@ -232,15 +243,16 @@ export class HostSession extends Session {
 
   /** Each player gets their own seat's update, and only that. */
   private broadcast(s: Snapshot) {
-    this.set({ me: HOST_SEAT, update: updateFor(s, HOST_SEAT), notice: null });
+    const clocks = this.table?.clockViews() ?? [];
+    this.set({ me: HOST_SEAT, update: updateFor(s, HOST_SEAT, clocks), notice: null });
     for (const [conn, seat] of this.conns) {
-      if (seat !== null) this.send(conn, { type: "update", update: updateFor(s, seat) });
+      if (seat !== null) this.send(conn, { type: "update", update: updateFor(s, seat, clocks) });
     }
   }
 
   private sendUpdate(conn: DataConnection, seat: Seat) {
     const s = this.table?.snapshot;
-    if (s) this.send(conn, { type: "update", update: updateFor(s, seat) });
+    if (s) this.send(conn, { type: "update", update: updateFor(s, seat, this.table?.clockViews() ?? []) });
   }
 
   private broadcastLobby() {
@@ -256,7 +268,14 @@ export class HostSession extends Session {
   /** Saved after every action so the host can resume after a reload; cleared once the game is over. */
   private persist(log: unknown, s: Snapshot) {
     if (s.outcome) clearHost();
-    else saveHost({ code: this.code, gameId: this.gameId, seats: this.registry.toJSON(), log });
+    else saveHost({
+        code: this.code,
+        gameId: this.gameId,
+        seats: this.registry.toJSON(),
+        log,
+        clock: this.clock,
+        banks: this.table?.banks() ?? [],
+      });
   }
 
   private send(conn: DataConnection, msg: HostMessage) {

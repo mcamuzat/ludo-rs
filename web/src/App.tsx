@@ -70,7 +70,7 @@ export function App() {
           game={screen.game}
           onBack={home}
           onLocal={(seats) => open(new LocalSession(screen.game.id, seats))}
-          onHost={(choices) => open(new HostSession(screen.game.id, name, choices.map(hostChoice)))}
+          onHost={(choices, clock) => open(new HostSession(screen.game.id, name, choices.map(hostChoice), clock))}
         />
       );
     case "table":

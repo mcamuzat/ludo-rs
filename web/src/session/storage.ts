@@ -1,5 +1,6 @@
 // Per-device conveniences. Storage may be unavailable (private window,
 // blocked site data): every access is guarded and the page works without it.
+import type { ClockSettings } from "./clock";
 import type { HostSeat } from "./seats";
 
 export interface SavedHost {
@@ -7,6 +8,8 @@ export interface SavedHost {
   gameId: string;
   seats: HostSeat[];
   log: unknown;
+  clock: ClockSettings | null;
+  banks: [number, number][];
 }
 
 const NAME_KEY = "ludo-name";
@@ -49,7 +52,7 @@ export function loadHost(): SavedHost | null {
   if (!raw) return null;
   try {
     const value: unknown = JSON.parse(raw);
-    return isSavedHost(value) ? value : null;
+    return isSavedHost(value) ? { ...value, clock: value.clock ?? null, banks: value.banks ?? [] } : null;
   } catch {
     return null;
   }
