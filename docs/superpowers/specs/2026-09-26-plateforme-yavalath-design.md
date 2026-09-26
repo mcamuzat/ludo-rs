@@ -20,6 +20,9 @@ Le travail est découpé en trois cycles, chacun avec sa spec et son plan :
    séparée, qui évaluera les crates existantes de shanten et de scoring
    (maintenance, licence, compilation WASM).
 3. Les jeux suivants.
+4. **Serveur optionnel** (API, comptes, classements, tournois). Hors de cette
+   spec, mais préparé par le journal de partie (§3.1) et par l'interface
+   `Session` (§6).
 
 La plateforme est conçue dès maintenant pour le cas le plus dur du cycle 2 :
 information cachée, 4 joueurs, décisions de plusieurs joueurs en même temps.
@@ -37,8 +40,9 @@ information cachée, 4 joueurs, décisions de plusieurs joueurs en même temps.
 
 ### Hors périmètre
 
-Mahjong (cycle 2), relais TURN, migration d'hôte, comptes, matchmaking
-public, chat, classements.
+Mahjong (cycle 2), relais TURN, migration d'hôte, chat, et tout le serveur
+(cycle 4) : API, comptes, base de données, matchmaking public, classements
+(Elo/Glicko), tournois, graine partagée par engagement/révélation.
 
 ## 2. Structure du dépôt
 
@@ -138,6 +142,33 @@ Règles du contrat :
 - **Effacement de type.** Un unique `impl<G: Game + Determinize + Heuristics> AnyGame for G`
   expose le jeu en JSON (`serde_json`) à `ludo-wasm` et `ludo-cli`. Le registre
   Rust est une liste statique : ajouter un jeu = une ligne.
+- **Portabilité native.** `ludo-core` et les crates `games/*` ne dépendent
+  jamais de `wasm-bindgen`, `web-sys` ni d'aucune API navigateur. Ils
+  compilent en natif, pour que `ludo-cli` et un futur serveur les réutilisent
+  tels quels. Seul `ludo-wasm` dépend de wasm-bindgen.
+
+### 3.1 Journal de partie
+
+```rust
+pub struct MatchLog<G: Game> {
+    pub game_id: String,
+    pub config: G::Config,
+    pub players: u8,
+    pub seed: u64,
+    pub actions: Vec<(Seat, G::Action)>,   // uniquement les `apply` réussis, dans l'ordre
+}
+
+pub fn replay<G: Game>(log: &MatchLog<G>) -> Result<G::State, Illegal>;
+```
+
+- `Match<G>` (dans `ludo-core`) regroupe l'état et son journal ; c'est lui que
+  le Worker moteur détient, et chaque `apply` réussi y ajoute l'action.
+- `replay` recrée l'état depuis `new(config, players, seed)` et réapplique
+  chaque action ; il renvoie `Illegal` à la première action refusée.
+- Usages : sauvegarde/reprise de l'hôte (on stocke le journal, pas l'état),
+  débogage, futur mode « revoir la partie », et vérification côté serveur
+  d'un résultat envoyé par un client (cycle 4).
+- Exposé en JSON par `ludo-wasm` (`export_log(h)`, `import_log(game_id, json)`).
 
 ## 4. L'IA (`ludo-core::ai`)
 
@@ -175,7 +206,8 @@ Règles du contrat :
 | `apply(h, seat, action)` | applique ou renvoie `Illegal` |
 | `view(h, viewer)` | vue d'un siège ou spectateur |
 | `outcome(h)` | résultat si fini |
-| `export_state(h)` / `import_state(game_id, json)` | sauvegarde / reprise, et copie pour l'IA |
+| `export_state(h)` | copie de l'état pour le Worker IA |
+| `export_log(h)` / `import_log(game_id, json)` | sauvegarde / reprise par le journal (§3.1) |
 | `ai_move(game_id, state, seat, budget_ms, seed)` | coup de l'IA |
 
 Aucune logique n'y vit.
@@ -203,7 +235,9 @@ interface Session {
 ```
 
 `LocalSession` (IA et/ou hot-seat), `HostSession` et `GuestSession`
-l'implémentent. L'UI ne sait pas lequel elle utilise.
+l'implémentent. L'UI ne sait pas lequel elle utilise. Un futur mode où le
+serveur fait autorité (cycle 4) sera une `ServerSession` WebSocket de plus,
+sans changement dans l'UI.
 
 ### P2P en étoile, hôte faisant autorité (PeerJS)
 
@@ -230,8 +264,8 @@ l'implémentent. L'UI ne sait pas lequel elle utilise.
 - **Reconnexion** : un invité qui revient avec son `seat_token` retrouve son
   siège et reçoit un `Update` complet. Son siège reste réservé pendant la
   partie ; les autres continuent d'attendre s'il doit jouer.
-- **Départ de l'hôte** : la partie s'arrête. L'hôte sauvegarde l'état et les
-  jetons dans `localStorage` après chaque `apply` ; il peut reprendre avec le
+- **Départ de l'hôte** : la partie s'arrête. L'hôte sauvegarde le journal de
+  partie et les jetons dans `localStorage` après chaque `apply` ; il peut reprendre avec le
   même code et les invités se reconnectent.
 
 ### Sièges
@@ -319,6 +353,9 @@ Source : le livret officiel nestorgames (règles de Cameron Browne / Ludi),
   - chaque action de `legal_actions` est acceptée par `apply` ; une action
     hors de la liste est refusée ;
   - aller-retour serde de `State` et `Action` ;
+  - `replay` du journal de chaque partie aléatoire redonne exactement l'état
+    final (comparé après sérialisation) ; un journal contenant une action
+    illégale est refusé ;
   - pour les jeux `hidden_info` : `view(Seat(i))` est identique pour deux
     déterminisations depuis le siège `i` (rien de caché n'y fuit).
 - **IA** : `ludo-cli arena` (Difficile ≥ 80 % contre Facile) ; test de
