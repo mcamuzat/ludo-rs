@@ -21,7 +21,9 @@ impl Cell {
     }
 
     pub fn is_on_board(self) -> bool {
-        self.q.abs() <= RADIUS && self.r.abs() <= RADIUS && (self.q + self.r).abs() <= RADIUS
+        // In i16: coordinates come from the network, and `i8::abs(-128)` overflows.
+        let (q, r, radius) = (i16::from(self.q), i16::from(self.r), i16::from(RADIUS));
+        q.abs() <= radius && r.abs() <= radius && (q + r).abs() <= radius
     }
 
     /// Position in `all_cells()` order, or `None` off the board.

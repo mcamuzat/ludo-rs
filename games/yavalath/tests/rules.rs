@@ -152,3 +152,14 @@ fn the_view_shows_the_board_and_whose_turn_it_is() {
         serde_json::json!("Swap")
     );
 }
+
+#[test]
+fn extreme_coordinates_are_off_the_board() {
+    for (q, r) in [(-128, 0), (0, -128), (127, 127), (-128, -128), (127, -128)] {
+        assert!(Cell::new(q, r).index().is_none(), "({q},{r})");
+    }
+    let mut s = new(2);
+    let before = s.clone();
+    assert!(Yavalath::apply(&mut s, Seat(0), &Action::Place(Cell::new(-128, 0))).is_err());
+    assert_eq!(s, before);
+}
