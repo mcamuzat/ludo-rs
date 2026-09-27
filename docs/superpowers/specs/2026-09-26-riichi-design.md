@@ -332,11 +332,25 @@ Mahjong Soul :
 14. `PROTOCOL_VERSION` passe à 2 (`Update` gagne `clocks` et une attente par
     joueur).
 
+### Après la revue finale
+15. **Une révision par spectateur** : `Table` tient une révision par siège, qui
+    ne bouge que si ce que ce siège reçoit change ; l'hôte n'envoie une mise à
+    jour qu'à ce changement, et un coup n'est périmé que pour son propre siège.
+    Sans cela, chaque réponse mise en attente révélait à tous qu'un joueur était
+    sollicité, et rendait périmée la réponse d'un autre joueur sollicité.
+16. **`Tsumogiri { tile }`** : défausser la tuile piochée est une action à part
+    (`Discard` = une copie de la main). Sinon, avec une copie en main, la
+    défausse de la tuile piochée était affichée à tous comme venant de la main.
+17. **Déterminisation** : les réponses déjà données par les autres sont
+    oubliées (qu'ils aient répondu ou non est caché) ; ils redécident dans la
+    simulation.
+
 ### Mesures
 - Arène `riichi 40 hard easy 4` : 0,317 avec les heuristiques du plan ;
-  0,567 avec l'évaluation en points ; **0,642** avec `search_actions`.
+  0,567 avec l'évaluation en points ; **0,642** avec `search_actions` ;
+  0,625 après les corrections de la revue.
   Yavalath (`200 hard easy 2`) : 0,940, inchangé.
-- WASM avec le Riichi : 893 Ko.
+- WASM avec le Riichi : 895 Ko.
 - Navigateur : hanchan locale complète contre 3 IA Facile (11 mains, aucune
   erreur) ; en ligne 5 + 20 s, la défausse de l'invité inactif est jouée pour
   lui après 24,8 s ; après rechargement de l'hôte, la main reprend et la
