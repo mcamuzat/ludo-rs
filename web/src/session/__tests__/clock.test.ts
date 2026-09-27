@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CLOCK_PRESETS, Clocks } from "../clock";
+import { CLOCK_PRESETS, Clocks, clockLabel } from "../clock";
 
 const settings = { baseMs: 5000, bankMs: 20000 };
 
@@ -46,5 +46,12 @@ describe("Clocks", () => {
   it("offers 5 + 20 s first", () => {
     expect(CLOCK_PRESETS[0].settings).toEqual(settings);
     expect(CLOCK_PRESETS.at(-1)?.settings).toBeNull();
+  });
+
+  it("labels time left from when the update arrived, never more than was sent", () => {
+    const c = { seat: 1, baseMs: 5000, bankMs: 20000 };
+    expect(clockLabel(c, 3000)).toBe("2 s + 20 s");
+    expect(clockLabel(c, 8000)).toBe("0 s + 17 s");
+    expect(clockLabel(c, -30000)).toBe("5 s + 20 s");
   });
 });

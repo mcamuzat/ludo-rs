@@ -81,3 +81,11 @@ export class Clocks {
     return [...this.banks.entries()].sort(([a], [b]) => a - b);
   }
 }
+
+/** Time left `elapsed` ms after the clock view was received (never negative). */
+export function clockLabel(c: SeatClockView, elapsed: number): string {
+  const spent = Math.max(0, elapsed);
+  const base = Math.max(0, c.baseMs - spent);
+  const bank = Math.max(0, c.bankMs - Math.max(0, spent - c.baseMs));
+  return `${Math.ceil(base / 1000)} s + ${Math.ceil(bank / 1000)} s`;
+}

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import type { GameMeta, SeatClockView, Update } from "../engine/types";
+import type { GameMeta, Update } from "../engine/types";
+import { clockLabel } from "../session/clock";
 import { gameUi } from "../games/registry";
 import { HostSession } from "../session/host";
 import type { SeatInfo, Session, SessionState } from "../session/session";
@@ -78,11 +79,6 @@ function useNow(ms: number, active: boolean): number {
   return now;
 }
 
-function clockLabel(c: SeatClockView, elapsed: number): string {
-  const base = Math.max(0, c.baseMs - elapsed);
-  const bank = Math.max(0, c.bankMs - Math.max(0, elapsed - c.baseMs));
-  return `${Math.ceil(base / 1000)} s + ${Math.ceil(bank / 1000)} s`;
-}
 
 function SeatList({
   seats,
