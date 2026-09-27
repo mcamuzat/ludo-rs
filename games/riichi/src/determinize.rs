@@ -51,7 +51,7 @@ impl State {
 impl Determinize for Riichi {
     /// Redraws everything `observer` cannot see: the other hands, the live
     /// wall and the unrevealed dead wall (sizes and revealed indicators kept),
-    /// then who may call and the answers others already gave.
+    /// then who may call; the answers others already gave are forgotten.
     /// Approximation: a redrawn hand of a player in riichi is not forced tenpai.
     fn determinize<R: Rng + ?Sized>(s: &State, observer: Seat, rng: &mut R) -> State {
         let mut d = s.clone();
@@ -103,19 +103,9 @@ impl Determinize for Riichi {
         if d.in_claim_window() {
             d.recompute_claims(observer);
         }
-        let others: Vec<Seat> = d
-            .answers
-            .keys()
-            .copied()
-            .filter(|&x| x != observer)
-            .collect();
-        for seat in others {
-            d.answers.remove(&seat);
-            let legal = d.engine_legal(seat);
-            if let Some((a, _)) = legal.choose(rng) {
-                d.answers.insert(seat, a.clone());
-            }
-        }
+        // Others' answers are hidden, and so is whether they have answered:
+        // every other asked seat decides again in the simulation.
+        d.answers.retain(|&seat, _| seat == observer);
         d
     }
 }
@@ -222,19 +212,20 @@ mod tests {
     }
 
     #[test]
-    fn others_answers_are_redrawn_legally() {
-        let mut s = after_first_discard();
-        let pon = Riichi::legal_actions(&s, Seat(3))
-            .into_iter()
-            .find(|a| matches!(a, Action::Pon { .. }))
-            .unwrap();
-        Riichi::apply(&mut s, Seat(3), &pon).unwrap();
-        for seed in 0..20 {
-            let mut d = Riichi::determinize(&s, Seat(1), &mut SmallRng::seed_from_u64(seed));
-            if let Some(answer) = d.answers.remove(&Seat(3)) {
-                assert!(Riichi::legal_actions(&d, Seat(3)).contains(&answer));
-            }
+    fn whether_others_have_answered_is_not_known() {
+        // Seat 1 cannot tell whether seat 3 has already answered.
+        let asked = after_first_discard();
+        let mut answered = asked.clone();
+        Riichi::apply(&mut answered, Seat(3), &Action::Pass).unwrap();
+        let mut seat3_asked = 0;
+        for seed in 0..300 {
+            let a = Riichi::determinize(&asked, Seat(1), &mut SmallRng::seed_from_u64(seed));
+            let b = Riichi::determinize(&answered, Seat(1), &mut SmallRng::seed_from_u64(seed));
+            assert_eq!(Riichi::pending(&a), Riichi::pending(&b), "seed {seed}");
+            assert_eq!(a.answers, b.answers, "seed {seed}");
+            seat3_asked += usize::from(Riichi::pending(&a).contains(Seat(3)));
         }
+        assert!(seat3_asked > 0, "the case where seat 3 may call occurs");
     }
 
     #[test]
