@@ -86,15 +86,31 @@ fn arena(id: &str, games: u32, a: Level, b: Level, players: u8) -> Result<(), St
         }
         Ok(m.outcome().expect("finished").rewards()[a_seat.index()])
     };
-    let mut total = 0.0;
-    for g in 0..games {
-        total += score(g)?;
-        eprint!(
-            "\r{}/{games}  score A = {:.3}",
-            g + 1,
-            total / f64::from(g + 1)
-        );
-    }
+    // Games are independent and seeded by their index: play them in parallel.
+    let workers = std::thread::available_parallelism().map_or(1, |n| n.get()) as u32;
+    let done = std::sync::atomic::AtomicU32::new(0);
+    let total = std::sync::Mutex::new(0.0);
+    std::thread::scope(|scope| -> Result<(), String> {
+        let handles: Vec<_> = (0..workers.min(games))
+            .map(|w| {
+                let (score, done, total) = (&score, &done, &total);
+                scope.spawn(move || -> Result<(), String> {
+                    for g in (w..games).step_by(workers as usize) {
+                        let r = score(g)?;
+                        let mut t = total.lock().expect("no poisoning");
+                        *t += r;
+                        let n = done.fetch_add(1, std::sync::atomic::Ordering::SeqCst) + 1;
+                        eprint!("\r{n}/{games}  score A = {:.3}", *t / f64::from(n));
+                    }
+                    Ok(())
+                })
+            })
+            .collect();
+        handles
+            .into_iter()
+            .try_for_each(|h| h.join().expect("arena worker panicked"))
+    })?;
+    let total = total.into_inner().expect("no poisoning");
     eprintln!();
     println!(
         "{id} à {players} : {a:?} contre {b:?}, {games} parties, score A = {:.3}",

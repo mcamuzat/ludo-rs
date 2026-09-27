@@ -121,6 +121,9 @@ pub fn choose<G: Game + Determinize + Heuristics>(
         };
         return Ok(G::rollout_action(&seen, seat, &mut rng));
     };
+    if let [only] = G::search_actions(state, seat).as_slice() {
+        return Ok(only.clone());
+    }
     let mut tree = vec![Node {
         action: None,
         mover: seat,
@@ -179,7 +182,7 @@ fn iterate<G: Game + Determinize + Heuristics>(
         // At the root the searching seat decides first, even if others are pending too;
         // elsewhere simultaneous decisions are taken in seat order.
         let mover = if current == 0 { me } else { first };
-        let legal = G::legal_actions(&sim, mover);
+        let legal = G::search_actions(&sim, mover);
         let available: Vec<usize> = tree[current]
             .children
             .iter()
@@ -407,5 +410,23 @@ mod tests {
         let s = Search::for_game::<Nim>(Level::Easy, false, 3);
         assert_eq!(s.budget, Some(Budget::Iterations(100)));
         assert_eq!(s.blunder, 0.15);
+    }
+
+    #[test]
+    fn the_search_only_considers_the_games_candidates() {
+        use crate::testgames::{Counter, CounterState};
+        for seed in 0..20 {
+            let search = Search {
+                budget: Some(Budget::Iterations(50)),
+                blunder: 0.0,
+                seed,
+            };
+            let s = CounterState { n: 0 };
+            assert_eq!(
+                choose::<Counter>(&s, Seat(0), &search, &no_clock).unwrap(),
+                1,
+                "seed {seed}"
+            );
+        }
     }
 }

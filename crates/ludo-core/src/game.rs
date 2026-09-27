@@ -174,6 +174,13 @@ pub trait Heuristics: Game {
     fn budget(level: Level, timed: bool) -> Option<Budget> {
         Some(level.default_budget(timed))
     }
+
+    /// The actions the search considers for `seat`: a non-empty subset of
+    /// `legal_actions`, depending only on what `seat` can see. Games narrow it
+    /// to keep a wide search on sensible moves; default: every legal action.
+    fn search_actions(s: &Self::State, seat: Seat) -> Vec<Self::Action> {
+        Self::legal_actions(s, seat)
+    }
 }
 
 #[cfg(test)]

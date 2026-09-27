@@ -180,6 +180,10 @@ impl Heuristics for Counter {
     fn evaluate(root: &CounterState, sim: &CounterState) -> Option<Vec<f64>> {
         (sim.n >= root.n + 5).then(|| vec![1.0])
     }
+    /// The search only ever considers adding 1.
+    fn search_actions(_s: &CounterState, _seat: Seat) -> Vec<u8> {
+        vec![1]
+    }
 }
 
 /// Nim whose timeout action is illegal once the pile is below 3.

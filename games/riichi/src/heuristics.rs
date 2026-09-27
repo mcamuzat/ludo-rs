@@ -6,6 +6,9 @@ use riichienv_core::shanten::calculate_shanten;
 
 use crate::{standings, Action, Riichi, State, Tile};
 
+/// Points of a large hand (haneman ron): the scale of a hand's gains.
+const HAND_SCALE: i32 = 12_000;
+
 impl State {
     /// Dragons, the round wind and `seat`'s wind give a yaku as a triplet.
     fn is_yakuhai(&self, seat: Seat, tile: Tile) -> bool {
@@ -42,54 +45,84 @@ impl State {
 }
 
 impl Heuristics for Riichi {
-    /// Win if possible; riichi when tenpai; on a call window pass, except a
-    /// pon that gives a yaku; otherwise the discard that lowers shanten most,
-    /// keeping the most valuable tiles.
+    /// Among the sensible moves (`search_actions`): take a pon that gives a
+    /// yaku, otherwise pass; discard the least valuable of the best discards.
     fn rollout_action<R: Rng + ?Sized>(s: &State, seat: Seat, rng: &mut R) -> Action {
-        let legal = Self::legal_actions(s, seat);
-        if let Some(win) = legal
-            .iter()
-            .find(|a| matches!(a, Action::Tsumo | Action::Ron))
-        {
-            return win.clone();
-        }
-        if legal.contains(&Action::Riichi) {
-            return Action::Riichi;
-        }
-        if legal.contains(&Action::Pass) {
-            return legal
+        let candidates = Self::search_actions(s, seat);
+        if candidates.contains(&Action::Pass) {
+            return candidates
                 .iter()
-                .find(|a| matches!(a, Action::Pon { tile, .. } if s.is_yakuhai(seat, *tile)))
+                .find(|a| matches!(a, Action::Pon { .. }))
                 .cloned()
                 .unwrap_or(Action::Pass);
         }
-        let discards: Vec<Tile> = legal
-            .iter()
-            .filter_map(|a| match a {
-                Action::Discard { tile } => Some(*tile),
-                _ => None,
-            })
-            .collect();
-        match discards.iter().min_by_key(|&&tile| {
-            (
-                s.shanten_without(seat, tile),
-                s.keep_value(seat, tile),
-                rng.gen::<u16>(),
-            )
-        }) {
-            Some(&tile) => Action::Discard { tile },
-            None => legal
+        let discards = candidates.iter().filter_map(|a| match a {
+            Action::Discard { tile } => Some(*tile),
+            _ => None,
+        });
+        match discards.min_by_key(|&tile| (s.keep_value(seat, tile), rng.gen::<u16>())) {
+            Some(tile) => Action::Discard { tile },
+            None => candidates
                 .choose(rng)
                 .expect("a pending seat has a legal action")
                 .clone(),
         }
     }
 
-    /// Simulate to the end of the current hand, then estimate the final
-    /// ranking from the scores.
+    /// Win if possible; riichi when tenpai; on a call window pass or a pon
+    /// that gives a yaku (an open hand without one cannot win); otherwise the
+    /// discards that lower shanten most, and any kan.
+    fn search_actions(s: &State, seat: Seat) -> Vec<Action> {
+        let legal = Self::legal_actions(s, seat);
+        if let Some(win) = legal
+            .iter()
+            .find(|a| matches!(a, Action::Tsumo | Action::Ron))
+        {
+            return vec![win.clone()];
+        }
+        if legal.contains(&Action::Riichi) {
+            return vec![Action::Riichi];
+        }
+        if legal.contains(&Action::Pass) {
+            return legal
+                .into_iter()
+                .filter(|a| match a {
+                    Action::Pass => true,
+                    Action::Pon { tile, .. } => s.is_yakuhai(seat, *tile),
+                    _ => false,
+                })
+                .collect();
+        }
+        let shanten = |a: &Action| match a {
+            Action::Discard { tile } => Some(s.shanten_without(seat, *tile)),
+            _ => None,
+        };
+        let Some(best) = legal.iter().filter_map(shanten).min() else {
+            return legal;
+        };
+        legal
+            .into_iter()
+            .filter(|a| shanten(a).is_none_or(|n| n == best))
+            .collect()
+    }
+
+    /// Simulate to the end of the current hand, then score it: half the
+    /// ranking the scores give, half the points won or lost in the hand (a
+    /// single hand rarely changes the ranking, and the search needs a signal).
     fn evaluate(root: &State, sim: &State) -> Option<Vec<f64>> {
-        (!sim.inner.is_done && sim.hand_key() != root.hand_key())
-            .then(|| standings(sim.scores()).rewards())
+        if sim.inner.is_done || sim.hand_key() == root.hand_key() {
+            return None;
+        }
+        let (before, after) = (root.scores(), sim.scores());
+        let ranks = standings(after).rewards();
+        Some(
+            (0..4)
+                .map(|i| {
+                    let gain = f64::from(after[i] - before[i]) / f64::from(2 * HAND_SCALE);
+                    0.5 * ranks[i] + 0.5 * (0.5 + gain).clamp(0.0, 1.0)
+                })
+                .collect(),
+        )
     }
 
     fn budget(level: Level, timed: bool) -> Option<Budget> {

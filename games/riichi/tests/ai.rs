@@ -141,3 +141,69 @@ fn reported_points_match_the_engine_payments() {
     }
     assert!(checked >= 10, "only {checked} wins checked");
 }
+
+/// A simulated hand scores its points, not only the ranking they give.
+#[test]
+fn a_hand_is_valued_by_its_points() {
+    let root = deal();
+    let mut sim = root.clone();
+    Riichi::apply(&mut sim, Seat(0), &Action::Discard { tile: t("5p") }).unwrap();
+    assert_eq!(Riichi::evaluate(&root, &sim), None, "the hand is not over");
+    Riichi::apply(&mut sim, Seat(3), &Action::Pass).unwrap();
+    Riichi::apply(&mut sim, Seat(1), &Action::Ron).unwrap();
+    let rewards = Riichi::evaluate(&root, &sim).expect("the hand is over");
+    let gain = f64::from(sim.scores()[1] - root.scores()[1]);
+    // Ranking reward 1 (first), plus the points: more than 0.75, below 1.
+    assert!(
+        (rewards[1] - (0.5 + 0.5 * (0.5 + gain / 24_000.0))).abs() < 1e-9,
+        "{rewards:?}"
+    );
+    assert!(rewards[1] > 0.75 && rewards[1] < 1.0);
+    assert!(
+        rewards[0] < rewards[2],
+        "the dealer who dealt in did worse than a bystander"
+    );
+}
+
+/// The search weighs sensible moves only: wins, riichi, yaku-giving calls,
+/// and the discards that keep the hand as close to complete as possible.
+#[test]
+fn the_search_considers_sensible_moves_only() {
+    let mut s = deal();
+    let start = Riichi::search_actions(&s, Seat(0));
+    assert!(start.contains(&Action::Discard { tile: t("N") }));
+    assert!(
+        !start.contains(&Action::Discard { tile: t("1m") }),
+        "breaking a triplet raises shanten"
+    );
+    assert!(start
+        .iter()
+        .all(|a| Riichi::legal_actions(&s, Seat(0)).contains(a)));
+
+    Riichi::apply(&mut s, Seat(0), &Action::Discard { tile: t("5p") }).unwrap();
+    assert_eq!(Riichi::search_actions(&s, Seat(1)), vec![Action::Ron]);
+    assert_eq!(
+        Riichi::search_actions(&s, Seat(3)),
+        vec![Action::Pass],
+        "a pon of 5p gives no yaku"
+    );
+
+    let mut e = State::start(
+        1,
+        Some(wall(
+            [
+                "1m 1m 1m 9m 9m 9m 1s 1s 1s 9s 9s E 5p",
+                "2m 3m 4m 5m 6m 7m 2p 3p 4p 6s 7s 8s 5p",
+                "1p 1p 1p 9p 9p 9p 2s 2s 2s 3s 3s 3s W",
+                "E E S S S W W N N P P F F",
+            ],
+            &["N"],
+        )),
+    );
+    Riichi::apply(&mut e, Seat(0), &Action::Discard { tile: t("E") }).unwrap();
+    let calls = Riichi::search_actions(&e, Seat(3));
+    assert!(
+        calls.contains(&Action::Pass) && calls.iter().any(|a| matches!(a, Action::Pon { .. })),
+        "E is the round wind: {calls:?}"
+    );
+}
