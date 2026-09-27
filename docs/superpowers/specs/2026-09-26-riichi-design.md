@@ -286,3 +286,58 @@ Mahjong Soul :
 - **Navigateur** (script headless) : hanchan complète contre 3 IA Facile ;
   partie en ligne à 2 humains + 2 IA avec un appel et un chrono qui expire ;
   reprise après rechargement de l'hôte.
+
+## 8. Ajustements faits pendant la planification et l'implémentation
+
+### Décidés pendant la planification
+1. **Attente visible par joueur** : `Game::visible_pending(s, viewer)` (défaut :
+   `pending`). Pendant une fenêtre d'appel, un joueur ne voit que lui-même en
+   attente ; sinon l'`Update` révélerait qui peut appeler. Les chronos envoyés
+   suivent la même règle.
+2. **Résultat de main lu avant le `step`** : riichienv enchaîne la main suivante
+   dans le même `step` et efface ses résultats. Les victoires sont évaluées juste
+   avant, avec son `HandEvaluator` public et les mêmes conditions. Un test vérifie
+   sur des parties réelles que nos points égalent ses paiements.
+3. **Pas de pause entre les mains** : le résultat reste dans la vue (`lastHand`)
+   et s'affiche par-dessus la main suivante (fermeture après 8 s ou
+   « Continuer »).
+4. **`Ankan { tile }`** : la tuile suffit à désigner le kan.
+5. **Défausse de la politique** : à shanten égal, départage par une valeur de
+   tuile (honneur isolé < terminale < 2/8 < centrale, cinq rouge gardé).
+6. **Conformance** : l'aller-retour serde est vérifié aux 20 premiers coups puis
+   tous les 25 coups (relire un état rejoue la partie).
+7. **Déterminisation** : la main redistribuée d'un adversaire en riichi n'est pas
+   forcée tenpai (approximation acceptée pour l'IA).
+8. `Heuristics::budget(level, timed)` remplace `Search::timed`/`Search::counted`.
+
+### Décidés pendant l'implémentation
+9. **Variations de score = règlement de la main**, comme Mahjong Soul : le bâton
+   d'un riichi est payé à la déclaration. La somme des variations vaut donc
+   1 000 × bâtons quand quelqu'un gagne ou que la partie se termine (les bâtons
+   restants vont au premier), 0 sinon.
+10. **Évaluation d'une main simulée** : moitié classement, moitié points gagnés
+    dans la main. Le classement seul bouge rarement en une main et ne donnait
+    aucun signal à la recherche.
+11. **`Heuristics::search_actions(s, seat)`** (nouveau, défaut : toutes les
+    actions légales ; Yavalath inchangé) : les actions que la recherche
+    considère. Au Riichi : la victoire ; le riichi ; passer ou un pon qui donne
+    un yaku ; les défausses de shanten minimal et les kans. La politique de
+    simulation choisit parmi elles. Mesure avant : Difficile refusait le riichi
+    61 % du temps et appelait dans 31 % des fenêtres. Limite assumée :
+    Difficile ne joue ni dama ni défense hors du shanten minimal.
+12. Essai écarté : étendre d'abord le coup de la politique dans l'arbre
+    (générique) faisait baisser Yavalath de 0,940 à 0,835.
+13. `ludo arena` joue les parties en parallèle (résultats identiques, environ
+    10 fois plus rapide).
+14. `PROTOCOL_VERSION` passe à 2 (`Update` gagne `clocks` et une attente par
+    joueur).
+
+### Mesures
+- Arène `riichi 40 hard easy 4` : 0,317 avec les heuristiques du plan ;
+  0,567 avec l'évaluation en points ; **0,642** avec `search_actions`.
+  Yavalath (`200 hard easy 2`) : 0,940, inchangé.
+- WASM avec le Riichi : 893 Ko.
+- Navigateur : hanchan locale complète contre 3 IA Facile (11 mains, aucune
+  erreur) ; en ligne 5 + 20 s, la défausse de l'invité inactif est jouée pour
+  lui après 24,8 s ; après rechargement de l'hôte, la main reprend et la
+  réserve de l'invité (0 s) est conservée.

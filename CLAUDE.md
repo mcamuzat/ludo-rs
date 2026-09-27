@@ -16,6 +16,10 @@ ludo-rs : plateforme de jeux traditionnels. Moteur Rust (`crates/ludo-core`, `ga
 - **Information cachée** : `view` ne contient jamais la graine ni les données cachées d'un autre siège ; `determinize` redistribue tout ce que l'observateur ne voit pas. La conformance le vérifie.
 - **P2P, l'hôte fait autorité** (`web/src/session/`) : un invité ne reçoit que `updateFor(snapshot, son siège)`. Incrémenter `PROTOCOL_VERSION` (`protocol.ts`) à tout changement du protocole. PeerJS encode en binaire : un champ `undefined` arrive `null` ; ne jamais envoyer `undefined`, et lire `null` comme absent.
 - Changer un type sérialisé d'un jeu impose de mettre à jour `web/src/games/<id>/types.ts` dans le même changement.
+- **Attente visible** : si le simple fait d'être sollicité est une information (qui peut appeler une défausse au Riichi), le jeu restreint `visible_pending` ; l'hôte n'envoie à chacun que cette attente et les chronos correspondants.
+- **Riichi** : `games/riichi` enveloppe `riichienv-core` (épinglé `=0.4.10`). Son état se sérialise par rejeu ; le résultat d'une main se lit avant le `step` (riichienv l'efface aussitôt). Monter de version = relancer toute la suite, dont `reported_points_match_the_engine_payments` et la conformance.
+- `getrandom` 0.4 (`wasm_js`) n'est déclaré que dans `crates/ludo-wasm`.
+- **IA** : un jeu au grand nombre de coups restreint la recherche avec `Heuristics::search_actions` (coups sensés) plutôt que de toucher à l'ISMCTS générique. Tout changement d'IA se mesure avec `ludo arena` (parallèle), Yavalath compris.
 - **Règles** : chaque jeu a un `RULES.md` qui cite sa source ([R]…) ; un point non tranché est marqué ❓. Toute modification de règle met à jour `RULES.md`, le moteur et un test ensemble.
 
 ## Ajouter un jeu

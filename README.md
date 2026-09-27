@@ -3,7 +3,9 @@
 Jeux traditionnels dans le navigateur : contre l'IA, sur le même écran, ou en ligne entre amis (P2P, sans serveur de jeu).
 Le moteur est en Rust, compilé en WebAssembly ; le site est en React.
 
-Jeux : **Yavalath** (2–3 joueurs, Cameron Browne). Prochain : Mahjong Riichi.
+Jeux :
+- **Yavalath** (2–3 joueurs, Cameron Browne) ;
+- **Mahjong Riichi** (4 joueurs, règles Mahjong Soul, moteur [riichienv-core](https://github.com/smly/RiichiEnv)).
 
 ## Lancer en local
 ```bash
@@ -23,4 +25,4 @@ En ligne, l'hôte fait tourner le moteur ; chaque invité, connecté à l'hôte 
 Voir `docs/superpowers/specs/` pour la conception et `CLAUDE.md` pour les règles du dépôt et la marche à suivre pour ajouter un jeu.
 
 ## Licence
-MIT.
+MIT. Licences tierces (moteur de Mahjong, tuiles) : voir `NOTICE`.
