@@ -1,5 +1,5 @@
 import { randomSeed } from "../engine/clients";
-import { updateFor, type Seat, type Snapshot } from "../engine/types";
+import type { Seat, Snapshot } from "../engine/types";
 import { errorMessage } from "./names";
 import { Session } from "./session";
 import { Table, type TableSeat } from "./table";
@@ -25,18 +25,18 @@ export class LocalSession extends Session {
 
   private begin(): Table {
     const table = new Table(this.gameId, this.seats, {
-      onSnapshot: (s) => this.show(s),
+      onSnapshot: (s) => this.show(table, s),
       onError: (message) => this.set({ notice: message }),
     });
     table.start(randomSeed(), this.config).catch((e) => this.fail(e));
     return table;
   }
 
-  private show(s: Snapshot) {
+  private show(table: Table, s: Snapshot) {
     const locals = this.seats.flatMap((seat, i) => (seat.kind === "local" ? [i] : []));
     // Hot-seat: show the local seat whose decision it is.
     const me = locals.find((i) => s.pending.includes(i)) ?? this.getState().me ?? locals[0] ?? null;
-    this.set({ me, update: updateFor(s, me), notice: null });
+    this.set({ me, update: table.update(me), notice: null });
   }
 
   submit(seat: Seat, action: unknown) {

@@ -1,5 +1,5 @@
 import { AiClient, EngineClient, randomSeed } from "../engine/clients";
-import type { AiRequest, Level, Seat, SeatClockView, Snapshot } from "../engine/types";
+import { updateFor, type AiRequest, type Level, type Seat, type SeatClockView, type Snapshot, type Update } from "../engine/types";
 import { Clocks, type ClockSettings } from "./clock";
 import { errorMessage } from "./names";
 import { StaleActionError, isStale } from "./rev";
@@ -63,6 +63,14 @@ export class Table {
   private timers = new Set<ReturnType<typeof setTimeout>>();
   private disposed = false;
   snapshot: Snapshot | null = null;
+  /**
+   * One revision per viewer, moved only when what that viewer receives
+   * changes: a seat never learns from a revision that others were asked or
+   * answered, and another seat's answer never makes its own answer stale.
+   * Starts at a random value, so an action meant for a previous table is stale.
+   */
+  private revs = new Map<Seat | null, { rev: number; key: string }>();
+  private firstRev = randomSeed();
 
   constructor(
     readonly gameId: string,
@@ -97,11 +105,22 @@ export class Table {
    */
   submit(seat: Seat, action: unknown, rev?: number): Promise<void> {
     return this.serial(async () => {
-      if (rev !== undefined && this.snapshot && isStale(rev, this.snapshot.rev)) throw new StaleActionError();
+      if (rev !== undefined && isStale(rev, this.revFor(seat))) throw new StaleActionError();
       await this.engine.apply(seat, action);
       this.clocks?.finish(seat, this.now());
       await this.refresh();
     });
+  }
+
+  /** The revision of what `viewer` currently receives. */
+  revFor(viewer: Seat | null): number {
+    return this.revs.get(viewer)?.rev ?? this.firstRev;
+  }
+
+  /** What `viewer` receives now, stamped with its own revision. */
+  update(viewer: Seat | null): Update | null {
+    if (!this.snapshot) return null;
+    return { ...updateFor(this.snapshot, viewer, this.clockViews()), rev: this.revFor(viewer) };
   }
 
   /** Time left for every timed seat that is deciding. */
@@ -141,6 +160,7 @@ export class Table {
     const s = await this.engine.snapshot(viewers);
     if (this.disposed) return;
     this.snapshot = s;
+    this.stampRevisions(s);
     for (const t of this.timers) clearTimeout(t);
     this.timers.clear();
     this.syncClocks(s);
@@ -148,6 +168,14 @@ export class Table {
     if (this.hooks.onLog) this.hooks.onLog(await this.engine.exportLog(), s);
     this.autoPlay(s);
     this.runAi(s);
+  }
+
+  private stampRevisions(s: Snapshot) {
+    for (const v of s.views) {
+      const key = JSON.stringify([v.view, v.legalActions, v.pending, s.outcome]);
+      const previous = this.revs.get(v.viewer);
+      if (previous?.key !== key) this.revs.set(v.viewer, { rev: (previous?.rev ?? this.firstRev) + 1, key });
+    }
   }
 
   private humanPending(s: Snapshot): Seat[] {
@@ -161,7 +189,10 @@ export class Table {
     this.clocks.sync(humans, now);
     for (const seat of humans) {
       const deadline = this.clocks.deadline(seat);
-      if (deadline !== null) this.later(deadline - now, () => void this.expire(seat, s.rev));
+      if (deadline !== null) {
+        const rev = this.revFor(seat);
+        this.later(deadline - now, () => void this.expire(seat, rev));
+      }
     }
   }
 
@@ -180,8 +211,9 @@ export class Table {
     for (const seat of this.humanPending(s)) {
       const legal = s.views.find((v) => v.viewer === seat)?.legalActions ?? [];
       if (legal.length !== 1) continue;
+      const rev = this.revFor(seat);
       this.later(AUTO_PLAY_MS, () => {
-        this.submit(seat, legal[0], s.rev).catch((e) => {
+        this.submit(seat, legal[0], rev).catch((e) => {
           if (!(e instanceof StaleActionError)) this.hooks.onError(errorMessage(e));
         });
       });
@@ -203,7 +235,7 @@ export class Table {
       try {
         const { state, rev } = await this.serial(async () => ({
           state: await this.engine.exportState(),
-          rev: this.snapshot?.rev ?? 0,
+          rev: this.revFor(seat),
         }));
         const action = await this.ai.move({ gameId: this.gameId, state, seat, level, seed: randomSeed() });
         await sleep(AI_MIN_DELAY_MS - (this.now() - started));
@@ -230,7 +262,7 @@ export class Table {
 
   /** The AI could not decide: the game's default action, else its first legal action. */
   private async playFallback(seat: Seat) {
-    const rev = this.snapshot?.rev;
+    const rev = this.revFor(seat);
     const fallback =
       (await this.serial(() => this.engine.timeoutAction(seat))) ??
       this.snapshot?.views.find((v) => v.viewer === seat)?.legalActions[0];

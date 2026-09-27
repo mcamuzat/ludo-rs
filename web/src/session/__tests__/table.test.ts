@@ -42,6 +42,33 @@ class FakeEngine implements EngineLike {
   dispose() {}
 }
 
+/** Seats 0 and 1 answer at the same time; the game moves on once both have. */
+class SimultaneousEngine extends FakeEngine {
+  answered = new Set<Seat>();
+  override async apply(seat: Seat, action: unknown) {
+    if (this.answered.has(seat)) throw new Error("déjà répondu");
+    this.applied.push([seat, action]);
+    this.rev++;
+    this.answered.add(seat);
+    if (this.answered.size === 2) this.answered.clear();
+  }
+  override async snapshot(viewers: (Seat | null)[]): Promise<Snapshot> {
+    const pending = [0, 1].filter((x) => !this.answered.has(x));
+    return {
+      rev: this.rev,
+      pending,
+      outcome: null,
+      views: viewers.map((viewer) => ({
+        viewer,
+        view: { answered: viewer !== null && this.answered.has(viewer), round: this.applied.length - this.answered.size },
+        legalActions: viewer !== null && pending.includes(viewer) ? this.legal : [],
+        // Like a call window: each seat only sees itself.
+        pending: viewer !== null && pending.includes(viewer) ? [viewer] : [],
+      })),
+    };
+  }
+}
+
 class FakeAi implements AiLike {
   constructor(private impl: (req: AiRequest) => Promise<unknown>) {}
   move(req: AiRequest) {
@@ -99,8 +126,9 @@ describe("Table", () => {
       now: Date.now,
     });
     await table.start(1);
+    const rev = table.update(0)!.rev;
     await vi.advanceTimersByTimeAsync(1001);
-    await expect(table.submit(0, "a", 0)).rejects.toBeInstanceOf(StaleActionError);
+    await expect(table.submit(0, "a", rev)).rejects.toBeInstanceOf(StaleActionError);
     expect(engine.applied).toEqual([[0, "t"]]);
     table.dispose();
   });
@@ -149,6 +177,24 @@ describe("Table", () => {
     await table.start(1);
     await vi.advanceTimersByTimeAsync(2000);
     expect(engine.applied).toEqual([[0, "b"]]);
+    table.dispose();
+  });
+
+  it("another seat's answer neither shows in my updates nor makes my answer stale", async () => {
+    const engine = new SimultaneousEngine();
+    const table = new Table("g", [remote("A"), remote("B"), remote("C")], hooks(), { engine, ai: new FakeAi(async () => "x"), now: Date.now });
+    await table.start(1);
+    const mine = table.update(0)!;
+    const bystander = table.update(2)!;
+    await table.submit(1, "a", table.update(1)!.rev);
+    expect(table.update(0)).toEqual(mine);
+    expect(table.update(2)).toEqual(bystander);
+    await table.submit(0, "b", mine.rev);
+    expect(engine.applied).toEqual([
+      [1, "a"],
+      [0, "b"],
+    ]);
+    expect(table.update(0)!.rev).not.toBe(mine.rev);
     table.dispose();
   });
 });

@@ -6,7 +6,7 @@ export class StaleActionError extends Error {
   }
 }
 
-/** `rev` counts accepted actions: an action is only valid for the revision it was chosen at. */
+/** An action is only valid for the revision (of its seat's update) it was chosen at. */
 export function isStale(actionRev: number, currentRev: number): boolean {
   return actionRev !== currentRev;
 }

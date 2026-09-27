@@ -1,6 +1,6 @@
 import Peer, { type DataConnection } from "peerjs";
 import { randomSeed } from "../engine/clients";
-import { updateFor, type Seat, type Snapshot } from "../engine/types";
+import type { Seat, Snapshot } from "../engine/types";
 import { errorMessage } from "./names";
 import {
   PEER_PREFIX,
@@ -29,6 +29,8 @@ export class HostSession extends Session {
   private peer: Peer | null = null;
   /** Open connections and the seat each one holds (null: not seated yet). */
   private conns = new Map<DataConnection, Seat | null>();
+  /** The revision each connection last received. */
+  private sentRev = new Map<DataConnection, number>();
   private registry: SeatRegistry;
   private table: Table | null = null;
   private code: string;
@@ -110,7 +112,7 @@ export class HostSession extends Session {
       this.gameId,
       this.registry.tableSeats(),
       {
-        onSnapshot: (s) => this.broadcast(s),
+        onSnapshot: () => this.broadcast(),
         onLog: (log, s) => this.persist(log, s),
         onError: (message) => this.set({ notice: message }),
       },
@@ -168,6 +170,7 @@ export class HostSession extends Session {
     if (!this.conns.has(conn)) return;
     const seat = this.conns.get(conn) ?? null;
     this.conns.delete(conn);
+    this.sentRev.delete(conn);
     // Unseated, or replaced by a newer connection of the same guest.
     if (seat === null || [...this.conns.values()].includes(seat)) return;
     const name = this.registry.info()[seat].name;
@@ -242,17 +245,19 @@ export class HostSession extends Session {
   }
 
   /** Each player gets their own seat's update, and only that. */
-  private broadcast(s: Snapshot) {
-    const clocks = this.table?.clockViews() ?? [];
-    this.set({ me: HOST_SEAT, update: updateFor(s, HOST_SEAT, clocks), notice: null });
+  /** A guest only hears of a change to what its seat sees. */
+  private broadcast() {
+    this.set({ me: HOST_SEAT, update: this.table?.update(HOST_SEAT) ?? null, notice: null });
     for (const [conn, seat] of this.conns) {
-      if (seat !== null) this.send(conn, { type: "update", update: updateFor(s, seat, clocks) });
+      if (seat !== null && this.table?.revFor(seat) !== this.sentRev.get(conn)) this.sendUpdate(conn, seat);
     }
   }
 
   private sendUpdate(conn: DataConnection, seat: Seat) {
-    const s = this.table?.snapshot;
-    if (s) this.send(conn, { type: "update", update: updateFor(s, seat, this.table?.clockViews() ?? []) });
+    const update = this.table?.update(seat);
+    if (!update) return;
+    this.sentRev.set(conn, update.rev);
+    this.send(conn, { type: "update", update });
   }
 
   private broadcastLobby() {
