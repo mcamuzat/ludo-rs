@@ -7,7 +7,12 @@ use crate::Tile;
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Action {
+    /// Discards a copy of `tile` from the hand (not the tile just drawn).
     Discard {
+        tile: Tile,
+    },
+    /// Discards the tile just drawn: shown as such to everyone.
+    Tsumogiri {
         tile: Tile,
     },
     /// Declares riichi; the discard follows as the next action.
@@ -35,6 +40,16 @@ pub enum Action {
     Pass,
 }
 
+impl Action {
+    /// The tile this action discards, from the hand or just drawn.
+    pub fn discarded(&self) -> Option<Tile> {
+        match self {
+            Action::Discard { tile } | Action::Tsumogiri { tile } => Some(*tile),
+            _ => None,
+        }
+    }
+}
+
 fn pair(ids: &[u8]) -> Option<[Tile; 2]> {
     match ids {
         [a, b] => Some([Tile::from_id(*a), Tile::from_id(*b)]),
@@ -43,9 +58,13 @@ fn pair(ids: &[u8]) -> Option<[Tile; 2]> {
 }
 
 /// Our view of an engine action; `None` for three-player actions (kita).
-pub(crate) fn from_engine(a: &EngineAction) -> Option<Action> {
+/// `drawn`: the engine id of the tile just drawn, if any.
+pub(crate) fn from_engine(a: &EngineAction, drawn: Option<u8>) -> Option<Action> {
     let tile = || a.tile.map(Tile::from_id);
     Some(match a.action_type {
+        ActionType::Discard if a.tile.is_some() && a.tile == drawn => {
+            Action::Tsumogiri { tile: tile()? }
+        }
         ActionType::Discard => Action::Discard { tile: tile()? },
         ActionType::Riichi => Action::Riichi,
         ActionType::Chi => Action::Chi {
@@ -75,12 +94,12 @@ pub(crate) fn from_engine(a: &EngineAction) -> Option<Action> {
 }
 
 /// The engine's legal actions in our terms, one per distinct `Action`
-/// (copies of the same tile are the same move), each paired with the first
-/// engine action that realises it.
-pub(crate) fn legal(engine: &[EngineAction]) -> Vec<(Action, EngineAction)> {
+/// (copies of the same tile in the hand are the same move), each paired with
+/// the first engine action that realises it.
+pub(crate) fn legal(engine: &[EngineAction], drawn: Option<u8>) -> Vec<(Action, EngineAction)> {
     let mut out: Vec<(Action, EngineAction)> = Vec::new();
     for e in engine {
-        if let Some(a) = from_engine(e) {
+        if let Some(a) = from_engine(e, drawn) {
             if !out.iter().any(|(seen, _)| *seen == a) {
                 out.push((a, e.clone()));
             }
@@ -150,11 +169,30 @@ mod tests {
             (engine(ActionType::Pass, None, vec![]), Action::Pass),
         ];
         for (e, expected) in cases {
-            assert_eq!(from_engine(&e), Some(expected.clone()), "{e:?}");
+            assert_eq!(from_engine(&e, None), Some(expected.clone()), "{e:?}");
         }
         assert_eq!(
-            from_engine(&engine(ActionType::Kita, Some(120), vec![])),
+            from_engine(&engine(ActionType::Kita, Some(120), vec![]), None),
             None
+        );
+    }
+
+    #[test]
+    fn discarding_the_drawn_id_is_tsumogiri() {
+        let drawn = engine(ActionType::Discard, Some(17), vec![]);
+        let other = engine(ActionType::Discard, Some(18), vec![]);
+        assert_eq!(
+            from_engine(&drawn, Some(17)),
+            Some(Action::Tsumogiri { tile: t("5m") })
+        );
+        assert_eq!(
+            from_engine(&other, Some(17)),
+            Some(Action::Discard { tile: t("5m") })
+        );
+        assert_eq!(
+            legal(&[other, drawn], Some(17)).len(),
+            2,
+            "two copies, two moves"
         );
     }
 
@@ -166,7 +204,7 @@ mod tests {
             engine(ActionType::Discard, Some(16), vec![]),
             engine(ActionType::Discard, Some(17), vec![]),
         ];
-        let legal = legal(&engine_legal);
+        let legal = legal(&engine_legal, None);
         let ours: Vec<Action> = legal.iter().map(|(a, _)| a.clone()).collect();
         assert_eq!(
             ours,

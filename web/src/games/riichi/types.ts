@@ -81,6 +81,7 @@ export interface RiichiView {
 
 export type RiichiAction =
   | { type: "Discard"; tile: Tile }
+  | { type: "Tsumogiri"; tile: Tile }
   | { type: "Riichi" }
   | { type: "Chi"; tile: Tile; with: [Tile, Tile] }
   | { type: "Pon"; tile: Tile; with: [Tile, Tile] }

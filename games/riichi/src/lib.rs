@@ -78,7 +78,7 @@ impl Game for Riichi {
     }
 
     /// Pass a call; otherwise discard the drawn tile; otherwise the first
-    /// legal discard; otherwise the first legal action.
+    /// legal discard (after a call); otherwise the first legal action.
     fn timeout_action(s: &State, seat: Seat) -> Option<Action> {
         let legal = Self::legal_actions(s, seat);
         if legal.is_empty() {
@@ -87,11 +87,8 @@ impl Game for Riichi {
         if legal.contains(&Action::Pass) {
             return Some(Action::Pass);
         }
-        if let Some(drawn) = s.inner.drawn_tile.map(Tile::from_id) {
-            let tsumogiri = Action::Discard { tile: drawn };
-            if legal.contains(&tsumogiri) {
-                return Some(tsumogiri);
-            }
+        if let Some(tsumogiri) = legal.iter().find(|a| matches!(a, Action::Tsumogiri { .. })) {
+            return Some(tsumogiri.clone());
         }
         legal
             .iter()

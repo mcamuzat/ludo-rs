@@ -56,12 +56,11 @@ impl Heuristics for Riichi {
                 .cloned()
                 .unwrap_or(Action::Pass);
         }
-        let discards = candidates.iter().filter_map(|a| match a {
-            Action::Discard { tile } => Some(*tile),
-            _ => None,
-        });
-        match discards.min_by_key(|&tile| (s.keep_value(seat, tile), rng.gen::<u16>())) {
-            Some(tile) => Action::Discard { tile },
+        let discards = candidates
+            .iter()
+            .filter_map(|a| a.discarded().map(|tile| (a, tile)));
+        match discards.min_by_key(|&(_, tile)| (s.keep_value(seat, tile), rng.gen::<u16>())) {
+            Some((action, _)) => action.clone(),
             None => candidates
                 .choose(rng)
                 .expect("a pending seat has a legal action")
@@ -93,10 +92,7 @@ impl Heuristics for Riichi {
                 })
                 .collect();
         }
-        let shanten = |a: &Action| match a {
-            Action::Discard { tile } => Some(s.shanten_without(seat, *tile)),
-            _ => None,
-        };
+        let shanten = |a: &Action| a.discarded().map(|tile| s.shanten_without(seat, tile));
         let Some(best) = legal.iter().filter_map(shanten).min() else {
             return legal;
         };

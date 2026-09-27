@@ -142,7 +142,10 @@ impl State {
         if !self.is_pending(seat) {
             return Vec::new();
         }
-        action::legal(&self.inner._get_legal_actions_internal(seat.0))
+        action::legal(
+            &self.inner._get_legal_actions_internal(seat.0),
+            self.inner.drawn_tile,
+        )
     }
 
     /// Records `seat`'s answer; runs the engine once every asked seat has answered.
@@ -163,7 +166,10 @@ impl State {
         let step: Step = std::mem::take(&mut self.answers).into_iter().collect();
         let mut engine_actions = HashMap::new();
         for (seat, a) in &step {
-            let legal = action::legal(&self.inner._get_legal_actions_internal(seat.0));
+            let legal = action::legal(
+                &self.inner._get_legal_actions_internal(seat.0),
+                self.inner.drawn_tile,
+            );
             let (_, e) = legal
                 .into_iter()
                 .find(|(ours, _)| ours == a)

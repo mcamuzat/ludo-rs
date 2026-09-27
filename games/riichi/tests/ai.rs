@@ -43,7 +43,7 @@ fn the_policy_throws_the_useless_honor() {
     for seed in 0..10 {
         assert_eq!(
             Riichi::rollout_action(&s, Seat(0), &mut SmallRng::seed_from_u64(seed)),
-            Action::Discard { tile: t("N") }
+            Action::Tsumogiri { tile: t("N") }
         );
     }
 }
@@ -171,7 +171,7 @@ fn a_hand_is_valued_by_its_points() {
 fn the_search_considers_sensible_moves_only() {
     let mut s = deal();
     let start = Riichi::search_actions(&s, Seat(0));
-    assert!(start.contains(&Action::Discard { tile: t("N") }));
+    assert!(start.contains(&Action::Tsumogiri { tile: t("N") }));
     assert!(
         !start.contains(&Action::Discard { tile: t("1m") }),
         "breaking a triplet raises shanten"

@@ -212,7 +212,7 @@ fn timeout_actions() {
     let mut s = ron_or_pon();
     assert_eq!(
         Riichi::timeout_action(&s, Seat(0)),
-        Some(Action::Discard { tile: t("N") }),
+        Some(Action::Tsumogiri { tile: t("N") }),
         "tsumogiri"
     );
     assert_eq!(Riichi::timeout_action(&s, Seat(1)), None, "not pending");
@@ -235,4 +235,57 @@ fn illegal_answers_change_nothing() {
     assert!(Riichi::apply(&mut s, Seat(0), &Action::Discard { tile: t("C") }).is_err());
     assert!(Riichi::apply(&mut s, Seat(2), &Action::Pass).is_err());
     assert_eq!(json(&s), before);
+}
+
+/// Seat 1 holds a 2m and draws another: which copy leaves is public. (Not the
+/// dealer: Mahjong Soul counts the dealer's first discard as from the hand.)
+fn drawn_copy() -> State {
+    let mut s = State::start(
+        1,
+        Some(wall(
+            [
+                "1m 1m 1m 9m 9m 9m 1s 1s 1s 9s 9s E 5p",
+                "2m 3m 4m 5m 6m 7m 2p 3p 4p 6s 7s 8s 5p",
+                "1p 1p 1p 9p 9p 9p 2s 2s 2s 3s 3s 3s W",
+                "5p 5pr S S S W W N N P P F F",
+            ],
+            &["N", "2m"],
+        )),
+    );
+    play(&mut s, 0, Action::Tsumogiri { tile: t("N") });
+    for seat in Riichi::pending(&s).0 {
+        if seat != Seat(1) {
+            play(&mut s, seat.0, Action::Pass);
+        }
+    }
+    s
+}
+
+#[test]
+fn discarding_the_drawn_tile_is_its_own_move() {
+    let s = drawn_copy();
+    assert_eq!(Riichi::pending(&s).0, vec![Seat(1)]);
+    let legal = Riichi::legal_actions(&s, Seat(1));
+    assert!(
+        legal.contains(&Action::Tsumogiri { tile: t("2m") }),
+        "{legal:?}"
+    );
+    assert!(
+        legal.contains(&Action::Discard { tile: t("2m") }),
+        "a copy from the hand"
+    );
+    assert_eq!(
+        Riichi::timeout_action(&s, Seat(1)),
+        Some(Action::Tsumogiri { tile: t("2m") })
+    );
+
+    let mut drawn = s.clone();
+    play(&mut drawn, 1, Action::Tsumogiri { tile: t("2m") });
+    let pond = &Riichi::view(&drawn, Viewer::Seat(Seat(2))).players[1].discards;
+    assert!(pond[0].tsumogiri, "{pond:?}");
+
+    let mut kept = s.clone();
+    play(&mut kept, 1, Action::Discard { tile: t("2m") });
+    let pond = &Riichi::view(&kept, Viewer::Seat(Seat(2))).players[1].discards;
+    assert!(!pond[0].tsumogiri, "{pond:?}");
 }

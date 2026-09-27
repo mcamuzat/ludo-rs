@@ -29,6 +29,7 @@ function callLabel(a: RiichiAction): string {
     case "Kakan":
       return "Kan";
     case "Discard":
+    case "Tsumogiri":
       return "Défausser";
   }
 }
@@ -163,7 +164,9 @@ export function RiichiBoard({ view, legalActions, seatNames, submit }: BoardProp
   const self = v.me ?? 0;
   const order = [0, 1, 2, 3].map((k) => (self + k) % 4);
   const discardable = new Set(legal.flatMap((a) => (a.type === "Discard" ? [a.tile] : [])));
-  const calls = legal.filter((a) => a.type !== "Discard");
+  const drawn = v.drawn;
+  const tsumogiri = legal.some((a) => a.type === "Tsumogiri");
+  const calls = legal.filter((a) => a.type !== "Discard" && a.type !== "Tsumogiri");
   const [showHelp, setShowHelp] = useState(true);
   const [dismissed, setDismissed] = useState(0);
   const result = v.lastHand && v.lastHand.number !== dismissed ? v.lastHand : null;
@@ -197,9 +200,14 @@ export function RiichiBoard({ view, legalActions, seatNames, submit }: BoardProp
           {v.hand.map((t, i) => (
             <TileImg key={i} tile={t} size="lg" onClick={discard(t)} dim={discardable.size > 0 && !discardable.has(t)} />
           ))}
-          {v.drawn && (
+          {drawn && (
             <span className="drawn">
-              <TileImg tile={v.drawn} size="lg" onClick={discard(v.drawn)} />
+              <TileImg
+                tile={drawn}
+                size="lg"
+                onClick={tsumogiri ? () => submit({ type: "Tsumogiri", tile: drawn }) : undefined}
+                dim={legal.length > 0 && !tsumogiri}
+              />
             </span>
           )}
           <Melds melds={v.players[self].melds} />
