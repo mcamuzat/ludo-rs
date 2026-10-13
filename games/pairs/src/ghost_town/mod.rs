@@ -1,6 +1,8 @@
 //! Ghost Town (James Ernest): a chip game where the pot is the bank. Rules
 //! and their sources: RULES.md.
 
+mod determinize;
+mod heuristics;
 pub mod testing;
 mod view;
 

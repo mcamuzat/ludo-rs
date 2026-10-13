@@ -6,8 +6,15 @@ static YAVALATH: GameEntry<yavalath::Yavalath> = GameEntry::new();
 static RIICHI: GameEntry<riichi::Riichi> = GameEntry::new();
 static PAIRS_CONTINUOUS: GameEntry<pairs::ContinuousPairs> = GameEntry::new();
 static PAIRS_AUBERGE: GameEntry<pairs::Auberge> = GameEntry::new();
+static PAIRS_GHOST_TOWN: GameEntry<pairs::GhostTown> = GameEntry::new();
 
-pub static GAMES: &[&dyn AnyGame] = &[&YAVALATH, &RIICHI, &PAIRS_CONTINUOUS, &PAIRS_AUBERGE];
+pub static GAMES: &[&dyn AnyGame] = &[
+    &YAVALATH,
+    &RIICHI,
+    &PAIRS_CONTINUOUS,
+    &PAIRS_AUBERGE,
+    &PAIRS_GHOST_TOWN,
+];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {
     ludo_core::find(GAMES, id)
