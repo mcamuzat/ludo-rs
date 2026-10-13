@@ -1,5 +1,5 @@
 use ludo_core::{Game, Outcome, Pending, Seat, Viewer};
-use pairs::deck::DECK_SIZE;
+use pairs::deck::{Supply, DECK_SIZE};
 use pairs::ghost_town::testing::{setup, table};
 use pairs::ghost_town::{Action, Config, Event, GhostTown, Phase, State};
 use pairs::testing::{r, ranks};
@@ -325,6 +325,7 @@ fn chips_and_cards_are_conserved() {
             while let Some(&seat) = GhostTown::pending(&s).0.first() {
                 let legal = GhostTown::legal_actions(&s, seat);
                 let action = legal.choose(&mut rng).expect("a legal action").clone();
+                assert!(!s.out[seat.index()], "an out seat is asked to move");
                 act(&mut s, seat.0, action);
                 assert_eq!(balance(&s), 0);
                 assert_eq!(cards(&s), DECK_SIZE);
@@ -388,4 +389,60 @@ fn the_json_the_web_relies_on() {
     assert_eq!(view["seats"][1]["chips"], json!(-10));
     assert_eq!(view["playCost"], json!(2));
     assert_eq!(view["discardSeen"], json!([]));
+}
+
+#[test]
+fn a_tie_break_stops_when_the_draw_pile_runs_out() {
+    // Both draw a 4, then the pile is empty: the first tied player starts,
+    // without reshuffling the tie-break cards back in.
+    let mut s = setup(&[&[3, 6, 7, 8, 9], &[3, 4, 5, 8, 9]], &[4, 4]);
+    act(&mut s, 0, place(3));
+    act(&mut s, 1, place(3));
+    assert_eq!(s.turn, Some(Seat(0)));
+    assert!(!s.events.contains(&Event::Reshuffled));
+    assert_eq!(s.supply.seen(), ranks(&[3, 4, 4]).as_slice());
+}
+
+#[test]
+fn a_second_tie_deals_another_round_to_those_still_tied() {
+    let mut s = setup(
+        &[&[3, 6, 7, 8, 9], &[3, 4, 5, 8, 9], &[3, 6, 7, 10, 10]],
+        &[5, 5, 9, 8, 2, 1],
+    );
+    for seat in 0..3 {
+        act(&mut s, seat, place(3));
+    }
+    // 5, 5, 9: seats 0 and 1 tie again; then 8 and 2: seat 1 starts.
+    assert_eq!(s.turn, Some(Seat(1)));
+    assert_eq!(s.supply.deck_len(), 1);
+}
+
+#[test]
+fn the_turn_skips_players_who_left_the_hand() {
+    let mut s = table(&[&[6], &[8], &[9]], &[&[], &[], &[]], &[2], &[7, 4]);
+    act(&mut s, 0, Action::Fold);
+    act(&mut s, 1, Action::Draw);
+    assert_eq!(s.turn, Some(Seat(2)));
+    act(&mut s, 2, Action::Draw);
+    assert_eq!(s.turn, Some(Seat(1)));
+    assert!(GhostTown::legal_actions(&s, Seat(0)).is_empty());
+}
+
+#[test]
+fn an_empty_draw_pile_is_rebuilt_from_the_discards() {
+    let mut s = table(&[&[6], &[8]], &[&[3], &[]], &[2], &[]);
+    s.supply = Supply::from_parts(Vec::new(), ranks(&[9]), Vec::new(), 0, 1);
+    act(&mut s, 0, Action::Draw);
+    assert_eq!(s.events[0], Event::Reshuffled);
+    assert_eq!(s.houses[0], ranks(&[3, 9]));
+    assert_eq!(s.chips[0], -1);
+}
+
+#[test]
+fn the_draw_value_reads_the_discards_when_the_pile_is_empty() {
+    // The only cards a draw can bring are the two 3s in the discards, and
+    // seat 0 has a 3 at home: a certain bust.
+    let mut s = table(&[&[], &[8]], &[&[3], &[]], &[2], &[]);
+    s.supply = Supply::from_parts(Vec::new(), ranks(&[3, 3]), Vec::new(), 0, 1);
+    assert_eq!(s.draw_value(Seat(0)), -3.0);
 }

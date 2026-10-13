@@ -138,7 +138,7 @@ describe("Ghost Town board", () => {
     expect(say({ type: "Played", seat: 0, to: 0, card: 7 })).toBe("Ana pose un 7 dans sa maison.");
     expect(say({ type: "Played", seat: 0, to: 1, card: 6 })).toBe("Ana pose un 6 chez Bob.");
     expect(say({ type: "Drew", seat: 0, card: 9, won: 9 })).toBe("Ana pioche un 9 et gagne 9 jetons.");
-    expect(say({ type: "Drew", seat: 0, card: 9, won: 4 })).toBe("Ana pioche un 9 et gagne 4 jetons : le pot est vide.");
+    expect(say({ type: "Drew", seat: 0, card: 9, won: 4 })).toBe("Ana pioche un 9 et gagne 4 jetons.");
     expect(say({ type: "Busted", seat: 0, card: 6 })).toBe("Ana pioche un 6 : paire ! 6 jetons au pot, et dehors.");
     expect(say({ type: "Folded", seat: 2 })).toBe("Cléo se couche.");
     expect(say({ type: "HandEnded", winner: 1, pot: 30 })).toBe("Bob reste seul et prend le pot : 30 jetons.");

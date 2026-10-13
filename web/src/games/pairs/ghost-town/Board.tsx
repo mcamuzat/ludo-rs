@@ -15,7 +15,7 @@ export function describeGhostTownEvent(e: GhostTownEvent, names: string[]): stri
         ? `${names[e.seat]} pose un ${e.card} dans sa maison.`
         : `${names[e.seat]} pose un ${e.card} chez ${names[e.to]}.`;
     case "Drew":
-      return `${names[e.seat]} pioche un ${e.card} et gagne ${e.won} jetons${e.won < e.card ? " : le pot est vide" : ""}.`;
+      return `${names[e.seat]} pioche un ${e.card} et gagne ${e.won} jetons.`;
     case "Busted":
       return `${names[e.seat]} pioche un ${e.card} : paire ! ${e.card} jetons au pot, et dehors.`;
     case "Folded":

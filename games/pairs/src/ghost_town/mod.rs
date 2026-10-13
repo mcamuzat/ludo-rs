@@ -180,7 +180,13 @@ impl State {
     /// Chips `seat` expects from a draw, from what it sees: the card's rank
     /// (at most the pot) if it is clean, minus its rank if it busts.
     pub fn draw_value(&self, seat: Seat) -> f64 {
-        let pool = self.unlocated_for(Some(seat));
+        // With an empty draw pile the next card comes from the reshuffled
+        // discards, not from the cards `seat` cannot place.
+        let pool = if self.supply.deck_len() == 0 {
+            self.supply.draw_pool()
+        } else {
+            self.unlocated_for(Some(seat))
+        };
         let total: u32 = pool.iter().map(|&c| u32::from(c)).sum();
         if total == 0 {
             return 0.0;
@@ -265,6 +271,10 @@ impl State {
         while tied.len() > 1 {
             let mut round: Vec<(Seat, Rank)> = Vec::new();
             for &seat in &tied {
+                // ❓5: the tie-break never reshuffles; an empty pile ends it.
+                if self.supply.deck_len() == 0 {
+                    break;
+                }
                 let Some(card) = self.draw() else {
                     break;
                 };
