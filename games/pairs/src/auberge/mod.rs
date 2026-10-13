@@ -2,6 +2,7 @@
 //! edition of a James Ernest and Paul Peterson game). Rules and their
 //! sources: RULES.md.
 
+mod determinize;
 pub mod testing;
 mod view;
 
