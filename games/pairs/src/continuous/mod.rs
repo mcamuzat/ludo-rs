@@ -2,6 +2,7 @@
 //! sources: RULES.md.
 
 mod determinize;
+mod heuristics;
 pub mod testing;
 mod view;
 
