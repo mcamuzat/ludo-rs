@@ -34,8 +34,6 @@ pub struct SeatView {
     pub stack: Vec<Rank>,
     pub scored: Vec<Rank>,
     pub score: u8,
-    /// Chance, per thousand, that the next card pairs this stack.
-    pub pair_odds: u16,
 }
 
 impl View {
@@ -47,7 +45,6 @@ impl View {
                     stack: s.stacks[seat.index()].clone(),
                     scored: s.scored[seat.index()].clone(),
                     score: s.score(seat),
-                    pair_odds: s.pair_odds(seat),
                 })
                 .collect(),
             target: s.target,

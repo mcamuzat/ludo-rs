@@ -63,7 +63,6 @@ export function ContinuousBoard({ view, legalActions, me, seatNames, submit }: B
             );
           })}
         </div>
-        {seat.stack.length > 0 && <p className="odds">Risque de paire : {Math.round(seat.pairOdds / 10)} %</p>}
         <div className="scored">
           {seat.scored.map((card, k) => (
             <Card key={k} rank={card} small />

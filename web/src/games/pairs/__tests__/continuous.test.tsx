@@ -8,9 +8,9 @@ const NAMES = ["Ana", "Bob", "Cléo"];
 
 const VIEW: ContinuousView = {
   seats: [
-    { stack: [10, 7], scored: [3], score: 3, pairOdds: 320 },
-    { stack: [4], scored: [], score: 0, pairOdds: 75 },
-    { stack: [], scored: [8, 2], score: 10, pairOdds: 0 },
+    { stack: [10, 7], scored: [3], score: 3 },
+    { stack: [4], scored: [], score: 0 },
+    { stack: [], scored: [8, 2], score: 10 },
   ],
   target: 21,
   turn: 0,
@@ -97,7 +97,7 @@ describe("Continuous Pairs board", () => {
     expect(html).toContain("Prendre une carte");
     expect(html.match(/<button[^>]*pairs-card/g)).toHaveLength(3);
     expect(html).toContain("3 / 21");
-    expect(html).toContain("Risque de paire : 32 %");
+    expect(html).not.toContain("Risque de paire");
     expect(html).toContain("Se coucher coûte au moins 4");
   });
 
@@ -118,7 +118,7 @@ describe("Continuous Pairs board", () => {
     const names = ["A", "B", "C", "D", "E", "F", "G", "H"];
     const eight: ContinuousView = {
       ...VIEW,
-      seats: names.map(() => ({ stack: [5], scored: [], score: 0, pairOdds: 80 })),
+      seats: names.map(() => ({ stack: [5], scored: [], score: 0 })),
       target: 11,
     };
     const html = renderToStaticMarkup(

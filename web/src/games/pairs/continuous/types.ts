@@ -14,8 +14,6 @@ export interface ContinuousSeatView {
   stack: Rank[];
   scored: Rank[];
   score: number;
-  /** Per thousand. */
-  pairOdds: number;
 }
 
 export interface ContinuousView {

@@ -291,9 +291,6 @@ fn every_viewer_sees_the_same_table() {
     assert_eq!(a.lowest, Some(r(9)));
     assert_eq!(a.deck, 53);
     assert_eq!(a.unlocated, vec![1, 2, 3, 4, 5, 6, 7, 8, 8, 9]);
-    // Nine 10s among 53 cards nobody can place.
-    assert_eq!(a.seats[0].pair_odds, 169);
-    assert_eq!(a.seats[1].pair_odds, 150);
 }
 
 #[test]
@@ -323,7 +320,8 @@ fn the_json_the_web_relies_on() {
     );
     let s = table(&[&[8], &[5]], &[3]);
     let view = serde_json::to_value(ContinuousPairs::view(&s, Viewer::Spectator)).unwrap();
-    assert_eq!(view["seats"][0]["pairOdds"], json!(0));
+    // No risk estimate in the view: weighing the odds is the player's job.
+    assert!(view["seats"][0].get("pairOdds").is_none());
     assert_eq!(view["seats"][0]["stack"], json!([8]));
     assert_eq!(view["target"], json!(31));
     assert!(view.get("supply").is_none());
@@ -340,9 +338,8 @@ fn the_odds_count_the_discards_when_the_deck_is_empty() {
     // The next card comes from a reshuffle of the whole discard pile.
     let mut s = table(&[&[10], &[9]], &[]);
     s.supply = Supply::from_parts(Vec::new(), ranks(&[10, 10, 10, 3]), Vec::new(), BURN, 1);
-    assert_eq!(s.pair_odds(Seat(0)), 750);
     assert_eq!(s.expected_hit_cost(Seat(0)), 7.5);
-    assert_eq!(s.pair_odds(Seat(1)), 0);
+    assert_eq!(s.expected_hit_cost(Seat(1)), 0.0);
 }
 
 #[test]

@@ -139,21 +139,6 @@ impl State {
         self.in_play().map(|(_, card)| card).min()
     }
 
-    /// Chance, per thousand, that the next card pairs `seat`'s stack, from
-    /// what everyone knows of the cards the next draw may bring.
-    pub fn pair_odds(&self, seat: Seat) -> u16 {
-        let counts = self.supply.draw_pool();
-        let total: u32 = counts.iter().map(|&c| u32::from(c)).sum();
-        if total == 0 {
-            return 0;
-        }
-        let matching: u32 = self.stacks[seat.index()]
-            .iter()
-            .map(|card| u32::from(counts[card.index()]))
-            .sum();
-        (matching * 1000 / total) as u16
-    }
-
     /// Points `seat` expects to score by taking a card.
     pub fn expected_hit_cost(&self, seat: Seat) -> f64 {
         let counts = self.supply.draw_pool();
