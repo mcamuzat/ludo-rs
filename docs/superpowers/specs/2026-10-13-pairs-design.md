@@ -286,3 +286,6 @@ règles et ne recopie pas les livrets, qui ne sont pas versionnés.
   vont jusqu'au bout, elles sont courtes.
 - `pair_in`, la défausse face cachée d'une main et la redistribution des
   mains arrivent avec l'Auberge (plan 2).
+- Après la revue finale : les mélanges utilisent `ChaCha8Rng` (identique en
+  wasm32 et en natif) ; une cible de config est plafonnée à 31 ; le risque de
+  paire compte toute la défausse quand la pioche est vide.

@@ -6,7 +6,7 @@ ludo-rs : plateforme de jeux traditionnels. Moteur Rust (`crates/ludo-core`, `ga
 - `cargo test --workspace --release` : règles, conformance, IA.
 - `cargo fmt --all` et `cargo clippy --workspace --all-targets -- -D warnings` avant chaque commit.
 - `cargo run --release -p ludo-cli -- arena yavalath 200 hard easy` : Difficile doit marquer ≥ 0.80 contre Facile (0.94 mesuré).
-- `cargo run --release -p ludo-cli -- arena pairs-continuous 400 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.81 mesuré ; 0.61 à 4 joueurs, où le hasard pèse plus).
+- `cargo run --release -p ludo-cli -- arena pairs-continuous 400 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.82 mesuré ; 0.60 à 4 joueurs, où le hasard pèse plus).
 - `cargo run --release -p ludo-cli -- play yavalath 2 medium` : partie en terminal.
 - Web : `./scripts/build-wasm.sh` (ou `dev`), puis `cd web && pnpm dev` / `pnpm test` / `pnpm build`.
 
@@ -21,7 +21,7 @@ ludo-rs : plateforme de jeux traditionnels. Moteur Rust (`crates/ludo-core`, `ga
 - **Riichi** : `games/riichi` enveloppe `riichienv-core` (épinglé `=0.4.10`). Son état se sérialise par rejeu ; le résultat d'une main se lit avant le `step` (riichienv l'efface aussitôt). Monter de version = relancer toute la suite, dont `reported_points_match_the_engine_payments` et la conformance.
 - `getrandom` 0.4 (`wasm_js`) n'est déclaré que dans `crates/ludo-wasm`.
 - **IA** : un jeu au grand nombre de coups restreint la recherche avec `Heuristics::search_actions` (coups sensés) plutôt que de toucher à l'ISMCTS générique. Tout changement d'IA se mesure avec `ludo arena` (parallèle), Yavalath compris.
-- **Pairs** : `games/pairs` porte tous les jeux du deck Pairs, un module par jeu, le matériel commun dans `deck.rs`. La graine des remélanges vit dans le `Supply` : il ne va jamais dans une vue, et `determinize` appelle `redeal_hidden`.
+- **Pairs** : `games/pairs` porte tous les jeux du deck Pairs, un module par jeu, le matériel commun dans `deck.rs`. La graine des remélanges vit dans le `Supply` : il ne va jamais dans une vue, et `determinize` appelle `redeal_hidden`. Les mélanges du moteur utilisent `ChaCha8Rng`, jamais `SmallRng` (générateur différent en wasm32 et en natif : un journal du navigateur ne se rejouerait pas) ; `the_deal_of_a_seed_is_pinned` fige la donne.
 - **Règles** : chaque jeu a un `RULES.md` qui cite sa source ([R]…) ; un point non tranché est marqué ❓. Toute modification de règle met à jour `RULES.md`, le moteur et un test ensemble.
 
 ## Ajouter un jeu

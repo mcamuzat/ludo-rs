@@ -1,3 +1,4 @@
+import { isValidElement, type ReactElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { ContinuousBoard, canHit, describeEvent, foldTargets } from "../continuous/Board";
@@ -44,7 +45,42 @@ function render(view: ContinuousView, legal: ContinuousAction[], me: number | nu
   );
 }
 
+type AnyElement = ReactElement<Record<string, unknown>>;
+
+/** Every host element of a tree, resolving the function components (none uses hooks). */
+function hostElements(node: ReactNode, out: AnyElement[] = []): AnyElement[] {
+  if (Array.isArray(node)) {
+    node.forEach((child) => hostElements(child, out));
+    return out;
+  }
+  if (!isValidElement(node)) return out;
+  const el = node as AnyElement;
+  if (typeof el.type === "function") {
+    return hostElements((el.type as (props: unknown) => ReactNode)(el.props), out);
+  }
+  out.push(el);
+  return hostElements(el.props.children as ReactNode, out);
+}
+
 describe("Continuous Pairs board", () => {
+  it("submits exactly the legal actions, one per control", () => {
+    const sent: unknown[] = [];
+    const board = (
+      <ContinuousBoard
+        view={VIEW}
+        legalActions={LEGAL}
+        pending={[0]}
+        me={0}
+        seatNames={NAMES}
+        submit={(action) => sent.push(action)}
+      />
+    );
+    const controls = hostElements(board).filter((el) => typeof el.props.onClick === "function");
+    controls.forEach((el) => (el.props.onClick as () => void)());
+    expect(sent).toHaveLength(LEGAL.length);
+    for (const action of LEGAL) expect(sent).toContainEqual(action);
+  });
+
   it("reads the moves from the legal actions and nowhere else", () => {
     expect(canHit(LEGAL)).toBe(true);
     expect(canHit([{ Fold: { seat: 1, card: 4 } }])).toBe(false);

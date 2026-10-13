@@ -12,3 +12,9 @@ fn continuous_pairs_conforms_at_every_table_size() {
 fn continuous_pairs_conforms_with_a_short_target() {
     check::<ContinuousPairs>(&Config { target: Some(6) }, 4, 100, 99);
 }
+
+#[test]
+fn continuous_pairs_conforms_with_an_absurd_target() {
+    check::<ContinuousPairs>(&Config { target: Some(255) }, 2, 30, 5);
+    check::<ContinuousPairs>(&Config { target: Some(255) }, 8, 30, 6);
+}

@@ -1,9 +1,9 @@
 //! The Pairs deck: one 1, two 2s, … ten 10s (55 cards), and the draw and
 //! discard piles every Pairs game shares.
 
-use rand::rngs::SmallRng;
 use rand::seq::SliceRandom;
 use rand::{Rng, SeedableRng};
+use rand_chacha::ChaCha8Rng;
 use serde::{Deserialize, Serialize};
 
 pub const DECK_SIZE: usize = 55;
@@ -122,9 +122,11 @@ impl Supply {
     fn restock(&mut self) {
         self.deck.append(&mut self.seen);
         self.deck.append(&mut self.unseen);
-        // One independent stream per shuffle.
+        // One independent stream per shuffle. ChaCha, not `SmallRng`: the
+        // latter is a different generator on wasm32 and on 64-bit targets,
+        // and a log recorded in the browser must replay natively.
         let stream = self.seed ^ u64::from(self.shuffles).wrapping_mul(0x9E37_79B9_7F4A_7C15);
-        self.deck.shuffle(&mut SmallRng::seed_from_u64(stream));
+        self.deck.shuffle(&mut ChaCha8Rng::seed_from_u64(stream));
         self.shuffles += 1;
         // ❓ Never burn the last card: a reshuffle always leaves one to draw.
         let burned = usize::from(self.burn).min(self.deck.len().saturating_sub(1));
@@ -178,6 +180,20 @@ impl Supply {
         counts
     }
 
+    /// Per rank, the cards the next draw may bring, from what everyone
+    /// knows: `unlocated`, or the whole discard pile when the draw pile is
+    /// empty and the next draw reshuffles it.
+    pub fn draw_pool(&self) -> [u8; 10] {
+        if !self.deck.is_empty() {
+            return self.unlocated();
+        }
+        let mut counts = count_by_rank(&self.seen);
+        for card in &self.unseen {
+            counts[card.index()] += 1;
+        }
+        counts
+    }
+
     /// For determinization: redraws the order of the draw pile, which cards
     /// are burned, and the seed of future shuffles. Pile sizes and the seen
     /// discards are unchanged.
@@ -194,7 +210,6 @@ impl Supply {
 #[cfg(test)]
 mod tests {
     use rand::rngs::SmallRng;
-    use rand::SeedableRng;
 
     use super::*;
 
@@ -253,6 +268,15 @@ mod tests {
         );
         assert_eq!(da, db);
         assert_ne!(da, dc);
+    }
+
+    /// The order comes from ChaCha8, identical on every platform. A change
+    /// here breaks the replay of every recorded match.
+    #[test]
+    fn the_deal_of_a_seed_is_pinned() {
+        let mut s = Supply::new(full_deck(), 5, 42);
+        let dealt: Vec<u8> = (0..10).map(|_| s.draw().unwrap().value()).collect();
+        assert_eq!(dealt, vec![7, 8, 8, 5, 8, 5, 10, 10, 7, 8]);
     }
 
     #[test]

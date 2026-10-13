@@ -21,9 +21,15 @@ pub const BURN: u8 = 5;
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Config {
-    /// The losing score. `None` (or 0): the booklet's, from the player count.
+    /// The losing score, capped at `MAX_TARGET`. `None` (or 0): the
+    /// booklet's, from the player count.
     pub target: Option<u8>,
 }
+
+/// The highest losing score a config may ask for (the booklet's own
+/// maximum). It keeps scores far below the 385 points of the deck, so the
+/// game always ends before the cards run out.
+pub const MAX_TARGET: u8 = 31;
 
 /// [R] 60 / players + 1, kept at 11 from 6 players up.
 pub fn default_target(players: u8) -> u8 {
@@ -134,9 +140,9 @@ impl State {
     }
 
     /// Chance, per thousand, that the next card pairs `seat`'s stack, from
-    /// what everyone knows: the cards nobody can place.
+    /// what everyone knows of the cards the next draw may bring.
     pub fn pair_odds(&self, seat: Seat) -> u16 {
-        let counts = self.supply.unlocated();
+        let counts = self.supply.draw_pool();
         let total: u32 = counts.iter().map(|&c| u32::from(c)).sum();
         if total == 0 {
             return 0;
@@ -150,7 +156,7 @@ impl State {
 
     /// Points `seat` expects to score by taking a card.
     pub fn expected_hit_cost(&self, seat: Seat) -> f64 {
-        let counts = self.supply.unlocated();
+        let counts = self.supply.draw_pool();
         let total: u32 = counts.iter().map(|&c| u32::from(c)).sum();
         if total == 0 {
             return 0.0;
@@ -228,7 +234,8 @@ impl State {
         let mut seat = from;
         // Each empty stack passed gets a card, so a full lap finds a player
         // with cards. Every stack empty with nothing to draw would put all 55
-        // cards among the scoring cards, long after someone reached the target.
+        // cards (385 points) among the scoring cards, which `MAX_TARGET` rules
+        // out: someone reaches the target long before.
         for _ in 0..2 * usize::from(self.players) {
             seat = Seat((seat.0 + 1) % self.players);
             if !self.stacks[seat.index()].is_empty() {
@@ -274,6 +281,7 @@ impl Game for ContinuousPairs {
         let target = config
             .target
             .filter(|&t| t > 0)
+            .map(|t| t.min(MAX_TARGET))
             .unwrap_or_else(|| default_target(players));
         State::deal(players, target, Supply::new(full_deck(), BURN, seed))
     }

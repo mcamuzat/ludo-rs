@@ -328,3 +328,54 @@ fn the_json_the_web_relies_on() {
     assert_eq!(view["target"], json!(31));
     assert!(view.get("supply").is_none());
 }
+
+#[test]
+fn an_oversized_target_is_capped() {
+    let s = ContinuousPairs::new(&Config { target: Some(255) }, 2, 1);
+    assert_eq!(s.target, 31);
+}
+
+#[test]
+fn the_odds_count_the_discards_when_the_deck_is_empty() {
+    // The next card comes from a reshuffle of the whole discard pile.
+    let mut s = table(&[&[10], &[9]], &[]);
+    s.supply = Supply::from_parts(Vec::new(), ranks(&[10, 10, 10, 3]), Vec::new(), BURN, 1);
+    assert_eq!(s.pair_odds(Seat(0)), 750);
+    assert_eq!(s.expected_hit_cost(Seat(0)), 7.5);
+    assert_eq!(s.pair_odds(Seat(1)), 0);
+}
+
+#[test]
+fn at_three_players_emptied_stacks_refill_on_their_own_turns() {
+    let mut s = table(&[&[6], &[5], &[3]], &[7, 8, 9]);
+    fold(&mut s, 0, 2, 3);
+    // Seats 0 and 2 are empty, but seat 1 is next and has cards.
+    assert_eq!(s.turn, Some(Seat(1)));
+    assert!(s.stacks[0].is_empty() && s.stacks[2].is_empty());
+    hit(&mut s, 1);
+    assert_eq!(s.stacks, vec![ranks(&[9]), ranks(&[5, 7]), ranks(&[8])]);
+    assert_eq!(s.turn, Some(Seat(1)));
+}
+
+#[test]
+fn a_hit_on_an_empty_deck_with_one_discard_draws_it() {
+    let mut s = table(&[&[5], &[9]], &[]);
+    s.supply = Supply::from_parts(Vec::new(), ranks(&[2]), Vec::new(), BURN, 1);
+    hit(&mut s, 0);
+    assert_eq!(s.stacks[0], ranks(&[5, 2]));
+}
+
+#[test]
+fn a_fold_that_reaches_the_target_loses() {
+    let mut s = table(&[&[9], &[4]], &[]);
+    s.target = 4;
+    fold(&mut s, 0, 1, 4);
+    assert_eq!(s.loser, Some(Seat(0)));
+    assert_eq!(
+        ContinuousPairs::outcome(&s),
+        Some(Outcome::Ranked(vec![1, 0]))
+    );
+    let over = s.clone();
+    assert!(ContinuousPairs::apply(&mut s, Seat(1), &Action::Hit).is_err());
+    assert_eq!(s, over);
+}
