@@ -135,3 +135,57 @@ qui prend alors le pot.
    face cachée.
 5. ❓ Si la pioche s'épuise pendant le départage, le premier des joueurs à
    égalité commence.
+
+## Zombie Life (`pairs-zombie-life`, 3 à 6 joueurs)
+
+Source : **[Z]** règle Origames en 4 pages, *Pairs – Zombie Life* (adapté de
+Pairs de James Ernest et Paul Peterson).
+
+### But [Z]
+Être le premier à atteindre 21 points, en plusieurs manches.
+
+### Mise en place [Z]
+- Mélanger les 55 cartes. Première manche : une carte face visible devant
+  chaque joueur, dans son *Refuge*.
+- Celui qui a reçu la plus petite carte commence.
+
+### Tour [Z]
+Le tour passe à gauche, parmi les joueurs encore en jeu. Une action au choix :
+- **Piocher** : regarder la carte, puis la poser face visible dans son Refuge
+  ou dans la *Horde* (zone commune), jamais dans une zone qui contient déjà
+  ce rang. Si le rang est déjà dans la Horde **et** dans son Refuge, on est
+  submergé : éliminé de la manche, et tout son Refuge est défaussé.
+- **Choisir une carte de la Horde** et la placer dans son Refuge, si ce rang
+  n'y est pas déjà.
+- **Passer** : on se cache et on ne joue plus de la manche. On retourne face
+  cachée autant de cartes de son Refuge qu'il reste de joueurs en jeu ; à
+  chaque élimination ensuite, on en remet une face visible.
+
+Le dernier joueur en jeu peut continuer, mais ne peut plus prendre dans la
+Horde.
+
+### Fin de manche [Z]
+- Quand tous ont passé ou sont éliminés, chaque joueur qui a passé marque
+  1 point par carte face visible devant lui.
+- Si un joueur a au moins 21 points, la partie s'arrête et le plus de points
+  gagne. Sinon, nouvelle manche : le joueur au plus petit score (à égalité,
+  le premier éliminé) pioche autant de cartes qu'il y a de joueurs et en
+  place une devant chacun. La plus petite carte commence.
+
+### Choix sur les points non tranchés
+1. ❓ « Autant de cartes qu'il reste de joueurs en jeu » : celui qui passe
+   ne se compte pas. S'il a moins de cartes, il les retourne toutes.
+2. ❓ Toutes les cartes valent 1 point : on ne choisit pas lesquelles
+   retourner, le jeu n'en retient que le nombre.
+3. ❓ En fin de manche, la Horde est défaussée avec les Refuges.
+4. ❓ La pioche n'est mélangée qu'au début ; vide, elle est refaite avec la
+   défausse. La carte d'un joueur submergé est défaussée avec son Refuge.
+5. ❓ Égalité sur la plus petite carte (« le joueur le plus âgé ») : tirage
+   au sort.
+6. ❓ Égalité pour donner sans qu'aucun des ex æquo ait été éliminé : tirage
+   au sort.
+7. ❓ Égalité au score final : victoire partagée.
+8. ❓ La carte piochée et les cartes du donneur sont visibles de tous :
+   personne d'autre n'agit avant qu'elles soient posées. Le donneur donne
+   ses cartes une à une, à partir de sa gauche ; des cartes toutes
+   identiques sont données sans demander.
