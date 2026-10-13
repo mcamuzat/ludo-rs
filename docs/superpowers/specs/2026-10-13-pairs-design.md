@@ -314,3 +314,62 @@ plateforme ni de `deck.rs`. Décisions de l'utilisateur : 5 mains par partie
 être négatifs, classement aux jetons ; le risque de paire n'est plus affiché
 non plus dans Continuous Pairs. Les points non tranchés par le livret sont
 dans `games/pairs/RULES.md`.
+
+## 12. Zombie Life (plan 4)
+
+Variante Origames de Pairs (`pairs-zombie-life`, 3–6 joueurs), ajoutée sans
+changement de plateforme. Source : la règle Origames en 4 pages
+(*Pairs – Zombie Life*). Aucune statistique affichée, comme les autres jeux.
+
+### Règles
+
+- **But** : premier à 21 points (`TARGET`), en plusieurs manches.
+- **Première manche** : mélanger, une carte visible dans le Refuge de chaque
+  joueur. La plus petite carte commence.
+- **Tour** : une action parmi trois.
+  - `Draw` : piocher une carte, que le joueur voit, puis `Place { zone }`
+    dans son Refuge ou dans la Horde (zone commune), là où le rang est
+    absent. Rang présent dans les deux : le joueur est éliminé de la manche,
+    son Refuge et la carte piochée sont défaussés.
+  - `Take { rank }` : prendre dans la Horde une carte dont le rang est absent
+    de son Refuge. Interdit au dernier joueur en jeu.
+  - `Pass` : le joueur ne joue plus de la manche. Il retourne face cachée
+    autant de cartes de son Refuge qu'il reste de joueurs en jeu ; à chaque
+    élimination ensuite, il en remet une face visible.
+- **Fin de manche** : quand tous ont passé ou sont éliminés, chaque joueur
+  qui a passé marque 1 point par carte visible. Un joueur à 21 ou plus : la
+  partie s'arrête, le plus de points gagne. Sinon nouvelle manche.
+- **Nouvelle manche** : le joueur au plus petit score (à égalité, le premier
+  éliminé de la manche) pioche autant de cartes qu'il y a de joueurs et en
+  place une devant chacun : `Deal { cards }`, une carte par siège. La plus
+  petite carte commence.
+
+### Points non tranchés par la règle
+
+- Cartes retournées en passant : le nombre de joueurs encore en jeu **sans**
+  celui qui passe, plafonné à la taille de son Refuge.
+- Toutes les cartes valent 1 point : l'état ne garde qu'un **nombre** de
+  cartes cachées par siège, pas un choix de cartes.
+- Fin de manche : la Horde est défaussée avec les Refuges.
+- Pioche : mélangée une seule fois ; les défausses sont remélangées quand
+  elle est vide (`Supply`).
+- Égalité sur la plus petite carte (« le plus âgé ») : tirage sur la graine.
+- Égalité pour le donneur sans aucun éliminé parmi les ex æquo : tirage sur
+  la graine.
+- Égalité au score final : victoire partagée.
+
+### Modèle
+
+`games/pairs/src/zombie_life/` (`mod.rs`, `view.rs`, `determinize.rs`,
+`heuristics.rs`, `testing.rs`) sur `deck.rs`. Phases : `Play`, `Placing`
+(carte piochée en attente, vue du seul joueur… puis de tous une fois posée),
+`Dealing` (les cartes du donneur, vues de lui seul), `Over`. Seule
+information cachée : l'ordre de la pioche, la carte en attente et les cartes
+du donneur.
+
+### Livraison
+
+`RULES.md`, `tests/zombie_life_rules.rs`, conformité à 3, 4, 5 et 6 joueurs,
+entrée `ludo-registry`, `web/src/games/pairs/zombie-life/` (`types.ts`,
+`Board.tsx`, test), entrée `registry.ts`,
+`ludo-cli arena pairs-zombie-life 400 hard easy`.
