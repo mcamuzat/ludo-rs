@@ -7,6 +7,7 @@ ludo-rs : plateforme de jeux traditionnels. Moteur Rust (`crates/ludo-core`, `ga
 - `cargo fmt --all` et `cargo clippy --workspace --all-targets -- -D warnings` avant chaque commit.
 - `cargo run --release -p ludo-cli -- arena yavalath 200 hard easy` : Difficile doit marquer ≥ 0.80 contre Facile (0.94 mesuré).
 - `cargo run --release -p ludo-cli -- arena pairs-continuous 400 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.82 mesuré ; 0.60 à 4 joueurs, où le hasard pèse plus).
+- `cargo run --release -p ludo-cli -- arena pairs-auberge 400 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.69 mesuré ; 0.75 à 4 joueurs).
 - `cargo run --release -p ludo-cli -- play yavalath 2 medium` : partie en terminal.
 - Web : `./scripts/build-wasm.sh` (ou `dev`), puis `cd web && pnpm dev` / `pnpm test` / `pnpm build`.
 
@@ -29,3 +30,11 @@ ludo-rs : plateforme de jeux traditionnels. Moteur Rust (`crates/ludo-core`, `ga
 2. `crates/ludo-registry/src/lib.rs` : un `static` et une entrée dans `GAMES` ; ajouter la dépendance dans son `Cargo.toml` et dans le workspace.
 3. `web/src/games/<id>/types.ts` + `Board.tsx`, et une entrée dans `web/src/games/registry.ts`.
 4. `ludo-cli arena <id> …` pour vérifier que l'IA tient la route.
+
+## Ajouter un jeu Pairs
+Comme « Ajouter un jeu », mais sans nouvelle crate :
+1. `games/pairs/src/<jeu>/` : `mod.rs` (règles, `Game`), `view.rs`, `determinize.rs`, `heuristics.rs`, `testing.rs` ; `pub mod <jeu>;` et la réexportation dans `games/pairs/src/lib.rs`. Le matériel vient de `deck.rs` (`Rank`, `Supply`, `pair_in`…) : l'étendre là plutôt que de le recopier.
+2. Une section dans `games/pairs/RULES.md` ; `tests/<jeu>_rules.rs` ; un cas dans `tests/conformance.rs` pour chaque nombre de joueurs.
+3. `crates/ludo-registry/src/lib.rs` : un `static` et une entrée dans `GAMES`.
+4. `web/src/games/pairs/<jeu>/types.ts` + `Board.tsx` (cartes et table : `../cards.tsx`), un test dans `__tests__/`, une entrée dans `web/src/games/registry.ts`.
+5. `ludo-cli arena pairs-<jeu> 400 hard easy`, et la ligne correspondante dans « Commandes ».

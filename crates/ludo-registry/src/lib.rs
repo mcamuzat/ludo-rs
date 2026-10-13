@@ -5,8 +5,9 @@ use ludo_core::{AnyGame, GameEntry, LudoError};
 static YAVALATH: GameEntry<yavalath::Yavalath> = GameEntry::new();
 static RIICHI: GameEntry<riichi::Riichi> = GameEntry::new();
 static PAIRS_CONTINUOUS: GameEntry<pairs::ContinuousPairs> = GameEntry::new();
+static PAIRS_AUBERGE: GameEntry<pairs::Auberge> = GameEntry::new();
 
-pub static GAMES: &[&dyn AnyGame] = &[&YAVALATH, &RIICHI, &PAIRS_CONTINUOUS];
+pub static GAMES: &[&dyn AnyGame] = &[&YAVALATH, &RIICHI, &PAIRS_CONTINUOUS, &PAIRS_AUBERGE];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {
     ludo_core::find(GAMES, id)
