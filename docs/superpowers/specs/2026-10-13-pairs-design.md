@@ -289,3 +289,15 @@ règles et ne recopie pas les livrets, qui ne sont pas versionnés.
 - Après la revue finale : les mélanges utilisent `ChaCha8Rng` (identique en
   wasm32 et en natif) ; une cible de config est plafonnée à 31 ; le risque de
   paire compte toute la défausse quand la pioche est vide.
+
+## 10. Ajustements faits au plan 2 (L'Auberge des Pirates)
+
+- `Config { rounds: Option<u8> }` : `None` ou 0 = 5 manches, plafond à 15.
+- Une manche bloquée ne rapporte de point à personne (au lieu d'être
+  partagée) : les points restent des entiers.
+- Pendant la mise en place, un siège ne voit que sa propre attente : la
+  déterminisation refait le choix des autres.
+- Le résultat d'une accusation est public ; la main montrée n'apparaît que
+  chez l'accusateur et l'accusé, et le rang de la paire n'est pas annoncé.
+- La table web est carrée et le journal défile, pour que le centre ne
+  recouvre pas les sièges.

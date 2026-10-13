@@ -45,7 +45,7 @@ export function Table({ seats, first, center }: { seats: ReactNode[]; first: num
         const angle = Math.PI / 2 + (2 * Math.PI * ((i - first + n) % n)) / n;
         const style = {
           "--x": `${50 + 41 * Math.cos(angle)}%`,
-          "--y": `${50 + 40 * Math.sin(angle)}%`,
+          "--y": `${50 + 42 * Math.sin(angle)}%`,
         } as CSSProperties;
         return (
           <div key={i} className="pairs-place" style={style}>

@@ -23,7 +23,7 @@
 
 .pairs-pile { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.8rem; color: var(--muted); }
 
-.pairs-table { position: relative; width: min(100%, 860px); aspect-ratio: 4 / 3; margin: 0 auto; }
+.pairs-table { position: relative; width: min(100%, 860px); aspect-ratio: 1 / 1; margin: 0 auto; }
 .pairs-center {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
   width: 46%; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
@@ -40,7 +40,14 @@
 .pairs-piles { display: flex; gap: 16px; justify-content: center; }
 .pairs-unlocated { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; font-size: 0.75rem; color: var(--muted); }
 .pairs-unlocated span { display: inline-flex; flex-direction: column; align-items: center; }
-.pairs-events { list-style: none; padding: 0; margin: 0; font-size: 0.85rem; }
+.pairs-events { list-style: none; padding: 0; margin: 0; font-size: 0.85rem; max-height: 7.5em; overflow-y: auto; }
+
+.pairs-round { margin: 0; font-weight: 600; }
+.pairs-moves { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-top: 4px; }
+.pairs-moves button { padding: 2px 8px; font-size: 0.85rem; }
+.pairs-hand { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px; }
+.pairs-seen { display: flex; flex-wrap: wrap; justify-content: center; }
+.hint.warn { color: var(--danger); font-weight: 600; }
 
 @media (max-width: 720px) {
   .pairs-table { aspect-ratio: auto; display: flex; flex-direction: column; gap: 8px; }

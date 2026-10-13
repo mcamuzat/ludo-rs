@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 import type { Seat } from "../engine/types";
+import { AubergeBoard } from "./pairs/auberge/Board";
 import { ContinuousBoard } from "./pairs/continuous/Board";
 import { RiichiBoard } from "./riichi/Board";
 import { YavalathBoard } from "./yavalath/Board";
@@ -24,6 +25,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "yavalath", Board: YavalathBoard },
   { id: "riichi", Board: RiichiBoard },
   { id: "pairs-continuous", Board: ContinuousBoard },
+  { id: "pairs-auberge", Board: AubergeBoard },
 ];
 
 export function gameUi(id: string): GameUi | undefined {
