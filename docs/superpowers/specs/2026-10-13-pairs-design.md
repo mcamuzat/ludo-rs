@@ -362,7 +362,8 @@ changement de plateforme. Source : la règle Origames en 4 pages
 
 `games/pairs/src/zombie_life/` (`mod.rs`, `view.rs`, `determinize.rs`,
 `heuristics.rs`, `testing.rs`) sur `deck.rs`. Phases : `Play`, `Placing`
-(carte piochée en attente, vue du seul joueur… puis de tous une fois posée),
+(carte piochée en attente, vue du seul joueur jusqu'à ce qu'elle soit
+posée ou défaussée, visible),
 `Dealing` (les cartes du donneur, vues de lui seul), `Over`. Seule
 information cachée : l'ordre de la pioche, la carte en attente et les cartes
 du donneur.
