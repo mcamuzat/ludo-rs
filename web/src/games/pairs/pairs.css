@@ -49,6 +49,8 @@
 .pairs-seen { display: flex; flex-wrap: wrap; justify-content: center; }
 .hint.warn { color: var(--danger); font-weight: 600; }
 
+.pairs-street { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px; }
+
 @media (max-width: 720px) {
   .pairs-table { aspect-ratio: auto; display: flex; flex-direction: column; gap: 8px; }
   .pairs-center, .pairs-place { position: static; transform: none; width: auto; }

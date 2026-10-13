@@ -305,3 +305,12 @@ règles et ne recopie pas les livrets, qui ne sont pas versionnés.
   l'Auberge ne donnent aucune statistique (ni paire estimée par joueur, ni
   compte des cartes non situées). Seule reste l'alerte sur sa propre paire.
   L'estimation sert toujours à l'IA.
+
+## 11. Ghost Town (plan 3)
+
+Ajouté après les deux jeux du périmètre initial, sans changement de
+plateforme ni de `deck.rs`. Décisions de l'utilisateur : 5 mains par partie
+(`Config { hands }`, plafond 15), soldes de jetons partant de 0 et pouvant
+être négatifs, classement aux jetons ; le risque de paire n'est plus affiché
+non plus dans Continuous Pairs. Les points non tranchés par le livret sont
+dans `games/pairs/RULES.md`.

@@ -2,6 +2,7 @@ import type { ComponentType } from "react";
 import type { Seat } from "../engine/types";
 import { AubergeBoard } from "./pairs/auberge/Board";
 import { ContinuousBoard } from "./pairs/continuous/Board";
+import { GhostTownBoard } from "./pairs/ghost-town/Board";
 import { RiichiBoard } from "./riichi/Board";
 import { YavalathBoard } from "./yavalath/Board";
 
@@ -26,6 +27,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "riichi", Board: RiichiBoard },
   { id: "pairs-continuous", Board: ContinuousBoard },
   { id: "pairs-auberge", Board: AubergeBoard },
+  { id: "pairs-ghost-town", Board: GhostTownBoard },
 ];
 
 export function gameUi(id: string): GameUi | undefined {
