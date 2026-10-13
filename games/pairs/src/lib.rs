@@ -4,10 +4,12 @@ pub mod auberge;
 pub mod continuous;
 pub mod deck;
 pub mod ghost_town;
+pub mod goblin_poker;
 pub mod testing;
 pub mod zombie_life;
 
 pub use auberge::Auberge;
 pub use continuous::ContinuousPairs;
 pub use ghost_town::GhostTown;
+pub use goblin_poker::GoblinPoker;
 pub use zombie_life::ZombieLife;

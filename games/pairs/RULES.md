@@ -189,3 +189,53 @@ Horde.
    personne d'autre n'agit avant qu'elles soient posées. Le donneur donne
    ses cartes une à une, à partir de sa gauche ; des cartes toutes
    identiques sont données sans demander.
+
+## Goblin Poker (`pairs-goblin-poker`, 3 à 8 joueurs)
+
+Source : **[R]** *Pairs Companion Book*, chapitre « Goblin Poker ».
+
+### Mise en place [R]
+- Chaque joueur mise 1 jeton dans le pot et reçoit 6 cartes en main.
+- Tous choisissent une carte en secret ; révélées ensemble, elles commencent
+  la *pile* visible de chacun.
+
+### Tour de table [R]
+En partant de la pile la plus basse, puis vers la gauche, chaque joueur
+encore en jeu choisit :
+- **Se coucher** : payer au pot la valeur de la plus petite carte en jeu, et
+  sortir de la main.
+- **Jeter** : mettre une carte de sa main, face cachée, au centre.
+
+Quand tous ont agi, les cartes jetées sont mélangées et données face visible,
+une par joueur restant, en partant de la pile la plus basse puis vers la
+gauche. Qui reçoit une paire sort de la main et paie au pot le rang de la
+carte. Les éliminations se font dans l'ordre : dès qu'il ne reste qu'un
+joueur, il gagne, même s'il allait recevoir une paire.
+
+### Pile la plus basse [R]
+Celle qui a la plus petite carte, puis la deuxième plus petite, et ainsi de
+suite. Une carte en plus est plus basse que pas de carte : 2-3-6 est plus bas
+que 2-3. Une égalité parfaite est départagée par des cartes de la pioche, qui
+rejoignent les piles ; une carte qui ferait une paire est défaussée et
+remplacée.
+
+### Fin de la main [R]
+- S'il ne reste qu'un joueur, il prend le pot.
+- Sinon on rejoue un tour de table, cinq au plus. Les survivants du dernier
+  se partagent le pot ; le reste de la division reste au pot pour la main
+  suivante.
+
+### Choix sur les points non tranchés
+1. ❓ Une partie se joue en plusieurs mains (5 par défaut). Chacun part de 0
+   jeton et peut passer en négatif ; classement final aux jetons, égalités
+   conservées. Les jetons restés au pot après la dernière main ne vont à
+   personne.
+2. ❓ « La plus petite carte en jeu » : la plus petite carte visible des
+   piles des joueurs encore en jeu, celle du joueur qui se couche comprise.
+3. ❓ La pile la plus basse est recalculée au début de chaque tour de table,
+   et de nouveau avant la redistribution, parmi les joueurs restants.
+4. ❓ Seule l'égalité pour la pile la plus basse est départagée.
+5. ❓ La pioche n'est pas refaite pour un départage : vide, c'est le premier
+   des joueurs à égalité, dans l'ordre des sièges, qui est le plus bas.
+6. ❓ Un joueur qui sort défausse sa pile face visible et sa main face
+   cachée.
