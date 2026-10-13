@@ -2,18 +2,22 @@ use ludo_core::{Determinize, Seat};
 use rand::Rng;
 
 use super::{Auberge, Phase, State};
+
+/// Deals tried to find one where no seat proven innocent holds a pair.
+const REDEALS: usize = 256;
 use crate::deck::Rank;
 
 impl Determinize for Auberge {
     /// The other hands, the draw pile and the face-down discards are redrawn
     /// among the cards `observer` cannot place; the face-down discards it
-    /// has seen stay. During setup the other seats' choices are forgotten:
+    /// has seen stay, and a seat everyone knows to be pair-free is not dealt
+    /// a pair. During setup the other seats' choices are forgotten:
     /// they will choose again from their new hands.
     fn determinize<R: Rng + ?Sized>(s: &State, observer: Seat, rng: &mut R) -> State {
         let mut d = s.clone();
         let o = observer.index();
         let keep: Vec<Rank> = d.known.get(o).cloned().unwrap_or_default();
-        {
+        for _ in 0..REDEALS {
             let mut others: Vec<&mut Vec<Rank>> = d
                 .hands
                 .iter_mut()
@@ -22,6 +26,12 @@ impl Determinize for Auberge {
                 .map(|(_, hand)| hand)
                 .collect();
             d.supply.redeal_hidden_with(&keep, &mut others, rng);
+            let contradicts = d.seats().any(|seat| {
+                seat.index() != o && d.clean[seat.index()] && d.own_pair(seat).is_some()
+            });
+            if !contradicts {
+                break;
+            }
         }
         if d.phase == Phase::Setup {
             for (i, choice) in d.placed.iter_mut().enumerate() {
@@ -92,5 +102,22 @@ mod tests {
             Auberge::visible_pending(&d, Viewer::Seat(Seat(0))),
             Auberge::visible_pending(&s, Viewer::Seat(Seat(0)))
         );
+    }
+
+    #[test]
+    fn a_player_proven_innocent_is_never_dealt_a_pair() {
+        // Seat 0 wrongly accused seat 1, who holds seven cards without a pair.
+        let mut s = table(
+            &[&[5], &[1, 2, 3, 4, 6, 8, 9], &[7]],
+            &[&[], &[], &[]],
+            &[10, 10, 10, 9, 9, 8],
+        );
+        Auberge::apply(&mut s, Seat(0), &Action::Accuse { target: Seat(1) }).unwrap();
+        assert!(s.clean[1]);
+        for seed in 0..40 {
+            let d = Auberge::determinize(&s, Seat(2), &mut SmallRng::seed_from_u64(seed));
+            assert_eq!(d.own_pair(Seat(1)), None, "seed {seed}");
+            assert_eq!(d.hands[1].len(), 7);
+        }
     }
 }

@@ -404,3 +404,49 @@ fn the_json_the_web_relies_on() {
         assert!(view.get(hidden).is_none(), "{hidden} leaked");
     }
 }
+
+#[test]
+fn a_wrongly_accused_player_is_known_to_hold_no_pair() {
+    let mut s = table(
+        &[&[5], &[1, 2, 3, 4, 6, 8, 9], &[7]],
+        &[&[], &[], &[]],
+        &[10, 10],
+    );
+    act(&mut s, 0, accuse(1));
+    assert!(s.out[0]);
+    let odds = |s: &State| Auberge::view(s, Viewer::Seat(Seat(2))).seats[1].pair_odds;
+    // Everyone saw the accusation fail: seat 1 has no pair for now.
+    assert_eq!(odds(&s), 0);
+    assert_eq!(s.pair_chance(Some(Seat(2)), Seat(1)), 0.0);
+    // Playing a hand card away cannot give it one.
+    act(&mut s, 1, attack(2, 9));
+    assert_eq!(odds(&s), 0);
+    // Receiving a card can.
+    act(&mut s, 2, dare(1));
+    assert!(odds(&s) > 0);
+}
+
+#[test]
+fn drawing_ends_the_proof_of_innocence() {
+    let mut s = table(&[&[5], &[1, 2, 3], &[7]], &[&[], &[], &[]], &[10, 10]);
+    act(&mut s, 0, accuse(1));
+    act(&mut s, 1, Action::Draw);
+    assert!(Auberge::view(&s, Viewer::Seat(Seat(2))).seats[1].pair_odds > 0);
+}
+
+/// The lot uses a fixed-width sample: identical on wasm32 and natively. A
+/// change here breaks the replay of recorded matches.
+#[test]
+fn the_tie_break_of_a_seed_is_pinned() {
+    let starters: Vec<u8> = (0..12)
+        .map(|seed| {
+            let mut s = setup(&[&[3, 6, 7], &[3, 8, 9], &[3, 5, 10]], &[1]);
+            s.seed = seed;
+            for seat in 0..3 {
+                act(&mut s, seat, place(3));
+            }
+            s.turn.unwrap().0
+        })
+        .collect();
+    assert_eq!(starters, vec![1, 0, 1, 2, 1, 0, 1, 2, 2, 2, 1, 1]);
+}

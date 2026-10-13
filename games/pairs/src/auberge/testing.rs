@@ -25,6 +25,7 @@ fn blank(hands: &[&[u8]], draws: &[u8]) -> State {
         placed: vec![None; n],
         out: vec![false; n],
         known: vec![Vec::new(); n],
+        clean: vec![false; n],
         phase: Phase::Setup,
         turn: None,
         wins: vec![0; n],

@@ -124,7 +124,9 @@ export function AubergeBoard({ view, legalActions, me, seatNames, submit }: Boar
       )}
       {v.phase === "Setup" && places.length > 0 && <p className="hint">Choisis la carte à poser devant toi.</p>}
       {v.phase === "Setup" && me !== null && places.length === 0 && (
-        <p className="hint">En attente des autres joueurs…</p>
+        <p className="hint">
+          {v.placed !== null ? `Tu as posé un ${v.placed}. ` : ""}En attente des autres joueurs…
+        </p>
       )}
       {v.ownPair !== null && (
         <p className="hint warn">Tu as une paire de {v.ownPair} : une accusation t&apos;éliminerait.</p>

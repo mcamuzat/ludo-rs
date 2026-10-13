@@ -116,6 +116,9 @@ pub struct State {
     /// Face-down discards each seat has seen (a hand shown by a right
     /// accusation, its own discarded hand). Forgotten at a reshuffle.
     pub known: Vec<Vec<Rank>>,
+    /// Seats everyone knows hold no pair: a wrong accusation showed it, and
+    /// they have received no card since.
+    pub clean: Vec<bool>,
     pub phase: Phase,
     /// Seat to move during play.
     pub turn: Option<Seat>,
@@ -196,7 +199,7 @@ impl State {
     /// `observer` cannot place.
     pub fn pair_chance(&self, observer: Option<Seat>, target: Seat) -> f64 {
         let hidden = self.hands[target.index()].len() as f64;
-        if hidden == 0.0 {
+        if hidden == 0.0 || self.clean[target.index()] {
             return 0.0;
         }
         let pool = self.unlocated_for(observer);
@@ -257,6 +260,7 @@ impl State {
         self.placed = vec![None; n];
         self.out = vec![false; n];
         self.known = vec![Vec::new(); n];
+        self.clean = vec![false; n];
         self.phase = Phase::Setup;
         self.turn = None;
     }
@@ -290,7 +294,8 @@ impl State {
             [only] => *only,
             _ => {
                 let mut rng = ChaCha8Rng::seed_from_u64(mix(self.seed, self.round) ^ TIE_STREAM);
-                tied[rng.gen_range(0..tied.len())]
+                // A `u32` sample: `usize` would draw differently on wasm32.
+                tied[rng.gen_range(0..tied.len() as u32) as usize]
             }
         };
         self.events.push(Event::Starts { seat: first });
@@ -374,6 +379,7 @@ impl State {
             Action::Draw => {
                 if let Some(card) = self.draw() {
                     self.hands[seat.index()].push(card);
+                    self.clean[seat.index()] = false;
                 }
                 self.events.push(Event::Drew { seat });
                 self.left_of(seat)
@@ -383,6 +389,7 @@ impl State {
                 if let Some(at) = hand.iter().position(|&c| c == card) {
                     hand.remove(at);
                     self.fronts[target.index()].push(card);
+                    self.clean[target.index()] = false;
                 }
                 self.events.push(Event::Attacked { seat, target, card });
                 target
@@ -403,6 +410,7 @@ impl State {
                         self.left_of(seat)
                     } else {
                         self.fronts[target.index()].push(card);
+                        self.clean[target.index()] = false;
                         target
                     }
                 }
@@ -423,6 +431,8 @@ impl State {
                     self.eliminate(target);
                     self.left_of(seat)
                 } else {
+                    // Everyone saw the accusation fail.
+                    self.clean[target.index()] = true;
                     self.eliminate(seat);
                     target
                 }
@@ -466,6 +476,7 @@ impl Game for Auberge {
             placed: Vec::new(),
             out: Vec::new(),
             known: Vec::new(),
+            clean: Vec::new(),
             phase: Phase::Setup,
             turn: None,
             wins: vec![0; n],

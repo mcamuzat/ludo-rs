@@ -3,7 +3,7 @@ use rand::seq::SliceRandom;
 use rand::Rng;
 
 use super::{Action, Auberge, Phase, State};
-use crate::deck::pair_in;
+use crate::deck::{lowest, pair_in};
 
 /// Accuse above this estimated chance of a pair.
 const ACCUSE: f64 = 0.5;
@@ -82,6 +82,21 @@ impl Heuristics for Auberge {
             _ => any(rng),
         }
     }
+
+    /// The card to place is not worth a search (and a table of AIs would
+    /// think one after the other): a card of its own pair, else its lowest.
+    /// In play, every legal action.
+    fn search_actions(s: &State, seat: Seat) -> Vec<Action> {
+        let legal = Self::legal_actions(s, seat);
+        if s.phase != Phase::Setup || legal.is_empty() {
+            return legal;
+        }
+        let hand = &s.hands[seat.index()];
+        match pair_in(hand).or_else(|| lowest(hand)) {
+            Some(card) => vec![Action::Place { card }],
+            None => legal,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -157,6 +172,48 @@ mod tests {
                     Auberge::apply(&mut s, seat, &action).unwrap();
                 }
             }
+        }
+    }
+
+    #[test]
+    fn the_search_does_not_deliberate_over_the_card_to_place() {
+        // A card of its own pair, else its lowest card: one candidate, so the
+        // generic search answers at once.
+        let s = setup(&[&[9, 4, 9], &[2, 8, 3]], &[1]);
+        assert_eq!(
+            Auberge::search_actions(&s, Seat(0)),
+            vec![Action::Place { card: r(9) }]
+        );
+        assert_eq!(
+            Auberge::search_actions(&s, Seat(1)),
+            vec![Action::Place { card: r(2) }]
+        );
+        let p = table(&[&[7, 3], &[4]], &[&[2], &[9]], &[5, 5]);
+        assert_eq!(
+            Auberge::search_actions(&p, Seat(0)),
+            Auberge::legal_actions(&p, Seat(0))
+        );
+    }
+
+    #[test]
+    fn does_not_accuse_a_player_just_proven_innocent() {
+        let mut s = table(
+            &[&[5], &[1, 2, 3, 4, 6, 8, 9], &[7]],
+            &[&[], &[], &[]],
+            &[10, 10, 10, 9, 9, 8],
+        );
+        Auberge::apply(&mut s, Seat(0), &Action::Accuse { target: Seat(1) }).unwrap();
+        Auberge::apply(
+            &mut s,
+            Seat(1),
+            &Action::Attack {
+                target: Seat(2),
+                card: r(9),
+            },
+        )
+        .unwrap();
+        for seed in 0..30 {
+            assert_ne!(rollout(&s, 2, seed), Action::Accuse { target: Seat(1) });
         }
     }
 }

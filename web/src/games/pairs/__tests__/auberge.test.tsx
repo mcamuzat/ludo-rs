@@ -113,6 +113,7 @@ describe("Auberge des Pirates board", () => {
     const html = renderToStaticMarkup(board(placed, [], 0));
     expect(html).not.toContain("<button");
     expect(html).toContain("En attente des autres joueurs");
+    expect(html).toContain("Tu as posé un 8");
   });
 
   it("offers nothing to a spectator or once the game is over", () => {
