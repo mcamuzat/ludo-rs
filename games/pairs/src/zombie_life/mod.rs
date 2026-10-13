@@ -2,6 +2,7 @@
 //! (after James Ernest and Paul Peterson). Rules and their sources: RULES.md.
 
 mod determinize;
+mod heuristics;
 pub mod testing;
 mod view;
 
@@ -194,6 +195,44 @@ impl State {
                 Some(tied[rng.gen_range(0..tied.len() as u32) as usize])
             }
         }
+    }
+
+    /// The chance `seat` is overrun by its next draw, from what everyone
+    /// sees. For the AI: never in a view.
+    pub fn overrun_chance(&self, seat: Seat) -> f64 {
+        let pool = self.draw_pool();
+        let total: u32 = pool.iter().map(|&c| u32::from(c)).sum();
+        if total == 0 {
+            return 0.0;
+        }
+        let refuge = &self.refuges[seat.index()];
+        let fatal: u32 = Rank::all()
+            .filter(|&rank| has_rank(refuge, rank) && has_rank(&self.horde, rank))
+            .map(|rank| u32::from(pool[rank.index()]))
+            .sum();
+        f64::from(fatal) / f64::from(total)
+    }
+
+    /// Per rank, the cards the next draw may bring: those nobody can place
+    /// on the table or in the discards, or the discards themselves when the
+    /// draw pile is empty and the next draw reshuffles them.
+    pub fn draw_pool(&self) -> [u8; 10] {
+        if self.supply.deck_len() == 0 {
+            return self.supply.draw_pool();
+        }
+        let mut counts = [1u8, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        for card in self
+            .refuges
+            .iter()
+            .flatten()
+            .chain(&self.horde)
+            .chain(&self.dealing)
+            .chain(&self.drawn)
+            .chain(self.supply.seen())
+        {
+            counts[card.index()] = counts[card.index()].saturating_sub(1);
+        }
+        counts
     }
 
     fn draw(&mut self) -> Option<Rank> {

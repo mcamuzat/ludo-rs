@@ -7,6 +7,7 @@ static RIICHI: GameEntry<riichi::Riichi> = GameEntry::new();
 static PAIRS_CONTINUOUS: GameEntry<pairs::ContinuousPairs> = GameEntry::new();
 static PAIRS_AUBERGE: GameEntry<pairs::Auberge> = GameEntry::new();
 static PAIRS_GHOST_TOWN: GameEntry<pairs::GhostTown> = GameEntry::new();
+static PAIRS_ZOMBIE_LIFE: GameEntry<pairs::ZombieLife> = GameEntry::new();
 
 pub static GAMES: &[&dyn AnyGame] = &[
     &YAVALATH,
@@ -14,6 +15,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &PAIRS_CONTINUOUS,
     &PAIRS_AUBERGE,
     &PAIRS_GHOST_TOWN,
+    &PAIRS_ZOMBIE_LIFE,
 ];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {
