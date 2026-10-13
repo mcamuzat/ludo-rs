@@ -8,6 +8,7 @@ static PAIRS_CONTINUOUS: GameEntry<pairs::ContinuousPairs> = GameEntry::new();
 static PAIRS_AUBERGE: GameEntry<pairs::Auberge> = GameEntry::new();
 static PAIRS_GHOST_TOWN: GameEntry<pairs::GhostTown> = GameEntry::new();
 static PAIRS_ZOMBIE_LIFE: GameEntry<pairs::ZombieLife> = GameEntry::new();
+static PAIRS_GOBLIN_POKER: GameEntry<pairs::GoblinPoker> = GameEntry::new();
 
 pub static GAMES: &[&dyn AnyGame] = &[
     &YAVALATH,
@@ -16,6 +17,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &PAIRS_AUBERGE,
     &PAIRS_GHOST_TOWN,
     &PAIRS_ZOMBIE_LIFE,
+    &PAIRS_GOBLIN_POKER,
 ];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {

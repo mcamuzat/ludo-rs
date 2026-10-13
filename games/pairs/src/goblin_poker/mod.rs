@@ -2,6 +2,7 @@
 //! and dealt back, and do not catch a pair. Rules and their sources: RULES.md.
 
 mod determinize;
+mod heuristics;
 pub mod testing;
 mod view;
 
@@ -183,6 +184,21 @@ impl State {
             counts[card.index()] = counts[card.index()].saturating_sub(1);
         }
         counts
+    }
+
+    /// Chips a card `seat` cannot place costs it on average if it lands on
+    /// its stack. For the AI: never in a view.
+    pub fn catch_cost(&self, seat: Seat) -> f64 {
+        let pool = self.unlocated_for(Some(seat));
+        let total: u32 = pool.iter().map(|&c| u32::from(c)).sum();
+        if total == 0 {
+            return 0.0;
+        }
+        let chips: u32 = self.stacks[seat.index()]
+            .iter()
+            .map(|card| u32::from(pool[card.index()]) * u32::from(card.value()))
+            .sum();
+        f64::from(chips) / f64::from(total)
     }
 
     fn pay(&mut self, seat: Seat, chips: u32) {
