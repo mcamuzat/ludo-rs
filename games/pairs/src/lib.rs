@@ -2,5 +2,6 @@
 
 pub mod continuous;
 pub mod deck;
+pub mod testing;
 
 pub use continuous::ContinuousPairs;

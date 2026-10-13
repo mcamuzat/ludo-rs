@@ -3,15 +3,8 @@
 use ludo_core::Seat;
 
 use super::{default_target, State, BURN};
-use crate::deck::{full_deck, Rank, Supply};
-
-pub fn r(value: u8) -> Rank {
-    Rank::new(value).expect("a rank from 1 to 10")
-}
-
-pub fn ranks(values: &[u8]) -> Vec<Rank> {
-    values.iter().map(|&v| r(v)).collect()
-}
+use crate::deck::{full_deck, Supply};
+pub use crate::testing::{r, ranks};
 
 /// A supply whose next draws are `draws`, in that order; empty discard.
 pub fn supply(draws: &[u8]) -> Supply {

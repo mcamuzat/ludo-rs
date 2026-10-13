@@ -75,6 +75,12 @@ pub fn count_by_rank(cards: &[Rank]) -> [u8; 10] {
     counts
 }
 
+/// The highest rank present at least twice.
+pub fn pair_in(cards: &[Rank]) -> Option<Rank> {
+    let counts = count_by_rank(cards);
+    Rank::all().filter(|r| counts[r.index()] >= 2).max()
+}
+
 /// The draw pile and the discard pile. An empty draw pile is rebuilt from the
 /// discards; `burn` cards then go face down to the discards.
 ///
@@ -154,6 +160,12 @@ impl Supply {
         self.seen.extend(cards);
     }
 
+    /// Face down: nobody at the table has seen these cards (a player who
+    /// has is the game's business, see `redeal_hidden_with`).
+    pub fn discard_unseen(&mut self, cards: impl IntoIterator<Item = Rank>) {
+        self.unseen.extend(cards);
+    }
+
     pub fn deck_len(&self) -> usize {
         self.deck.len()
     }
@@ -194,15 +206,42 @@ impl Supply {
         counts
     }
 
-    /// For determinization: redraws the order of the draw pile, which cards
-    /// are burned, and the seed of future shuffles. Pile sizes and the seen
-    /// discards are unchanged.
+    /// For determinization in a game without hidden hands.
     pub fn redeal_hidden<R: Rng + ?Sized>(&mut self, rng: &mut R) {
-        let burned = self.unseen.len();
+        self.redeal_hidden_with(&[], &mut [], rng);
+    }
+
+    /// For determinization: everything an observer cannot place is redrawn —
+    /// the order of the draw pile, the face-down discards, and the `hands`
+    /// given (the other players'), each keeping its size. `keep` lists
+    /// face-down discards the observer has seen: they stay where they are.
+    /// The seed of future shuffles is redrawn too.
+    pub fn redeal_hidden_with<R: Rng + ?Sized>(
+        &mut self,
+        keep: &[Rank],
+        hands: &mut [&mut Vec<Rank>],
+        rng: &mut R,
+    ) {
+        let mut kept = Vec::new();
+        for &card in keep {
+            if let Some(at) = self.unseen.iter().position(|&c| c == card) {
+                kept.push(self.unseen.swap_remove(at));
+            }
+        }
+        let face_down = self.unseen.len();
         self.deck.append(&mut self.unseen);
+        let sizes: Vec<usize> = hands.iter().map(|hand| hand.len()).collect();
+        for hand in hands.iter_mut() {
+            self.deck.append(hand);
+        }
         self.deck.shuffle(rng);
-        let keep = self.deck.len() - burned;
-        self.unseen.extend(self.deck.drain(keep..));
+        for (hand, size) in hands.iter_mut().zip(sizes) {
+            let at = self.deck.len() - size;
+            hand.extend(self.deck.drain(at..));
+        }
+        let at = self.deck.len() - face_down;
+        self.unseen.extend(self.deck.drain(at..));
+        self.unseen.append(&mut kept);
         self.seed = rng.next_u64();
     }
 }
@@ -342,5 +381,57 @@ mod tests {
             moved |= d != before;
         }
         assert!(moved, "the hidden cards never moved");
+    }
+
+    #[test]
+    fn pair_in_finds_the_highest_pair() {
+        assert_eq!(pair_in(&ranks(&[3, 7, 3, 9, 9])), Rank::new(9));
+        assert_eq!(pair_in(&ranks(&[3, 7, 9])), None);
+        assert_eq!(pair_in(&[]), None);
+    }
+
+    #[test]
+    fn face_down_discards_stay_unlocated() {
+        let mut s = Supply::from_parts(ranks(&[2]), Vec::new(), Vec::new(), 0, 0);
+        s.discard_unseen(ranks(&[7, 7]));
+        assert!(s.seen().is_empty());
+        assert_eq!(s.discard_len(), 2);
+        assert_eq!(s.unlocated()[6], 2);
+    }
+
+    #[test]
+    fn redealing_with_hands_keeps_sizes_and_cards() {
+        let before =
+            Supply::from_parts(ranks(&[1, 2, 3, 4]), ranks(&[9]), ranks(&[10, 10, 5]), 0, 0);
+        let mut moved = false;
+        for seed in 0..20 {
+            let mut s = before.clone();
+            let mut a = ranks(&[6, 7]);
+            let mut b = ranks(&[8]);
+            s.redeal_hidden_with(
+                &ranks(&[10, 10]),
+                &mut [&mut a, &mut b],
+                &mut SmallRng::seed_from_u64(seed),
+            );
+            assert_eq!((a.len(), b.len()), (2, 1));
+            assert_eq!(s.deck_len(), 4);
+            assert_eq!(s.discard_len(), 4);
+            assert_eq!(s.seen(), before.seen());
+            // The two 10s the observer saw are still face down in the discards.
+            assert_eq!(s.unseen.iter().filter(|c| c.value() == 10).count(), 2);
+            assert!(!a.iter().chain(&b).any(|c| c.value() == 10));
+            let mut all: Vec<Rank> = s
+                .deck
+                .iter()
+                .chain(&s.unseen)
+                .chain(&a)
+                .chain(&b)
+                .copied()
+                .collect();
+            all.sort_unstable();
+            assert_eq!(all, ranks(&[1, 2, 3, 4, 5, 6, 7, 8, 10, 10]));
+            moved |= a != ranks(&[6, 7]);
+        }
+        assert!(moved, "the hands never changed");
     }
 }
