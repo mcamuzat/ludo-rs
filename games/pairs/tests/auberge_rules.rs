@@ -335,8 +335,6 @@ fn the_view_tells_a_player_about_their_own_pair_only() {
     let mine = Auberge::view(&s, Viewer::Seat(Seat(0)));
     assert_eq!(mine.own_pair, Some(r(7)));
     assert_eq!(mine.hand, ranks(&[7, 3]));
-    assert_eq!(mine.seats[0].pair_odds, 0);
-    assert!(mine.seats[1].pair_odds > 0);
     let theirs = Auberge::view(&s, Viewer::Seat(Seat(1)));
     assert_eq!(theirs.own_pair, None);
     assert_eq!(theirs.hand, ranks(&[8]));
@@ -397,7 +395,9 @@ fn the_json_the_web_relies_on() {
     assert_eq!(view["ownPair"], json!(7));
     assert_eq!(view["seats"][1]["handSize"], json!(1));
     assert_eq!(view["seats"][1]["wins"], json!(0));
-    assert!(view["seats"][1]["pairOdds"].is_number());
+    // No statistics in the view: counting cards is the players' job.
+    assert!(view["seats"][1].get("pairOdds").is_none());
+    assert!(view.get("unlocated").is_none());
     assert_eq!(view["discardSeen"], json!([]));
     assert_eq!(view["rounds"], json!(5));
     for hidden in ["supply", "hands", "known", "seed"] {
@@ -414,16 +414,15 @@ fn a_wrongly_accused_player_is_known_to_hold_no_pair() {
     );
     act(&mut s, 0, accuse(1));
     assert!(s.out[0]);
-    let odds = |s: &State| Auberge::view(s, Viewer::Seat(Seat(2))).seats[1].pair_odds;
+    let odds = |s: &State| s.pair_chance(Some(Seat(2)), Seat(1));
     // Everyone saw the accusation fail: seat 1 has no pair for now.
-    assert_eq!(odds(&s), 0);
-    assert_eq!(s.pair_chance(Some(Seat(2)), Seat(1)), 0.0);
+    assert_eq!(odds(&s), 0.0);
     // Playing a hand card away cannot give it one.
     act(&mut s, 1, attack(2, 9));
-    assert_eq!(odds(&s), 0);
+    assert_eq!(odds(&s), 0.0);
     // Receiving a card can.
     act(&mut s, 2, dare(1));
-    assert!(odds(&s) > 0);
+    assert!(odds(&s) > 0.0);
 }
 
 #[test]
@@ -431,7 +430,7 @@ fn drawing_ends_the_proof_of_innocence() {
     let mut s = table(&[&[5], &[1, 2, 3], &[7]], &[&[], &[], &[]], &[10, 10]);
     act(&mut s, 0, accuse(1));
     act(&mut s, 1, Action::Draw);
-    assert!(Auberge::view(&s, Viewer::Seat(Seat(2))).seats[1].pair_odds > 0);
+    assert!(s.pair_chance(Some(Seat(2)), Seat(1)) > 0.0);
 }
 
 /// The lot uses a fixed-width sample: identical on wasm32 and natively. A

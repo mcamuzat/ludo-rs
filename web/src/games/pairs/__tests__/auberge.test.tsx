@@ -28,9 +28,9 @@ const PLAY: AubergeView = {
   rounds: 5,
   phase: "Play",
   seats: [
-    { front: [5], handSize: 2, out: false, wins: 1, pairOdds: 0 },
-    { front: [2, 9], handSize: 3, out: false, wins: 0, pairOdds: 412 },
-    { front: [], handSize: 0, out: true, wins: 0, pairOdds: 0 },
+    { front: [5], handSize: 2, out: false, wins: 1 },
+    { front: [2, 9], handSize: 3, out: false, wins: 0 },
+    { front: [], handSize: 0, out: true, wins: 0 },
   ],
   hand: [7, 7],
   placed: null,
@@ -39,7 +39,6 @@ const PLAY: AubergeView = {
   deck: 30,
   discard: 4,
   discardSeen: [4, 8],
-  unlocated: [1, 1, 3, 3, 4, 6, 5, 7, 8, 10],
   events: [{ type: "Out", seat: 2 }],
 };
 
@@ -54,7 +53,7 @@ const SETUP: AubergeView = {
   ...PLAY,
   round: 1,
   phase: "Setup",
-  seats: NAMES.map(() => ({ front: [], handSize: 3, out: false, wins: 0, pairOdds: 120 })),
+  seats: NAMES.map(() => ({ front: [], handSize: 3, out: false, wins: 0 })),
   hand: [3, 8, 8],
   ownPair: 8,
   turn: null,
@@ -101,7 +100,9 @@ describe("Auberge des Pirates board", () => {
     const html = renderToStaticMarkup(board(PLAY, PLAY_LEGAL, 0));
     expect(html).toContain("Manche 2 / 5");
     expect(html).toContain("Tu as une paire de 7");
-    expect(html).toContain("Paire estimée : 41 %");
+    // No statistics on the board: who holds what is for the players to work out.
+    expect(html).not.toContain("Paire estimée");
+    expect(html).not.toContain("pairs-unlocated");
     expect(html).toContain("Piocher");
     expect(html).toContain("Accuser");
     expect(html).toContain("éliminé");

@@ -6,7 +6,8 @@ use crate::deck::Rank;
 
 /// What one seat sees: its own hand, everyone's face-up cards and hand
 /// sizes. Never another hand, the draw pile, nor a card another seat has
-/// chosen during setup.
+/// chosen during setup. No statistics either: working out who may hold what
+/// is the game.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct View {
@@ -27,8 +28,6 @@ pub struct View {
     pub discard: usize,
     /// The discards everyone has seen.
     pub discard_seen: Vec<Rank>,
-    /// Per rank (index = rank − 1), the cards the viewer cannot place.
-    pub unlocated: Vec<u8>,
     pub events: Vec<Event>,
 }
 
@@ -41,9 +40,6 @@ pub struct SeatView {
     pub out: bool,
     /// Rounds won.
     pub wins: u8,
-    /// The viewer's estimate, per thousand, that this seat holds a pair
-    /// (0 for the viewer itself and for an eliminated seat).
-    pub pair_odds: u16,
 }
 
 impl View {
@@ -56,17 +52,11 @@ impl View {
             .map(Seat)
             .map(|seat| {
                 let i = seat.index();
-                let hidden = Some(seat) == me || s.out[i];
                 SeatView {
                     front: s.fronts[i].clone(),
                     hand_size: s.hands[i].len(),
                     out: s.out[i],
                     wins: s.wins[i],
-                    pair_odds: if hidden {
-                        0
-                    } else {
-                        (s.pair_chance(me, seat) * 1000.0).round() as u16
-                    },
                 }
             })
             .collect();
@@ -107,7 +97,6 @@ impl View {
             deck: s.supply.deck_len(),
             discard: s.supply.discard_len(),
             discard_seen: s.supply.seen().to_vec(),
-            unlocated: s.unlocated_for(me).to_vec(),
             events,
         }
     }

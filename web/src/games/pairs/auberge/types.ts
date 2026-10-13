@@ -20,8 +20,6 @@ export interface AubergeSeatView {
   handSize: number;
   out: boolean;
   wins: number;
-  /** Per thousand; 0 for the viewer and for an eliminated seat. */
-  pairOdds: number;
 }
 
 export interface AubergeView {
@@ -36,8 +34,6 @@ export interface AubergeView {
   deck: number;
   discard: number;
   discardSeen: Rank[];
-  /** Index = rank − 1. */
-  unlocated: number[];
   events: AubergeEvent[];
 }
 

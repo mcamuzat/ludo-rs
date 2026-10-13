@@ -301,3 +301,7 @@ règles et ne recopie pas les livrets, qui ne sont pas versionnés.
   chez l'accusateur et l'accusé, et le rang de la paire n'est pas annoncé.
 - La table web est carrée et le journal défile, pour que le centre ne
   recouvre pas les sièges.
+- À la demande de l'utilisateur après essai : la vue et le plateau de
+  l'Auberge ne donnent aucune statistique (ni paire estimée par joueur, ni
+  compte des cartes non situées). Seule reste l'alerte sur sa propre paire.
+  L'estimation sert toujours à l'IA.

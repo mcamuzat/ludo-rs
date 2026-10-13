@@ -53,9 +53,6 @@ export function AubergeBoard({ view, legalActions, me, seatNames, submit }: Boar
           ))}
         </div>
         {!seat.out && <CardBack count={seat.handSize} label="en main" />}
-        {i !== me && !seat.out && seat.handSize > 0 && (
-          <p className="odds">Paire estimée : {Math.round(seat.pairOdds / 10)} %</p>
-        )}
         {(dare || accuse || mine.length > 0) && (
           <div className="pairs-moves">
             {dare && (
@@ -131,13 +128,6 @@ export function AubergeBoard({ view, legalActions, me, seatNames, submit }: Boar
       {v.ownPair !== null && (
         <p className="hint warn">Tu as une paire de {v.ownPair} : une accusation t&apos;éliminerait.</p>
       )}
-      <div className="pairs-unlocated" title="Cartes que tu ne peux pas situer">
-        {v.unlocated.map((count, i) => (
-          <span key={i}>
-            <Card rank={i + 1} small />×{count}
-          </span>
-        ))}
-      </div>
       <ul className="pairs-events">
         {v.events.map((e, i) => (
           <li key={i}>{describeAubergeEvent(e, seatNames)}</li>
