@@ -1,6 +1,7 @@
 //! Continuous Pairs (James Ernest and Paul Peterson). Rules and their
 //! sources: RULES.md.
 
+mod determinize;
 pub mod testing;
 mod view;
 
