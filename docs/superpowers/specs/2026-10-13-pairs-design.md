@@ -341,8 +341,10 @@ changement de plateforme. Source : la règle Origames en 4 pages
   partie s'arrête, le plus de points gagne. Sinon nouvelle manche.
 - **Nouvelle manche** : le joueur au plus petit score (à égalité, le premier
   éliminé de la manche) pioche autant de cartes qu'il y a de joueurs et en
-  place une devant chacun : `Deal { cards }`, une carte par siège. La plus
-  petite carte commence.
+  place une devant chacun, une à une : `Give { card }` sert le prochain siège
+  non servi, à partir de la gauche du donneur, le donneur en dernier. Des
+  cartes toutes identiques sont données sans demander. La plus petite carte
+  commence.
 
 ### Points non tranchés par la règle
 
@@ -361,12 +363,12 @@ changement de plateforme. Source : la règle Origames en 4 pages
 ### Modèle
 
 `games/pairs/src/zombie_life/` (`mod.rs`, `view.rs`, `determinize.rs`,
-`heuristics.rs`, `testing.rs`) sur `deck.rs`. Phases : `Play`, `Placing`
-(carte piochée en attente, vue du seul joueur jusqu'à ce qu'elle soit
-posée ou défaussée, visible),
-`Dealing` (les cartes du donneur, vues de lui seul), `Over`. Seule
-information cachée : l'ordre de la pioche, la carte en attente et les cartes
-du donneur.
+`heuristics.rs`, `testing.rs`) sur `deck.rs`. Phases : `Dealing`, `Play`,
+`Placing` (carte piochée en attente), `Over`. La carte piochée et les cartes
+du donneur sont publiques : personne d'autre n'agit avant qu'elles soient
+posées, les cacher ne changerait aucune décision. Seule information cachée :
+l'ordre de la pioche (`determinize` = `redeal_hidden` et nouvelle graine).
+`Config { target }` (21 par défaut).
 
 ### Livraison
 

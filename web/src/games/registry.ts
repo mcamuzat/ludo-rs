@@ -3,6 +3,7 @@ import type { Seat } from "../engine/types";
 import { AubergeBoard } from "./pairs/auberge/Board";
 import { ContinuousBoard } from "./pairs/continuous/Board";
 import { GhostTownBoard } from "./pairs/ghost-town/Board";
+import { ZombieLifeBoard } from "./pairs/zombie-life/Board";
 import { RiichiBoard } from "./riichi/Board";
 import { YavalathBoard } from "./yavalath/Board";
 
@@ -28,6 +29,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "pairs-continuous", Board: ContinuousBoard },
   { id: "pairs-auberge", Board: AubergeBoard },
   { id: "pairs-ghost-town", Board: GhostTownBoard },
+  { id: "pairs-zombie-life", Board: ZombieLifeBoard },
 ];
 
 export function gameUi(id: string): GameUi | undefined {

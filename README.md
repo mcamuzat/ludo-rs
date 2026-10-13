@@ -9,6 +9,7 @@ Jeux :
 - **Continuous Pairs** (2–8 joueurs, James Ernest et Paul Peterson, deck Pairs) ;
 - **L'Auberge des Pirates** (2–8 joueurs, Regent multijoueur, deck Pairs) ;
 - **Ghost Town** (2–6 joueurs, jeu à jetons de James Ernest, deck Pairs).
+- **Zombie Life** (3–6 joueurs, variante Origames de Pairs : Refuges, Horde, 21 points).
 
 ## Lancer en local
 ```bash
