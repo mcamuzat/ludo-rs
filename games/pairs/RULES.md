@@ -48,3 +48,50 @@ unique. Cible : 31 à 2 joueurs, 21 à 3, 16 à 4, 13 à 5, 11 de 6 à 8.
    tour.
 4. ❓ Si la pioche s'épuise pendant le départage initial, le premier des
    joueurs encore à égalité commence.
+
+## L'Auberge des Pirates (`pairs-auberge`, 2 à 8 joueurs)
+
+Source : **[A]** la règle de *Pairs – L'Auberge des Pirates* (Origames,
+2017), adaptation de Regent (James Ernest et Paul Peterson).
+
+### But [A]
+Être le dernier joueur en jeu. On est éliminé si on fait une paire en
+défiant, si on est accusé à raison d'avoir une paire, ou si on accuse à tort.
+
+### Mise en place [A]
+- Chaque joueur reçoit 3 cartes en main.
+- Tous choisissent en même temps une carte de leur main et la posent visible
+  devant eux. La plus petite commence.
+
+### Tour [A]
+Une action au choix :
+- **Attaquer** : jouer une carte de sa main devant un autre joueur, sans
+  faire de paire avec les cartes qu'il a devant lui. C'est à lui de jouer.
+- **Défier** : poser la première carte de la pioche, visible, devant un
+  autre joueur. Sans paire avec ses cartes visibles : c'est à lui de jouer.
+  Avec une paire : on est éliminé, la carte est défaussée, et c'est au joueur
+  à sa gauche de jouer.
+- **Accuser** un joueur : il montre sa main à l'accusateur seul. S'il a une
+  paire entre sa main et les cartes devant lui (ou dans sa main), il est
+  éliminé et c'est au joueur à gauche de l'accusateur. Sinon l'accusateur
+  est éliminé et c'est à l'accusé de jouer.
+- **Piocher** : prendre une carte en main sans la montrer. Une paire ainsi
+  faite ne fait pas perdre tant qu'on n'est pas accusé. C'est au joueur à
+  gauche.
+
+### Choix sur les points non tranchés
+1. ❓ Égalité pour commencer : tirage au sort entre les joueurs à égalité
+   (la règle dit « le plus âgé »).
+2. ❓ Une partie se joue en plusieurs manches (5 par défaut). Le vainqueur
+   d'une manche marque 1 point ; classement final aux points, égalités
+   conservées.
+3. ❓ Un joueur éliminé défausse ses cartes visibles face visible et sa main
+   face cachée.
+4. ❓ On ne peut pas accuser un joueur qui n'a aucune carte en main : il ne
+   peut pas avoir de paire.
+5. ❓ Pioche vide : la défausse est remélangée. Si pioche et défausse sont
+   vides, piocher et défier ne sont pas proposés ; si le joueur au tour n'a
+   alors aucune action, la manche s'arrête sans vainqueur.
+6. ❓ Le résultat d'une accusation est connu de tous ; la main montrée et le
+   rang de la paire, de l'accusateur seul.
+7. ❓ « À gauche » saute les joueurs éliminés.
