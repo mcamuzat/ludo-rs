@@ -1,0 +1,322 @@
+//! The Pairs deck: one 1, two 2s, … ten 10s (55 cards), and the draw and
+//! discard piles every Pairs game shares.
+
+use rand::rngs::SmallRng;
+use rand::seq::SliceRandom;
+use rand::{Rng, SeedableRng};
+use serde::{Deserialize, Serialize};
+
+pub const DECK_SIZE: usize = 55;
+
+/// A card. Cards of one rank are interchangeable: there are no suits.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+#[serde(try_from = "u8", into = "u8")]
+pub struct Rank(u8);
+
+impl Rank {
+    pub const MIN: u8 = 1;
+    pub const MAX: u8 = 10;
+
+    pub fn new(value: u8) -> Option<Self> {
+        (Self::MIN..=Self::MAX)
+            .contains(&value)
+            .then_some(Self(value))
+    }
+
+    pub fn value(self) -> u8 {
+        self.0
+    }
+
+    /// Position in a per-rank table: 0 for the 1, 9 for the 10.
+    pub fn index(self) -> usize {
+        usize::from(self.0 - Self::MIN)
+    }
+
+    pub fn all() -> impl Iterator<Item = Rank> {
+        (Self::MIN..=Self::MAX).map(Rank)
+    }
+}
+
+impl TryFrom<u8> for Rank {
+    type Error = String;
+
+    fn try_from(value: u8) -> Result<Self, String> {
+        Rank::new(value).ok_or_else(|| format!("rang hors de 1–10 : {value}"))
+    }
+}
+
+impl From<Rank> for u8 {
+    fn from(rank: Rank) -> u8 {
+        rank.0
+    }
+}
+
+/// The 55 cards, in rank order.
+pub fn full_deck() -> Vec<Rank> {
+    Rank::all()
+        .flat_map(|r| std::iter::repeat_n(r, usize::from(r.value())))
+        .collect()
+}
+
+pub fn has_rank(cards: &[Rank], rank: Rank) -> bool {
+    cards.contains(&rank)
+}
+
+pub fn lowest(cards: &[Rank]) -> Option<Rank> {
+    cards.iter().copied().min()
+}
+
+/// How many cards of each rank (see `Rank::index`).
+pub fn count_by_rank(cards: &[Rank]) -> [u8; 10] {
+    let mut counts = [0u8; 10];
+    for card in cards {
+        counts[card.index()] += 1;
+    }
+    counts
+}
+
+/// The draw pile and the discard pile. An empty draw pile is rebuilt from the
+/// discards; `burn` cards then go face down to the discards.
+///
+/// The seed lives here so that a reshuffle replays identically from a match
+/// log. Never put a `Supply` in a view.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Supply {
+    /// Draw pile; the top is the last element.
+    deck: Vec<Rank>,
+    /// Discards everyone has seen.
+    seen: Vec<Rank>,
+    /// Discards nobody has seen (burned cards).
+    unseen: Vec<Rank>,
+    burn: u8,
+    seed: u64,
+    shuffles: u32,
+}
+
+impl Supply {
+    /// Shuffles `cards` and burns.
+    pub fn new(cards: Vec<Rank>, burn: u8, seed: u64) -> Self {
+        let mut supply = Self::from_parts(Vec::new(), Vec::new(), cards, burn, seed);
+        supply.restock();
+        supply
+    }
+
+    /// Piles as given, without shuffling. The top of `deck` is its last element.
+    pub fn from_parts(
+        deck: Vec<Rank>,
+        seen: Vec<Rank>,
+        unseen: Vec<Rank>,
+        burn: u8,
+        seed: u64,
+    ) -> Self {
+        Self {
+            deck,
+            seen,
+            unseen,
+            burn,
+            seed,
+            shuffles: 0,
+        }
+    }
+
+    fn restock(&mut self) {
+        self.deck.append(&mut self.seen);
+        self.deck.append(&mut self.unseen);
+        // One independent stream per shuffle.
+        let stream = self.seed ^ u64::from(self.shuffles).wrapping_mul(0x9E37_79B9_7F4A_7C15);
+        self.deck.shuffle(&mut SmallRng::seed_from_u64(stream));
+        self.shuffles += 1;
+        // ❓ Never burn the last card: a reshuffle always leaves one to draw.
+        let burned = usize::from(self.burn).min(self.deck.len().saturating_sub(1));
+        let keep = self.deck.len() - burned;
+        self.unseen.extend(self.deck.drain(keep..));
+    }
+
+    pub fn can_draw(&self) -> bool {
+        !(self.deck.is_empty() && self.seen.is_empty() && self.unseen.is_empty())
+    }
+
+    /// The top card. `None` only when both piles are empty.
+    pub fn draw(&mut self) -> Option<Rank> {
+        if self.deck.is_empty() {
+            if !self.can_draw() {
+                return None;
+            }
+            self.restock();
+        }
+        self.deck.pop()
+    }
+
+    /// Face up: everyone has seen these cards.
+    pub fn discard(&mut self, cards: impl IntoIterator<Item = Rank>) {
+        self.seen.extend(cards);
+    }
+
+    pub fn deck_len(&self) -> usize {
+        self.deck.len()
+    }
+
+    pub fn discard_len(&self) -> usize {
+        self.seen.len() + self.unseen.len()
+    }
+
+    pub fn seen(&self) -> &[Rank] {
+        &self.seen
+    }
+
+    /// How many times the draw pile has been built (1 after `new`).
+    pub fn shuffles(&self) -> u32 {
+        self.shuffles
+    }
+
+    /// Per rank, the cards nobody can place: the draw pile and the burned cards.
+    pub fn unlocated(&self) -> [u8; 10] {
+        let mut counts = count_by_rank(&self.deck);
+        for card in &self.unseen {
+            counts[card.index()] += 1;
+        }
+        counts
+    }
+
+    /// For determinization: redraws the order of the draw pile, which cards
+    /// are burned, and the seed of future shuffles. Pile sizes and the seen
+    /// discards are unchanged.
+    pub fn redeal_hidden<R: Rng + ?Sized>(&mut self, rng: &mut R) {
+        let burned = self.unseen.len();
+        self.deck.append(&mut self.unseen);
+        self.deck.shuffle(rng);
+        let keep = self.deck.len() - burned;
+        self.unseen.extend(self.deck.drain(keep..));
+        self.seed = rng.next_u64();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use rand::rngs::SmallRng;
+    use rand::SeedableRng;
+
+    use super::*;
+
+    fn ranks(values: &[u8]) -> Vec<Rank> {
+        values.iter().map(|&v| Rank::new(v).unwrap()).collect()
+    }
+
+    #[test]
+    fn the_deck_has_n_cards_of_rank_n() {
+        let deck = full_deck();
+        assert_eq!(deck.len(), DECK_SIZE);
+        let counts = count_by_rank(&deck);
+        assert_eq!(counts, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    }
+
+    #[test]
+    fn ranks_outside_1_to_10_do_not_deserialize() {
+        assert!(Rank::new(0).is_none());
+        assert!(Rank::new(11).is_none());
+        assert!(serde_json::from_str::<Rank>("0").is_err());
+        assert!(serde_json::from_str::<Rank>("11").is_err());
+        assert_eq!(
+            serde_json::from_str::<Rank>("7").unwrap(),
+            Rank::new(7).unwrap()
+        );
+        assert_eq!(serde_json::to_string(&Rank::new(7).unwrap()).unwrap(), "7");
+    }
+
+    #[test]
+    fn helpers_read_a_stack() {
+        let stack = ranks(&[9, 3, 6]);
+        assert!(has_rank(&stack, Rank::new(3).unwrap()));
+        assert!(!has_rank(&stack, Rank::new(4).unwrap()));
+        assert_eq!(lowest(&stack), Rank::new(3));
+        assert_eq!(lowest(&[]), None);
+    }
+
+    #[test]
+    fn a_new_supply_burns_five_cards() {
+        let s = Supply::new(full_deck(), 5, 1);
+        assert_eq!(s.deck_len(), 50);
+        assert_eq!(s.discard_len(), 5);
+        assert!(s.seen().is_empty());
+        assert_eq!(s.shuffles(), 1);
+    }
+
+    #[test]
+    fn the_same_seed_gives_the_same_order() {
+        let mut a = Supply::new(full_deck(), 5, 42);
+        let mut b = Supply::new(full_deck(), 5, 42);
+        let mut c = Supply::new(full_deck(), 5, 43);
+        let (da, db, dc): (Vec<_>, Vec<_>, Vec<_>) = (
+            (0..50).map(|_| a.draw()).collect(),
+            (0..50).map(|_| b.draw()).collect(),
+            (0..50).map(|_| c.draw()).collect(),
+        );
+        assert_eq!(da, db);
+        assert_ne!(da, dc);
+    }
+
+    #[test]
+    fn an_empty_deck_is_rebuilt_from_the_discards() {
+        let mut s = Supply::new(full_deck(), 5, 7);
+        let drawn: Vec<Rank> = (0..50).map(|_| s.draw().unwrap()).collect();
+        s.discard(drawn);
+        // 55 cards in the discard: reshuffle, burn 5, draw 1.
+        assert!(s.draw().is_some());
+        assert_eq!(s.shuffles(), 2);
+        assert_eq!(s.deck_len(), 49);
+        assert_eq!(s.discard_len(), 5);
+    }
+
+    #[test]
+    fn a_small_discard_still_yields_a_card() {
+        let mut s = Supply::from_parts(Vec::new(), ranks(&[7, 7]), Vec::new(), 5, 1);
+        assert_eq!(s.draw(), Rank::new(7));
+        assert_eq!(s.deck_len() + s.discard_len(), 1);
+    }
+
+    #[test]
+    fn nothing_left_means_no_card() {
+        let mut s = Supply::new(Vec::new(), 5, 1);
+        assert!(!s.can_draw());
+        assert_eq!(s.draw(), None);
+    }
+
+    #[test]
+    fn from_parts_draws_the_last_card_first() {
+        let mut s = Supply::from_parts(ranks(&[2, 5, 9]), Vec::new(), Vec::new(), 0, 0);
+        assert_eq!(s.draw(), Rank::new(9));
+        assert_eq!(s.draw(), Rank::new(5));
+    }
+
+    #[test]
+    fn unlocated_counts_the_deck_and_the_burned_cards_only() {
+        let mut s = Supply::new(full_deck(), 5, 3);
+        assert_eq!(s.unlocated(), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        let card = s.draw().unwrap();
+        s.discard([card]);
+        let mut expected = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        expected[card.index()] -= 1;
+        assert_eq!(s.unlocated(), expected);
+        assert_eq!(s.seen(), &[card]);
+    }
+
+    #[test]
+    fn redealing_keeps_what_everyone_knows() {
+        let mut s = Supply::new(full_deck(), 5, 3);
+        let card = s.draw().unwrap();
+        s.discard([card]);
+        let before = s.clone();
+        let mut moved = false;
+        for seed in 0..10 {
+            let mut d = before.clone();
+            d.redeal_hidden(&mut SmallRng::seed_from_u64(seed));
+            assert_eq!(d.deck_len(), before.deck_len());
+            assert_eq!(d.discard_len(), before.discard_len());
+            assert_eq!(d.seen(), before.seen());
+            assert_eq!(d.unlocated(), before.unlocated());
+            assert_eq!(d.shuffles(), before.shuffles());
+            moved |= d != before;
+        }
+        assert!(moved, "the hidden cards never moved");
+    }
+}
