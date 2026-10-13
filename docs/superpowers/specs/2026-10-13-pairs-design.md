@@ -376,3 +376,63 @@ l'ordre de la pioche (`determinize` = `redeal_hidden` et nouvelle graine).
 entrée `ludo-registry`, `web/src/games/pairs/zombie-life/` (`types.ts`,
 `Board.tsx`, test), entrée `registry.ts`,
 `ludo-cli arena pairs-zombie-life 400 hard easy`.
+
+## 13. Goblin Poker (plan 5)
+
+Jeu à jetons du livret (`pairs-goblin-poker`, 3–8 joueurs), ajouté sans
+changement de plateforme. Source : *Pairs Companion Book*, chapitre « Goblin
+Poker ». Aucune statistique affichée.
+
+### Règles d'une main
+
+- **Mise en place** : chacun mise 1 jeton (`ANTE`) et reçoit 6 cartes
+  (`HAND`). Tous choisissent une carte en secret (`Place { card }`) ;
+  révélées ensemble, elles commencent la pile visible de chacun.
+- **Tour de table** : en partant de la pile la plus basse, puis vers la
+  gauche, chaque joueur encore en jeu choisit :
+  - `Fold` : payer au pot la plus petite carte en jeu, et sortir de la main ;
+  - `Pitch { card }` : jeter une carte de sa main, face cachée, au centre.
+- **Redistribution** : quand tous ont agi, les cartes jetées sont mélangées
+  et données face visible, une par joueur restant, en partant de la pile la
+  plus basse puis vers la gauche. Qui reçoit une paire sort et paie le rang
+  au pot. Les éliminations se font dans l'ordre : dès qu'il ne reste qu'un
+  joueur, il gagne, même s'il allait recevoir une paire.
+- **Fin de la main** : le dernier joueur en jeu prend le pot. Sinon nouveau
+  tour de table, cinq au plus ; les survivants du cinquième se partagent le
+  pot, le reste de la division restant au pot pour la main suivante.
+- **Pile la plus basse** : la plus petite carte, puis la deuxième plus
+  petite, etc. ; une carte en plus est plus basse que pas de carte (2-3-6
+  est plus bas que 2-3).
+
+### Points non tranchés par le livret
+
+- Partie en 5 mains (`Config { hands }`, plafond 15), soldes partant de 0 et
+  pouvant être négatifs, classement aux jetons, égalités conservées : comme
+  Ghost Town. Les jetons restés au pot après la dernière main ne vont à
+  personne.
+- « Plus petite carte en jeu » : la plus petite carte visible des piles des
+  joueurs encore en jeu, celle du joueur qui se couche comprise.
+- La pile la plus basse est recalculée au début de chaque tour de table, et
+  de nouveau avant la redistribution, parmi les joueurs restants.
+- Égalité parfaite pour la pile la plus basse : chaque pile à égalité reçoit
+  une carte de la pioche, ajoutée à la pile ; une carte qui ferait une paire
+  est défaussée et remplacée. Les autres égalités ne sont pas départagées.
+- Pioche vide pendant un départage : le premier des ex æquo dans l'ordre
+  des sièges. La pioche n'est pas remélangée.
+- Un joueur qui sort défausse sa pile face visible et sa main face cachée.
+
+### Modèle
+
+`games/pairs/src/goblin_poker/` (`mod.rs`, `view.rs`, `determinize.rs`,
+`heuristics.rs`, `testing.rs`) sur `deck.rs`. Phases : `Setup`, `Play`,
+`Over`. Information cachée : les mains, la carte choisie par un autre
+pendant la mise en place, les cartes jetées. `determinize` redistribue les
+mains des autres, leurs cartes jetées, la pioche et les défausses cachées.
+Pendant la mise en place, chacun ne se voit que lui-même en attente.
+
+### Livraison
+
+`RULES.md`, `tests/goblin_poker_rules.rs`, conformité de 3 à 8 joueurs,
+entrée `ludo-registry`, `web/src/games/pairs/goblin-poker/` (`types.ts`,
+`Board.tsx`, test), entrée `registry.ts`,
+`ludo-cli arena pairs-goblin-poker 400 hard easy 3`.
