@@ -7,3 +7,8 @@ distribué sous licence Apache 2.0.
 Les tuiles de Mahjong (web/public/tiles) viennent de
 https://github.com/FluffyStuff/riichi-mahjong-tiles et sont dans le domaine
 public (CC0 1.0).
+
+Pairs est un jeu de James Ernest et Paul Peterson (Hip Pocket Games /
+Cheapass Games). Les règles implémentées dans games/pairs sont reformulées
+d'après le « Pairs Companion Book » ; ni ses textes ni les illustrations des
+éditions du jeu ne sont inclus.

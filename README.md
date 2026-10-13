@@ -5,7 +5,8 @@ Le moteur est en Rust, compilé en WebAssembly ; le site est en React.
 
 Jeux :
 - **Yavalath** (2–3 joueurs, Cameron Browne) ;
-- **Mahjong Riichi** (4 joueurs, règles Mahjong Soul, moteur [riichienv-core](https://github.com/smly/RiichiEnv)).
+- **Mahjong Riichi** (4 joueurs, règles Mahjong Soul, moteur [riichienv-core](https://github.com/smly/RiichiEnv)) ;
+- **Continuous Pairs** (2–8 joueurs, James Ernest et Paul Peterson, deck Pairs).
 
 ## Lancer en local
 ```bash

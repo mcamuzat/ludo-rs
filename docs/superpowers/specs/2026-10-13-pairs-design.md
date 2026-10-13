@@ -275,3 +275,14 @@ Deux plans, chacun fusionnable seul :
 
 `NOTICE` et `README.md` citent les deux sources ; `RULES.md` reformule les
 règles et ne recopie pas les livrets, qui ne sont pas versionnés.
+
+## 9. Ajustements faits au plan 1
+
+- `Supply::draw()` ne prend pas de `rng` : la graine des remélanges est dans
+  le `Supply`, pour qu'un remélange se rejoue à l'identique depuis le
+  `MatchLog`. `determinize` la retire au hasard (`redeal_hidden`).
+- Au remélange, on ne brûle jamais la dernière carte.
+- Continuous Pairs ne fournit pas `Heuristics::evaluate` : les simulations
+  vont jusqu'au bout, elles sont courtes.
+- `pair_in`, la défausse face cachée d'une main et la redistribution des
+  mains arrivent avec l'Auberge (plan 2).
