@@ -47,3 +47,13 @@ fn zombie_life_conforms_at_every_table_size() {
     check::<ZombieLife>(&Config { target: Some(1) }, 3, 100, 27);
     check::<ZombieLife>(&Config { target: Some(255) }, 6, 3, 28);
 }
+
+#[test]
+fn goblin_poker_conforms_at_every_table_size() {
+    use pairs::goblin_poker::{Config, GoblinPoker};
+    for players in 3..=8u8 {
+        check::<GoblinPoker>(&Config::default(), players, 40, 400 + u64::from(players));
+    }
+    check::<GoblinPoker>(&Config { hands: Some(1) }, 3, 100, 37);
+    check::<GoblinPoker>(&Config { hands: Some(255) }, 8, 5, 38);
+}

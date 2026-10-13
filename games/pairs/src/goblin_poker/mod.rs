@@ -1,6 +1,7 @@
 //! Goblin Poker (James Ernest): pitch a card into a pool that is shuffled
 //! and dealt back, and do not catch a pair. Rules and their sources: RULES.md.
 
+mod determinize;
 pub mod testing;
 mod view;
 
