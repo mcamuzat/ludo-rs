@@ -1,6 +1,7 @@
 //! Zombie Life: the Origames variant of Pairs with refuges and a horde
 //! (after James Ernest and Paul Peterson). Rules and their sources: RULES.md.
 
+mod determinize;
 pub mod testing;
 mod view;
 

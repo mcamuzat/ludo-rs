@@ -37,3 +37,13 @@ fn ghost_town_conforms_at_every_table_size() {
     check::<GhostTown>(&Config { hands: Some(1) }, 3, 100, 17);
     check::<GhostTown>(&Config { hands: Some(255) }, 2, 5, 18);
 }
+
+#[test]
+fn zombie_life_conforms_at_every_table_size() {
+    use pairs::zombie_life::{Config, ZombieLife};
+    for players in 3..=6u8 {
+        check::<ZombieLife>(&Config::default(), players, 40, 300 + u64::from(players));
+    }
+    check::<ZombieLife>(&Config { target: Some(1) }, 3, 100, 27);
+    check::<ZombieLife>(&Config { target: Some(255) }, 6, 3, 28);
+}
