@@ -10,6 +10,7 @@ Jeux :
 - **L'Auberge des Pirates** (2–8 joueurs, Regent multijoueur, deck Pairs) ;
 - **Ghost Town** (2–6 joueurs, jeu à jetons de James Ernest, deck Pairs).
 - **Zombie Life** (3–6 joueurs, variante Origames de Pairs : Refuges, Horde, 21 points).
+- **Goblin Poker** (3–8 joueurs, jeu à jetons de James Ernest, deck Pairs).
 
 ## Lancer en local
 ```bash
