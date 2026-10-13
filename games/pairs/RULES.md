@@ -95,3 +95,43 @@ Une action au choix :
 6. ❓ Le résultat d'une accusation est connu de tous ; la main montrée et le
    rang de la paire, de l'accusateur seul.
 7. ❓ « À gauche » saute les joueurs éliminés.
+
+## Ghost Town (`pairs-ghost-town`, 2 à 6 joueurs)
+
+Source : **[R]** *Pairs Companion Book*, chapitre « Ghost Town ».
+
+### Mise en place [R]
+- Chaque joueur mise 10 jetons dans le pot et reçoit 5 cartes en main.
+- Tous choisissent une carte en secret ; révélées ensemble, elles forment la
+  *rue*, commune à tous. S'il y a plusieurs cartes d'un même rang dans la
+  rue, les doublons sont défaussés.
+- Celui qui a posé la plus petite carte commence. Une égalité est départagée
+  par des cartes de la pioche, qui ne servent qu'à cela et sont défaussées.
+
+### Tour [R]
+Le tour passe à gauche. Une action au choix :
+- **Jouer** : payer 2 jetons au pot et poser une carte de sa main devant soi
+  (sa *maison*). Pas de paire dans une maison, pas de carte du rang d'une
+  carte de la rue. Si on a déjà un rang chez soi et que le joueur actif à sa
+  gauche ne l'a pas, on peut poser une carte de ce rang chez lui (même coût).
+- **Piocher** : prendre une carte de la pioche, visible, dans sa maison. Si
+  elle fait une paire avec sa maison ou avec la rue, on est éliminé de la
+  main et on paie son rang au pot. Sinon on gagne aussitôt son rang en
+  jetons, pris dans le pot.
+- **Se coucher** : quitter la main et défausser ses cartes.
+
+### Fin de la main [R]
+La main s'arrête quand le pot est vide, ou quand il ne reste qu'un joueur,
+qui prend alors le pot.
+
+### Choix sur les points non tranchés
+1. ❓ Une partie se joue en plusieurs mains (5 par défaut). Chacun part de 0
+   jeton et peut passer en négatif ; classement final aux jetons, égalités
+   conservées.
+2. ❓ Si le pot contient moins que la carte piochée, on prend ce qui reste.
+3. ❓ Pioche vide : la défausse est remélangée. S'il n'y a plus rien à
+   piocher, piocher n'est pas proposé (on peut toujours se coucher).
+4. ❓ Un joueur qui quitte la main défausse sa maison face visible et sa main
+   face cachée.
+5. ❓ Si la pioche s'épuise pendant le départage, le premier des joueurs à
+   égalité commence.
