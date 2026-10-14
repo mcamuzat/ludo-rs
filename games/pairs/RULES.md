@@ -5,7 +5,10 @@ rang 10. Une *paire* : deux cartes de même rang dans une même pile.
 
 Les points marqués ❓ ne sont pas tranchés par la source : ce sont nos choix.
 
-## Continuous Pairs (`pairs-continuous`, 2 à 8 joueurs)
+## Jour de chance — Continuous Pairs (`pairs-continuous`, 2 à 8 joueurs)
+
+Affiché « Jour de chance », nom de l'édition française que l'on possède ;
+les règles sont celles de Continuous Pairs.
 
 Source : **[R]** *Pairs Companion Book, PDF Edition* (James Ernest, Hip
 Pocket Games, 2018), chapitres « How to Play Pairs », « Breaking a Tie for

@@ -5,6 +5,7 @@ import { gameUi } from "../games/registry";
 import { HostSession } from "../session/host";
 import type { SeatInfo, Session, SessionState } from "../session/session";
 import { HostLobby } from "./HostLobby";
+import { RulesReminder } from "./RulesReminder";
 
 interface Props {
   session: Session;
@@ -45,6 +46,7 @@ function Playing({ session, state }: { session: Session; state: SessionState }) 
   return (
     <>
       <SeatList seats={state.seats} update={update} me={state.me} receivedAt={receivedAt} />
+      <RulesReminder rules={ui?.rules} />
       {update && Board && (
         <Board
           view={update.view}

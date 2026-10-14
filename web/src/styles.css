@@ -166,3 +166,8 @@ label { color: var(--muted); font-size: 0.85rem; font-weight: 500; }
   .game { transition: none; }
   .game:hover:not(:disabled) { transform: none; }
 }
+
+/* Rappel des règles */
+.rules { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 8px 14px; margin: 8px 0; }
+.rules summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+.rules ul { margin: 8px 0 2px; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }

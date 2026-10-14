@@ -41,5 +41,5 @@ Comme « Ajouter un jeu », mais sans nouvelle crate :
 1. `games/pairs/src/<jeu>/` : `mod.rs` (règles, `Game`), `view.rs`, `determinize.rs`, `heuristics.rs`, `testing.rs` ; `pub mod <jeu>;` et la réexportation dans `games/pairs/src/lib.rs`. Le matériel vient de `deck.rs` (`Rank`, `Supply`, `pair_in`…) : l'étendre là plutôt que de le recopier.
 2. Une section dans `games/pairs/RULES.md` ; `tests/<jeu>_rules.rs` ; un cas dans `tests/conformance.rs` pour chaque nombre de joueurs.
 3. `crates/ludo-registry/src/lib.rs` : un `static` et une entrée dans `GAMES`.
-4. `web/src/games/pairs/<jeu>/types.ts` + `Board.tsx` (cartes et table : `../cards.tsx`), un test dans `__tests__/`, une entrée dans `web/src/games/registry.ts`.
+4. `web/src/games/pairs/<jeu>/types.ts` + `Board.tsx` (cartes et table : `../cards.tsx`), un test dans `__tests__/`, une entrée dans `web/src/games/registry.ts` avec son rappel de règles (`web/src/games/pairs/rules.ts`, à garder d'accord avec `RULES.md`). L'accueil trie les jeux par nom ; `hidden: true` retire un jeu de l'accueil (Riichi, pour l'instant).
 5. `ludo-cli arena pairs-<jeu> 400 hard easy`, et la ligne correspondante dans « Commandes ».

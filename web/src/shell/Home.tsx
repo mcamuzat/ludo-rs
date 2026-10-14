@@ -24,10 +24,12 @@ const SHELVES: { title: string; families: GameFamily[] }[] = [
 
 export function Home({ catalog, error, name, onName, onPick, onJoin, saved, onResume, onAbandon }: Props) {
   const [code, setCode] = useState("");
-  const games = (catalog ?? []).flatMap((meta) => {
-    const ui = gameUi(meta.id);
-    return ui ? [{ meta, family: ui.family }] : [];
-  });
+  const games = (catalog ?? [])
+    .flatMap((meta) => {
+      const ui = gameUi(meta.id);
+      return ui && !ui.hidden ? [{ meta, family: ui.family }] : [];
+    })
+    .sort((a, b) => a.meta.name.localeCompare(b.meta.name, "fr", { sensitivity: "base" }));
   const savedName = saved ? (catalog?.find((g) => g.id === saved.gameId)?.name ?? saved.gameId) : null;
   return (
     <main className="home">

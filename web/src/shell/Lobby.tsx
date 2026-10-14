@@ -3,6 +3,8 @@ import type { GameMeta, Level } from "../engine/types";
 import { aiName } from "../session/names";
 import { CLOCK_PRESETS, type ClockSettings } from "../session/clock";
 import type { TableSeat } from "../session/table";
+import { gameUi } from "../games/registry";
+import { RulesReminder } from "./RulesReminder";
 
 /** What the host picks for each seat after their own. */
 export type SeatChoice = "local" | "open" | Level;
@@ -51,6 +53,7 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
           {game.minPlayers === game.maxPlayers ? game.minPlayers : `${game.minPlayers}–${game.maxPlayers}`} joueurs
         </span>
       </div>
+      <RulesReminder rules={gameUi(game.id)?.rules} open />
       <div className="lobby">
         <section className="panel">
           <div className="panel-head">

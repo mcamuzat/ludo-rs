@@ -6,6 +6,15 @@ import { DeadfallBoard } from "./pairs/deadfall/Board";
 import { GhostTownBoard } from "./pairs/ghost-town/Board";
 import { GoblinPokerBoard } from "./pairs/goblin-poker/Board";
 import { ToTheMoonBoard } from "./pairs/to-the-moon/Board";
+import {
+  AUBERGE_RULES,
+  CONTINUOUS_RULES,
+  DEADFALL_RULES,
+  GHOST_TOWN_RULES,
+  GOBLIN_POKER_RULES,
+  TO_THE_MOON_RULES,
+  ZOMBIE_LIFE_RULES,
+} from "./pairs/rules";
 import { ZombieLifeBoard } from "./pairs/zombie-life/Board";
 import { RiichiBoard } from "./riichi/Board";
 import { YavalathBoard } from "./yavalath/Board";
@@ -27,19 +36,23 @@ export interface GameUi {
   id: string;
   family: GameFamily;
   Board: ComponentType<BoardProps>;
+  /** Left off the home screen; a shared link still opens it. */
+  hidden?: boolean;
+  /** A short reminder shown at the table. */
+  rules?: string[];
 }
 
 /** Adding a game: one entry here (and one in crates/ludo-registry). */
 export const GAME_UIS: GameUi[] = [
   { id: "yavalath", family: "board", Board: YavalathBoard },
-  { id: "riichi", family: "tiles", Board: RiichiBoard },
-  { id: "pairs-continuous", family: "pairs", Board: ContinuousBoard },
-  { id: "pairs-auberge", family: "pairs", Board: AubergeBoard },
-  { id: "pairs-ghost-town", family: "pairs", Board: GhostTownBoard },
-  { id: "pairs-zombie-life", family: "pairs", Board: ZombieLifeBoard },
-  { id: "pairs-goblin-poker", family: "pairs", Board: GoblinPokerBoard },
-  { id: "pairs-to-the-moon", family: "pairs", Board: ToTheMoonBoard },
-  { id: "pairs-deadfall", family: "pairs", Board: DeadfallBoard },
+  { id: "riichi", family: "tiles", Board: RiichiBoard, hidden: true },
+  { id: "pairs-continuous", family: "pairs", Board: ContinuousBoard, rules: CONTINUOUS_RULES },
+  { id: "pairs-auberge", family: "pairs", Board: AubergeBoard, rules: AUBERGE_RULES },
+  { id: "pairs-ghost-town", family: "pairs", Board: GhostTownBoard, rules: GHOST_TOWN_RULES },
+  { id: "pairs-zombie-life", family: "pairs", Board: ZombieLifeBoard, rules: ZOMBIE_LIFE_RULES },
+  { id: "pairs-goblin-poker", family: "pairs", Board: GoblinPokerBoard, rules: GOBLIN_POKER_RULES },
+  { id: "pairs-to-the-moon", family: "pairs", Board: ToTheMoonBoard, rules: TO_THE_MOON_RULES },
+  { id: "pairs-deadfall", family: "pairs", Board: DeadfallBoard, rules: DEADFALL_RULES },
 ];
 
 export function gameUi(id: string): GameUi | undefined {

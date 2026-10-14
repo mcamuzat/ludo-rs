@@ -1,4 +1,4 @@
-//! Continuous Pairs (James Ernest and Paul Peterson). Rules and their
+//! Jour de chance: Continuous Pairs (James Ernest and Paul Peterson). Rules and their
 //! sources: RULES.md.
 
 mod determinize;
@@ -254,7 +254,7 @@ impl Game for ContinuousPairs {
     fn meta() -> GameMeta {
         GameMeta {
             id: "pairs-continuous",
-            name: "Continuous Pairs",
+            name: "Jour de chance",
             min_players: 2,
             max_players: 8,
             hidden_info: true,
