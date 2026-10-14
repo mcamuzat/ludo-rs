@@ -19,6 +19,13 @@ describe("SeatRegistry", () => {
     expect(r.ready()).toBe(true);
   });
 
+  it("names each AI after its seat, so they can be told apart", () => {
+    const r = table({ kind: "ai", level: "Easy" }, { kind: "ai", level: "Easy" }, { kind: "ai", level: "Hard" });
+    const names = r.info().map((s) => s.name);
+    expect(names).toEqual(["Hôte", "Hugo (IA)", "Lina (IA)", "Oscar (IA)"]);
+    expect(r.tableSeats().map((s) => s.name)).toEqual(names);
+  });
+
   it("gives the last open seat to one guest only", () => {
     const r = table({ kind: "open" });
     const next = tokens();

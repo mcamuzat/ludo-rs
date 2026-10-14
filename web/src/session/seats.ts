@@ -1,5 +1,5 @@
 import type { Level, Seat } from "../engine/types";
-import { aiName } from "./names";
+import { aiSeatName } from "./names";
 import type { SeatInfo } from "./session";
 import type { TableSeat } from "./table";
 
@@ -77,12 +77,12 @@ export class SeatRegistry {
   }
 
   info(): SeatInfo[] {
-    return this.seats.map((s): SeatInfo => {
+    return this.seats.map((s, i): SeatInfo => {
       switch (s.kind) {
         case "host":
           return { name: s.name, kind: "local", connected: true };
         case "ai":
-          return { name: aiName(s.level), kind: "ai", connected: true };
+          return { name: aiSeatName(i), kind: "ai", connected: true };
         case "open":
           return { name: "Place libre", kind: "open", connected: false };
         case "guest":
@@ -93,12 +93,12 @@ export class SeatRegistry {
 
   /** The table to start: throws if a seat is still open. */
   tableSeats(): TableSeat[] {
-    return this.seats.map((s): TableSeat => {
+    return this.seats.map((s, i): TableSeat => {
       switch (s.kind) {
         case "host":
           return { kind: "local", name: s.name };
         case "ai":
-          return { kind: "ai", level: s.level, name: aiName(s.level) };
+          return { kind: "ai", level: s.level, name: aiSeatName(i) };
         case "guest":
           return { kind: "remote", name: s.name };
         case "open":

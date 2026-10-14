@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { GameMeta, Level } from "../engine/types";
-import { aiName } from "../session/names";
+import { aiName, aiSeatName } from "../session/names";
 import { CLOCK_PRESETS, type ClockSettings } from "../session/clock";
 import type { TableSeat } from "../session/table";
 import { gameUi } from "../games/registry";
@@ -35,7 +35,7 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
   const localSeats = (): TableSeat[] => [
     { kind: "local", name: "Toi" },
     ...others.map((c, i): TableSeat =>
-      c === "local" || c === "open" ? { kind: "local", name: `Joueur ${i + 2}` } : { kind: "ai", level: c, name: aiName(c) },
+      c === "local" || c === "open" ? { kind: "local", name: `Joueur ${i + 2}` } : { kind: "ai", level: c, name: aiSeatName(i + 1) },
     ),
   ];
 
