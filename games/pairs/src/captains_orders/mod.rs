@@ -4,6 +4,7 @@
 
 mod determinize;
 mod heuristics;
+mod reading;
 pub mod testing;
 mod view;
 

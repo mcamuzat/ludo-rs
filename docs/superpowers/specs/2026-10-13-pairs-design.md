@@ -517,6 +517,24 @@ plus basse pour la fin ; un Mutin joue sa plus basse (suivre ou annuler),
 ordonne avec une carte haute, demande sinon une carte, défausse et donne sa
 plus basse. Les accusations ne sont délibérées que par la recherche.
 
-Seconde version (reportée) : redistribution pondérée par la vraisemblance
-des actions observées (lecture), et politique de simulation bruitée
-(bluff), mesurées avec `ludo-cli arena` contre la première version.
+Seconde version : la lecture. Les gestes publics de la manche trahissent
+un rôle (`reading.rs`) : passer une carte est un geste de Capitaine,
+demander une carte ou ordonner de soi-même un geste de Mutin (annuler ne dit
+rien). Dès qu'il y en a, la déterminisation tire 8 donnes et en garde une
+avec une probabilité proportionnelle à leur vraisemblance (×0,3 par geste
+qui ne cadre pas avec le rôle du joueur dans la donne). Mesuré en
+Difficile contre Difficile sur les mêmes parties à 4 joueurs : 0,566 contre
+0,470 pour l'ancienne IA face à elle-même ; à 8 joueurs le gain se perd
+dans le bruit (0,478 contre 0,455 sur 200 parties : chacun y joue peu de
+coups par manche, donc trahit peu). Les variantes 0,15 et/ou 16
+donnes font moins bien.
+
+Bluff : deux pistes essayées puis écartées. Restreindre les accusations
+(dans la recherche, ou des seuls adversaires simulés) aux joueurs qui se
+sont trahis fait perdre (0,510, et 0,46 sans la lecture) : la recherche
+sous-estime alors des adversaires qui accusent bien au compte des cartes.
+Des accusations sur soupçon dans les simulations ne changent aucune
+décision. L'ISMCTS à observateur unique ne prête pas de croyances aux
+adversaires simulés : bluffer n'y rapporte rien, et il faudrait un autre
+algorithme (MO-ISMCTS, ou une recherche qui modélise les croyances) pour
+qu'il apprenne à le faire.
