@@ -283,3 +283,45 @@ On joue dans le sens horaire en sautant les joueurs sortis. À son tour, on :
 7. ❓ Les cartes entrées dans une main à la vue de tous (prise en se
    retirant, carte d'un test raté) restent affichées face visible jusqu'à
    ce qu'une carte de ce rang soit jouée de cette main.
+
+## Deadfall (`pairs-deadfall`, 2 à 7 joueurs)
+
+Source : **[R]** *Pairs Companion Book*, chapitre « Deadfall » (règles de
+base ; les variantes du chapitre ne sont pas implémentées).
+
+### Mise en place [R]
+- Chacun mise 1 jeton dans le pot et reçoit 6 cartes (7 à deux joueurs,
+  5 à sept).
+- Chacun choisit en secret une *carte de porte* ; révélées ensemble, elles
+  commencent la pile visible de chacun. La plus basse joue la première, puis
+  on tourne dans le sens horaire.
+- Égalité pour la plus basse : tout le monde joue une autre carte de porte.
+  Seule la nouvelle carte compte, la précédente départage ; si l'égalité
+  demeure, on recommence avec une troisième, etc.
+
+### Tour [R]
+- **Jouer** une carte de sa main sur sa pile : on prétend qu'il reste des
+  cartes de ce rang en main chez quelqu'un.
+- **Appeler** la carte du dessus d'un autre joueur : on prétend que ce rang
+  est *mort*, qu'il n'en reste dans aucune main, la sienne comprise. Si
+  plusieurs cartes du dessus ont le même rang, seule la dernière jouée peut
+  être appelée. Les cartes de porte comptent comme jouées dans le sens
+  horaire à partir du premier joueur.
+
+### Abattage [R]
+L'appel met fin à la main ; toutes les mains sont montrées. Rang mort :
+l'appelant gagne ; sinon le joueur appelé gagne. Le perdant paie au gagnant
+le rang de la carte appelée, et le gagnant prend les mises.
+
+### Choix sur les points non tranchés
+1. ❓ Une partie se joue en plusieurs mains (5 par défaut, `Config
+   { hands }`, plafond 15). Chacun part de 0 jeton et peut passer en
+   négatif ; classement final aux jetons, égalités conservées.
+2. ❓ La restriction d'appel ne compare que les cartes du dessus des
+   *autres* joueurs : la sienne n'empêche jamais d'appeler une carte de même
+   rang. Ainsi on a toujours au moins un appel possible.
+3. ❓ Si les mains sont vides alors que l'égalité de porte demeure, le
+   premier des ex æquo dans l'ordre des sièges commence.
+4. ❓ Un joueur sans carte en main ne peut qu'appeler.
+5. ❓ Les cartes non distribuées ne comptent pas : un rang dont il ne reste
+   des cartes que là est mort.

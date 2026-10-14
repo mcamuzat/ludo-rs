@@ -2,6 +2,7 @@
 
 pub mod auberge;
 pub mod continuous;
+pub mod deadfall;
 pub mod deck;
 pub mod ghost_town;
 pub mod goblin_poker;
@@ -11,6 +12,7 @@ pub mod zombie_life;
 
 pub use auberge::Auberge;
 pub use continuous::ContinuousPairs;
+pub use deadfall::Deadfall;
 pub use ghost_town::GhostTown;
 pub use goblin_poker::GoblinPoker;
 pub use to_the_moon::ToTheMoon;

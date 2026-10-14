@@ -67,3 +67,13 @@ fn to_the_moon_conforms_at_every_table_size() {
     check::<ToTheMoon>(&Config { rounds: Some(1) }, 3, 100, 47);
     check::<ToTheMoon>(&Config { rounds: Some(255) }, 6, 3, 48);
 }
+
+#[test]
+fn deadfall_conforms_at_every_table_size() {
+    use pairs::deadfall::{Config, Deadfall};
+    for players in 2..=7u8 {
+        check::<Deadfall>(&Config::default(), players, 40, 600 + u64::from(players));
+    }
+    check::<Deadfall>(&Config { hands: Some(1) }, 3, 100, 57);
+    check::<Deadfall>(&Config { hands: Some(255) }, 7, 5, 58);
+}
