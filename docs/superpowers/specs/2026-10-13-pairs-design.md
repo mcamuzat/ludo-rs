@@ -482,3 +482,41 @@ Politique de simulation : appeler la carte du dessus la plus sûrement morte
 distribuées) si elle dépasse 0,7 ou si la main est vide ; sinon jouer la
 carte la plus sûrement vivante (une paire d'abord). La recherche ne délibère
 pas la porte : la plus basse.
+
+## 16. Captain's Orders (plan 8)
+
+Jeu de bluff et de déduction de la série mensuelle Cheapass 2018
+(`pairs-captains-orders`, 4–8 joueurs), ajouté sans changement de
+plateforme. Source : `~/Téléchargements/pairs/8CAGCapsOrders.pdf`. Règles et
+points non tranchés : `games/pairs/RULES.md`. Aucune statistique affichée.
+
+### Modèle
+
+`games/pairs/src/captains_orders/` sur `deck.rs`. Phases : `Turn` (pas
+d'ordre sur la table), `Respond` (un ordre circule), `Give { asker }` (le
+joueur sollicité choisit la carte qu'il donne), `Discard { after }` (le
+receveur défausse face cachée), `Over`. Actions : `Order { card }` (jouer un
+ordre, ou annuler l'ordre en cours avec une carte plus basse), `Follow
+{ card }`, `Pass { card, to }`, `Ask { from }`, `Give { card }`, `Discard
+{ card }`, `Accuse { seat }`. La déclaration de Capitaine quand une main se
+vide est automatique (ne pas se déclarer ne peut rien rapporter).
+
+Information cachée : les mains, les cartes non distribuées, les défausses
+face cachée (chacun garde les siennes), les cartes passées (connues de qui
+donne et de qui reçoit). Le journal de la manche (`log`) garde chaque carte ;
+la vue masque celles que le spectateur ne connaît pas. Le résultat de la
+manche précédente reste affiché (`last_round`).
+
+### IA
+
+Première version : ISMCTS sur une redistribution uniforme des cartes
+cachées (les défausses de l'observateur restent en place). Politique de
+simulation : un joueur qui se croit Capitaine (probabilité qu'aucune autre
+main ne tienne plus bas que sa plus basse ≥ ½) se vide la main en gardant sa
+plus basse pour la fin ; un Mutin joue sa plus basse (suivre ou annuler),
+ordonne avec une carte haute, demande sinon une carte, défausse et donne sa
+plus basse. Les accusations ne sont délibérées que par la recherche.
+
+Seconde version (reportée) : redistribution pondérée par la vraisemblance
+des actions observées (lecture), et politique de simulation bruitée
+(bluff), mesurées avec `ludo-cli arena` contre la première version.

@@ -328,3 +328,74 @@ le rang de la carte appelée, et le gagnant prend les mises.
 4. ❓ Un joueur sans carte en main ne peut qu'appeler.
 5. ❓ Les cartes non distribuées ne comptent pas : un rang dont il ne reste
    des cartes que là est mort.
+
+## Captain's Orders (`pairs-captains-orders`, 4 à 8 joueurs)
+
+Source : **[C]** fiche *Captain's Orders* (James Ernest, Cheapass Games,
+2018, jeu Pairs du mois n° 8, `8CAGCapsOrders.pdf`).
+
+### Rôles [C]
+- Le *Capitaine* est le joueur qui tient la carte la plus basse de toutes
+  les mains ; il change dès qu'une carte bouge. Plusieurs joueurs à égalité
+  sont tous Capitaines. Les autres sont des *Mutins*.
+- Un Mutin gagne la manche en démasquant un Capitaine, ou en ayant le plus
+  de points en main (chaque carte vaut son rang). Un Capitaine ne gagne
+  qu'en vidant sa main.
+
+### Manche [C]
+On mélange tout le deck et on distribue 6 cartes à chacun ; le reste n'est
+pas joué. Le joueur à gauche du donneur commence, puis on tourne dans le
+sens horaire. La donne passe à gauche à chaque manche.
+
+### Sans ordre sur la table [C]
+À son tour, on fait une des choses suivantes :
+- **Ordonner** : poser une carte de sa main face visible au centre. Elle
+  devient un *ordre* dont on est le propriétaire.
+- **Passer une carte** face cachée à un autre joueur, qui défausse ensuite
+  une carte face cachée.
+- **Demander une carte** à un autre joueur, qui en donne une face cachée ;
+  on défausse ensuite une carte face cachée.
+- **Accuser** un joueur d'être le Capitaine.
+
+### Ordre en cours [C]
+L'ordre fait le tour de la table à partir de la gauche de son propriétaire,
+qui ne répond pas à son propre ordre. Chacun à son tour :
+- **Obéit** : donne face cachée au propriétaire une carte de rang supérieur
+  ou égal à l'ordre (sans défausse ensuite) ;
+- **Annule** : pose un nouvel ordre plus bas ; l'ancien est défaussé et le
+  nouveau lui appartient ;
+- ou **accuse**.
+
+Quand l'ordre a fait tout le tour, son propriétaire le défausse et c'est au
+joueur à sa gauche.
+
+### Fin de manche [C]
+- **Accusation** : toutes les mains sont révélées. Un Mutin qui désigne un
+  Capitaine gagne la manche. Sinon il ne peut pas gagner, et l'autre Mutin
+  qui a le plus de points la gagne. Un Capitaine ne gagne pas en en
+  désignant un autre.
+- **Main vide** : qui vide sa main (en passant une carte ou en posant un
+  ordre) révèle cette carte et se déclare Capitaine ; s'il a raison, il
+  gagne. Sinon le Mutin qui a le plus de points gagne, et une carte passée
+  reste dans la main de celui qui l'a reçue.
+- Égalité aux points : chaque ex æquo gagne la manche. Le premier à trois
+  manches gagnées remporte la partie.
+
+### Choix sur les points non tranchés
+1. ❓ La déclaration de Capitaine est automatique : ne pas se déclarer ne
+   peut rien rapporter (une main vide vaut 0 point).
+2. ❓ Vider sa main en donnant la carte demandée, ou en obéissant à un
+   ordre, compte comme la passer.
+3. ❓ Qui vide sa main a raison si la carte révélée est inférieure ou égale
+   à toutes les cartes des autres mains, celle qui la reçoit comprise (avant
+   de la recevoir).
+4. ❓ Les Capitaines de la fin de manche (pour désigner les Mutins qui
+   comptent leurs points) sont lus sur les mains révélées. Qui s'est
+   déclaré Capitaine à tort ne peut pas gagner aux points, comme
+   l'accusateur qui s'est trompé. S'il ne reste aucun Mutin pour gagner,
+   personne ne gagne la manche.
+5. ❓ Après un passage ou une demande, c'est au joueur à gauche de celui
+   qui a joué.
+6. ❓ La partie se joue en 3 manches gagnées par défaut (`Config
+   { wins }`, plafond 9). Plusieurs joueurs peuvent l'atteindre ensemble :
+   classement aux manches gagnées, égalités conservées.
