@@ -77,3 +77,13 @@ fn deadfall_conforms_at_every_table_size() {
     check::<Deadfall>(&Config { hands: Some(1) }, 3, 100, 57);
     check::<Deadfall>(&Config { hands: Some(255) }, 7, 5, 58);
 }
+
+#[test]
+fn captains_orders_conforms_at_every_table_size() {
+    use pairs::captains_orders::{CaptainsOrders, Config};
+    for players in 4..=8u8 {
+        check::<CaptainsOrders>(&Config::default(), players, 40, 700 + u64::from(players));
+    }
+    check::<CaptainsOrders>(&Config { wins: Some(1) }, 4, 100, 67);
+    check::<CaptainsOrders>(&Config { wins: Some(255) }, 8, 5, 68);
+}
