@@ -436,3 +436,25 @@ Pendant la mise en place, chacun ne se voit que lui-même en attente.
 entrée `ludo-registry`, `web/src/games/pairs/goblin-poker/` (`types.ts`,
 `Board.tsx`, test), entrée `registry.ts`,
 `ludo-cli arena pairs-goblin-poker 400 hard easy 3`.
+
+## 14. To the Moon! (plan 6)
+
+Jeu de plis de la série mensuelle Cheapass 2018 (`pairs-to-the-moon`, 2–6
+joueurs), ajouté sans changement de plateforme. Source : fiche *To the
+Moon!* (`~/Téléchargements/pairs/5CAGToTheMoon.pdf`). Règles et points non
+tranchés : `games/pairs/RULES.md`. Aucune statistique affichée.
+
+### Modèle
+
+`games/pairs/src/to_the_moon/` sur `deck.rs`. Actions : `Build { card }`,
+`Test`, `Withdraw { take: Option<Rank> }`. Information cachée : les mains,
+sauf les cartes `known` que tout le monde a vues y entrer, et l'ordre de la
+pioche. `determinize` redistribue la partie inconnue des autres mains et la
+pioche. Les cartes gagnées vont aux défausses de la `Supply`, jamais
+remélangées (le tirage est gardé par `deck_len() > 0`).
+
+### IA
+
+Politique de simulation : tester tant que le risque d'appariement (vu du
+siège) est faible, sinon construire le plus haut rang, sinon tester si le
+risque reste modéré, sinon se retirer avec la plus petite carte.
