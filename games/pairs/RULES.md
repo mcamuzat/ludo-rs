@@ -239,3 +239,47 @@ remplacée.
    des joueurs à égalité, dans l'ordre des sièges, qui est le plus bas.
 6. ❓ Un joueur qui sort défausse sa pile face visible et sa main face
    cachée.
+
+## To the Moon! (`pairs-to-the-moon`, 2 à 6 joueurs)
+
+Source : **[M]** fiche *To the Moon!* (James Ernest, Cheapass Games, 2018,
+jeu Pairs du mois n° 5, `5CAGToTheMoon.pdf`).
+
+### Manche [M]
+- On mélange tout le deck et on distribue une main à chacun : 8 cartes à 2
+  joueurs, 7 à 3, 6 à 4, 5 à 5, 4 à 6.
+- Le donneur retourne la carte du dessus de la pioche : elle commence le
+  premier *compte à rebours* (le pli). Un compte à rebours contient au plus
+  une carte de chaque rang.
+
+### Tour [M]
+On joue dans le sens horaire en sautant les joueurs sortis. À son tour, on :
+- **Construit** : on pose une carte de sa main d'un rang absent du compte à
+  rebours. Qui complète un compte à rebours parfait (les dix rangs) gagne le
+  pli aussitôt ; sinon on reste en jeu.
+- **Teste** : on retourne la carte du dessus de la pioche. Rang absent : elle
+  rejoint le compte à rebours et on reste en jeu. Rang présent : on sort du
+  pli et on prend cette carte en main.
+- **Se retire** : on sort du pli et on prend en main une carte du compte à
+  rebours, au choix, sauf si elle était la seule sur la table.
+
+### Fin du pli et de la manche [M]
+- Quand il ne reste qu'un joueur en jeu, il gagne le pli : un point par
+  carte. Tout le monde revient en jeu et le gagnant entame le pli suivant
+  avec la carte du dessus de la pioche.
+- Si la pioche est vide à ce moment, la manche est finie.
+- Six manches ; le plus haut total gagne.
+
+### Choix sur les points non tranchés
+1. ❓ La donne passe à gauche à chaque manche.
+2. ❓ Le joueur à gauche de celui qui entame agit le premier ; celui qui
+   entame est en jeu.
+3. ❓ Un test réussi qui complète les dix rangs gagne aussi le pli aussitôt.
+4. ❓ La pioche n'est jamais refaite pendant une manche : pioche vide, on ne
+   peut plus tester.
+5. ❓ Classement final aux points, égalités conservées. Nombre de manches
+   réglable (`Config { rounds }`, plafond 15).
+6. ❓ Les cartes restées en main à la fin d'une manche ne valent rien.
+7. ❓ Les cartes entrées dans une main à la vue de tous (prise en se
+   retirant, carte d'un test raté) restent affichées face visible jusqu'à
+   ce qu'une carte de ce rang soit jouée de cette main.

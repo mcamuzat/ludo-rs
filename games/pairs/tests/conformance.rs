@@ -57,3 +57,13 @@ fn goblin_poker_conforms_at_every_table_size() {
     check::<GoblinPoker>(&Config { hands: Some(1) }, 3, 100, 37);
     check::<GoblinPoker>(&Config { hands: Some(255) }, 8, 5, 38);
 }
+
+#[test]
+fn to_the_moon_conforms_at_every_table_size() {
+    use pairs::to_the_moon::{Config, ToTheMoon};
+    for players in 2..=6u8 {
+        check::<ToTheMoon>(&Config::default(), players, 40, 500 + u64::from(players));
+    }
+    check::<ToTheMoon>(&Config { rounds: Some(1) }, 3, 100, 47);
+    check::<ToTheMoon>(&Config { rounds: Some(255) }, 6, 3, 48);
+}
