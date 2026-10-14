@@ -54,3 +54,11 @@ export const DEADFALL_RULES = [
   "Appeler la carte du dessus d'un autre, c'est dire que son rang est mort : plus aucune en main, la tienne comprise. De deux cartes du dessus de même rang, seule la dernière jouée peut être appelée.",
   "Abattage : qui a tort paie le rang à l'autre, qui prend aussi le pot. 5 mains, classement aux jetons.",
 ];
+
+export const CAPTAINS_ORDERS_RULES = [
+  "6 cartes chacun. Le Capitaine tient la carte la plus basse de toutes les mains (égalité : plusieurs Capitaines) ; les autres sont des Mutins.",
+  "Sans ordre : pose une carte comme ordre, passe une carte (le receveur en défausse une), demande une carte (puis défausses-en une), ou accuse.",
+  "Ordre en cours, chacun à son tour : obéis en donnant au propriétaire une carte au moins égale, annule avec un ordre plus bas, ou accuse. Revenu à son propriétaire, l'ordre est défaussé.",
+  "Main vide : tu te déclares Capitaine, et gagnes si c'est vrai. Accuser juste fait gagner un Mutin ; sinon le Mutin qui a le plus de points (son rang par carte) gagne, sauf celui qui s'est trompé.",
+  "Le premier à 3 manches gagnées l'emporte.",
+];
