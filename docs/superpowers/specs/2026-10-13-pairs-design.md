@@ -458,3 +458,27 @@ remélangées (le tirage est gardé par `deck_len() > 0`).
 Politique de simulation : tester tant que le risque d'appariement (vu du
 siège) est faible, sinon construire le plus haut rang, sinon tester si le
 risque reste modéré, sinon se retirer avec la plus petite carte.
+
+## 15. Deadfall (plan 7)
+
+Jeu de bluff du livret (`pairs-deadfall`, 2–7 joueurs), règles de base sans
+variantes, ajouté sans changement de plateforme. Source : *Pairs Companion
+Book*, chapitre « Deadfall ». Règles et points non tranchés :
+`games/pairs/RULES.md`. Aucune statistique affichée.
+
+### Modèle
+
+`games/pairs/src/deadfall/` sur `deck.rs`. Phases : `Door` (choix
+simultané, rejoué tant que l'égalité pour la plus basse demeure), `Play`,
+`Over`. Actions : `Door { card }`, `Play { card }`, `Call { seat }`. Chaque
+pile garde l'horodatage de sa carte du dessus (`stamps`, `clock`) pour la
+restriction d'appel. Information cachée : les mains, les portes choisies par
+les autres, les cartes non distribuées (pioche de la `Supply`).
+
+### IA
+
+Politique de simulation : appeler la carte du dessus la plus sûrement morte
+(probabilité que toutes ses copies invisibles soient parmi les cartes non
+distribuées) si elle dépasse 0,7 ou si la main est vide ; sinon jouer la
+carte la plus sûrement vivante (une paire d'abord). La recherche ne délibère
+pas la porte : la plus basse.
