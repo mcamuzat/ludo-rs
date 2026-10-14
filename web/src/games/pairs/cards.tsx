@@ -39,13 +39,13 @@ export function CardBack({ count, label }: { count: number; label: string }) {
 export function Table({ seats, first, center }: { seats: ReactNode[]; first: number; center: ReactNode }) {
   const n = seats.length;
   return (
-    <div className="pairs-table">
+    <div className="pairs-table felt">
       <div className="pairs-center">{center}</div>
       {seats.map((seat, i) => {
         const angle = Math.PI / 2 + (2 * Math.PI * ((i - first + n) % n)) / n;
         const style = {
-          "--x": `${50 + 41 * Math.cos(angle)}%`,
-          "--y": `${50 + 42 * Math.sin(angle)}%`,
+          "--x": `${50 + 39 * Math.cos(angle)}%`,
+          "--y": `${50 + 38 * Math.sin(angle)}%`,
         } as CSSProperties;
         return (
           <div key={i} className="pairs-place" style={style}>

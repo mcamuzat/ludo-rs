@@ -182,7 +182,7 @@ export function RiichiBoard({ view, legalActions, seatNames, submit }: BoardProp
 
   return (
     <div className="riichi">
-      <div className="riichi-table">
+      <div className="riichi-table felt">
         {order.map((seat, k) => (
           <div key={seat} className={`area area-${POSITIONS[k]}`}>
             <Pond player={v.players[seat]} position={POSITIONS[k]} />

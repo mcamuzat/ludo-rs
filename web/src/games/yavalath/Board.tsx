@@ -40,7 +40,7 @@ export function YavalathBoard({ view, legalActions, me, seatNames, submit }: Boa
           </li>
         ))}
       </ul>
-      <svg className="hexboard" viewBox="-210 -190 420 380" role="img" aria-label="Plateau de Yavalath">
+      <svg className="hexboard felt"viewBox="-210 -190 420 380" role="img" aria-label="Plateau de Yavalath">
         {v.cells.map((c) => {
           const { x, y } = center(c);
           const playable = placeable.some((p) => same(p, c));

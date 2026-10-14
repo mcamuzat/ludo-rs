@@ -18,9 +18,12 @@ export function TableScreen({ session, games, onLeave }: Props) {
   return (
     <main>
       <div className="topbar">
-        <button onClick={onLeave}>← Menu</button>
+        <button className="ghost" onClick={onLeave}>
+          ← Menu
+        </button>
         <h2>{meta?.name ?? "…"}</h2>
-        {state.latencyMs !== null && <span className="status">{state.latencyMs} ms</span>}
+        <span className="spacer" />
+        {state.latencyMs !== null && <span className="pill mono">{state.latencyMs} ms</span>}
       </div>
       {state.error && <p className="error">{state.error}</p>}
       {state.status && <p className="status">{state.status}</p>}
@@ -57,7 +60,11 @@ function Playing({ session, state }: { session: Session; state: SessionState }) 
       {update?.outcome && (
         <div className="end">
           <strong>Partie terminée.</strong>{" "}
-          {session.canRestart && <button onClick={() => session.restart()}>Revanche</button>}
+          {session.canRestart && (
+            <button className="primary" onClick={() => session.restart()}>
+              Revanche
+            </button>
+          )}
         </div>
       )}
     </>
@@ -93,21 +100,21 @@ function SeatList({
 }) {
   const now = useNow(250, (update?.clocks.length ?? 0) > 0);
   return (
-    <ol className="seats">
+    <ol className="seatbar">
       {seats.map((seat, i) => {
         const pending = update?.pending.includes(i) ?? false;
         const rank = update?.outcome?.[i];
+        const clock = update?.clocks.find((x) => x.seat === i);
         return (
           <li key={i} className={pending ? "active" : undefined}>
-            {seat.name}
-            {i === me ? " (toi)" : ""}
-            {!seat.connected && seat.kind === "remote" ? " (déconnecté)" : ""}
-            {pending ? (seat.kind === "ai" ? " — réfléchit…" : " — à jouer") : ""}
-            {(() => {
-              const c = update?.clocks.find((x) => x.seat === i);
-              return c ? ` — ⏱ ${clockLabel(c, now - receivedAt)}` : "";
-            })()}
-            {rank !== undefined ? ` — ${rankLabel(rank)}` : ""}
+            <strong>
+              {seat.name}
+              {i === me ? " (toi)" : ""}
+            </strong>
+            {!seat.connected && seat.kind === "remote" && <span className="tag">déconnecté</span>}
+            {pending && <span className="tag">{seat.kind === "ai" ? "réfléchit…" : "à jouer"}</span>}
+            {clock && <span className="clock">{clockLabel(clock, now - receivedAt)}</span>}
+            {rank !== undefined && <span className="tag">{rankLabel(rank)}</span>}
           </li>
         );
       })}
@@ -117,13 +124,17 @@ function SeatList({
 
 function GuestLobby({ state }: { state: SessionState }) {
   return (
-    <ol className="seats">
-      {state.seats.map((seat, i) => (
-        <li key={i}>
-          {seat.name}
-          {i === state.me ? " (toi)" : ""}
-        </li>
-      ))}
-    </ol>
+    <section className="panel">
+      <h3>Sièges</h3>
+      <ol className="seats">
+        {state.seats.map((seat, i) => (
+          <li key={i}>
+            {seat.name}
+            {i === state.me ? " (toi)" : ""}
+          </li>
+        ))}
+      </ol>
+      <p className="hint">L'hôte lance la partie.</p>
+    </section>
   );
 }

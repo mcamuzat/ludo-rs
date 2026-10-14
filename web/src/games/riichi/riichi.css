@@ -4,9 +4,8 @@
   grid-template-columns: 150px 220px 150px;
   grid-template-rows: 150px 220px 150px;
   grid-template-areas: ". top ." "left center right" ". bottom .";
-  background: color-mix(in srgb, var(--accent) 18%, var(--card));
-  border-radius: 12px;
-  padding: 6px;
+  border-radius: 18px;
+  padding: 8px;
 }
 .area { display: flex; align-items: center; justify-content: center; }
 .area-bottom { grid-area: bottom; }
@@ -17,8 +16,8 @@
 .pond-right { transform: rotate(-90deg); }
 .pond-top { transform: rotate(180deg); }
 .pond-left { transform: rotate(90deg); }
-.center { grid-area: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: var(--card); border-radius: 10px; margin: 20px; font-size: 0.9rem; }
-.center .round { font-size: 1.4rem; font-weight: 700; }
+.center { grid-area: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: var(--card); color: var(--fg); border-radius: var(--r); margin: 20px; font-size: 0.9rem; box-shadow: var(--shadow); }
+.center .round { font: 800 1.4rem var(--f-display); }
 .tile { position: relative; display: inline-block; flex: none; border-radius: 3px; box-shadow: 0 1px 2px rgb(0 0 0 / 35%); margin: 1px; }
 .tile img { position: absolute; inset: 0; width: 100%; height: 100%; }
 .tile .face { inset: 8% 10%; width: 80%; height: 84%; }
@@ -33,7 +32,7 @@
 .seat-label { font-size: 0.9rem; }
 .seat-label .concealed { display: flex; margin-top: 2px; }
 .seat-label .concealed .tile { width: 12px; height: 16px; box-shadow: none; opacity: 0.75; }
-.riichi-stick { color: var(--danger); font-weight: 600; }
+.riichi-stick { color: var(--brass); font-weight: 600; }
 .melds { display: inline-flex; gap: 6px; margin-left: 8px; }
 .meld { display: inline-flex; }
 .my-area { display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -44,7 +43,7 @@
 .help { display: flex; gap: 8px; align-items: center; color: var(--muted); }
 .hand-result {
   position: absolute; top: 40px; left: 50%; transform: translateX(-50%);
-  background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px;
+  background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px;
   box-shadow: 0 8px 30px rgb(0 0 0 / 25%); z-index: 10; min-width: 320px; max-width: 95vw;
 }
 .hand-result h3 { margin: 4px 0 8px; }

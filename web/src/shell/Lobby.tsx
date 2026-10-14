@@ -43,56 +43,75 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
   return (
     <main>
       <div className="topbar">
-        <button onClick={onBack}>← Menu</button>
-        <h2>{game.name}</h2>
-      </div>
-      <div className="row">
-        <label htmlFor="players">Joueurs :</label>
-        <select id="players" value={players} onChange={(e) => setPlayers(Number(e.target.value))}>
-          {Array.from({ length: game.maxPlayers - game.minPlayers + 1 }, (_, k) => game.minPlayers + k).map((n) => (
-            <option key={n} value={n}>
-              {n}
-            </option>
-          ))}
-        </select>
-      </div>
-      <ol className="seats">
-        <li>Toi</li>
-        {others.map((c, i) => (
-          <li key={i}>
-            <select value={c} onChange={(e) => choose(i, e.target.value as SeatChoice)}>
-              {options.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </li>
-        ))}
-      </ol>
-      {onHost && game.clock && (
-        <div className="row">
-          <label htmlFor="clock">Chrono en ligne :</label>
-          <select id="clock" value={clockId} onChange={(e) => setClockId(e.target.value)}>
-            {CLOCK_PRESETS.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-      <div className="row">
-        <button className="primary" disabled={others.includes("open")} onClick={() => onLocal(localSeats())}>
-          Jouer sur cet appareil
+        <button className="ghost" onClick={onBack}>
+          ← Menu
         </button>
-        {onHost && (
-          <button disabled={others.includes("local")} onClick={() =>
-              onHost(others, game.clock ? (CLOCK_PRESETS.find((p) => p.id === clockId)?.settings ?? null) : null)
-            }>
-            Héberger en ligne
-          </button>
-        )}
+        <h2>{game.name}</h2>
+        <span className="pill">
+          {game.minPlayers === game.maxPlayers ? game.minPlayers : `${game.minPlayers}–${game.maxPlayers}`} joueurs
+        </span>
+      </div>
+      <div className="lobby">
+        <section className="panel">
+          <div className="panel-head">
+            <h3>Sièges</h3>
+            <div className="row">
+              <label htmlFor="players">Joueurs</label>
+              <select id="players" value={players} onChange={(e) => setPlayers(Number(e.target.value))}>
+                {Array.from({ length: game.maxPlayers - game.minPlayers + 1 }, (_, k) => game.minPlayers + k).map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <ol className="seats">
+            <li>Toi</li>
+            {others.map((c, i) => (
+              <li key={i}>
+                <select value={c} aria-label={`Siège ${i + 2}`} onChange={(e) => choose(i, e.target.value as SeatChoice)}>
+                  {options.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </li>
+            ))}
+          </ol>
+        </section>
+        <section className="panel">
+          <h3>Lancer</h3>
+          {onHost && game.clock && (
+            <div className="field">
+              <label htmlFor="clock">Chrono en ligne</label>
+              <select id="clock" value={clockId} onChange={(e) => setClockId(e.target.value)}>
+                {CLOCK_PRESETS.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          <div className="row">
+            <button className="primary" disabled={others.includes("open")} onClick={() => onLocal(localSeats())}>
+              Jouer sur cet appareil
+            </button>
+            {onHost && (
+              <button
+                disabled={others.includes("local")}
+                onClick={() =>
+                  onHost(others, game.clock ? (CLOCK_PRESETS.find((p) => p.id === clockId)?.settings ?? null) : null)
+                }
+              >
+                Héberger en ligne
+              </button>
+            )}
+          </div>
+          {onHost && <p className="hint">En ligne, tu reçois un code à donner aux autres joueurs.</p>}
+        </section>
       </div>
     </main>
   );

@@ -1,39 +1,46 @@
 .pairs-card {
   display: inline-flex; align-items: center; justify-content: center;
   width: 38px; height: 54px; margin: 0 2px; padding: 0;
-  border: 1px solid var(--line); border-radius: 6px;
-  background: var(--card); color: var(--rank, inherit);
-  font: 700 1.25rem/1 system-ui, sans-serif;
-  box-shadow: inset 0 -5px 0 var(--rank, var(--line));
+  border: 1px solid var(--face-line); border-radius: 6px;
+  background: var(--face); color: var(--rank, #1f2421);
+  font: 800 1.25rem/1 var(--f-display);
+  box-shadow: inset 0 -5px 0 var(--rank, var(--face-line)), 0 1px 2px rgb(0 0 0 / 25%);
 }
-.pairs-card.small { width: 24px; height: 34px; font-size: 0.85rem; box-shadow: inset 0 -3px 0 var(--rank, var(--line)); }
-.pairs-card.back { background: repeating-linear-gradient(45deg, var(--line), var(--line) 4px, var(--card) 4px, var(--card) 8px); color: inherit; box-shadow: none; }
-.pairs-card.playable { cursor: pointer; outline: 2px solid var(--accent); outline-offset: 1px; }
+.pairs-card.small { width: 24px; height: 34px; font-size: 0.85rem; box-shadow: inset 0 -3px 0 var(--rank, var(--face-line)), 0 1px 1px rgb(0 0 0 / 20%); }
+/* Le dos porte le nombre de cartes de la pile, en clair sur le motif. */
+.pairs-card.back {
+  background: repeating-linear-gradient(45deg, #2a4f44 0 4px, #366457 4px 8px); border-color: #1d3a31;
+  color: #f3f1ec; font-size: 0.95rem; text-shadow: 0 1px 2px rgb(0 0 0 / 60%); box-shadow: 0 1px 2px rgb(0 0 0 / 30%);
+}
+.pairs-card.playable { cursor: pointer; outline: 2px solid var(--brass); outline-offset: 1px; transition: transform 0.12s; }
 .pairs-card.playable:hover { transform: translateY(-3px); }
-.pairs-card.r1 { --rank: hsl(100 45% 40%); }
-.pairs-card.r2 { --rank: hsl(25 80% 50%); }
-.pairs-card.r3 { --rank: hsl(350 70% 48%); }
-.pairs-card.r4 { --rank: hsl(225 60% 52%); }
-.pairs-card.r5 { --rank: hsl(280 45% 50%); }
-.pairs-card.r6 { --rank: hsl(35 85% 45%); }
-.pairs-card.r7 { --rank: hsl(20 35% 42%); }
-.pairs-card.r8 { --rank: hsl(52 80% 38%); }
-.pairs-card.r9 { --rank: hsl(5 75% 50%); }
-.pairs-card.r10 { --rank: hsl(175 55% 34%); }
+/* Encre foncée : les faces restent claires même en mode foncé. */
+.pairs-card.r1 { --rank: hsl(100 45% 34%); }
+.pairs-card.r2 { --rank: hsl(25 80% 42%); }
+.pairs-card.r3 { --rank: hsl(350 70% 44%); }
+.pairs-card.r4 { --rank: hsl(225 60% 46%); }
+.pairs-card.r5 { --rank: hsl(280 45% 44%); }
+.pairs-card.r6 { --rank: hsl(35 85% 36%); }
+.pairs-card.r7 { --rank: hsl(20 35% 36%); }
+.pairs-card.r8 { --rank: hsl(52 80% 30%); }
+.pairs-card.r9 { --rank: hsl(5 75% 44%); }
+.pairs-card.r10 { --rank: hsl(175 55% 28%); }
 
 .pairs-pile { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.8rem; color: var(--muted); }
+.felt .pairs-pile, .felt .pairs-unlocated { color: var(--table-muted); }
 
-.pairs-table { position: relative; width: min(100%, 860px); aspect-ratio: 1 / 1; margin: 0 auto; }
+.pairs-table { position: relative; width: min(100%, 860px); aspect-ratio: 1 / 1; margin: 0 auto; border-radius: 28px; }
 .pairs-center {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
   width: 46%; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
 }
 .pairs-place { position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -50%); width: 24%; min-width: 150px; }
 
-.pairs-seat { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 6px 8px; }
-.pairs-seat.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
-.pairs-seat.lost { border-color: var(--danger); }
+.pairs-seat { background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: var(--r); padding: 6px 8px; box-shadow: var(--shadow); }
+.pairs-seat.active { border-color: var(--brass); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brass) 40%, transparent); }
+.pairs-seat.lost { border-color: var(--danger); opacity: 0.8; }
 .pairs-seat h3 { margin: 0 0 4px; font-size: 0.95rem; display: flex; justify-content: space-between; gap: 8px; }
+.felt .pairs-seat .hint, .felt .pairs-seat .pairs-pile { color: var(--muted); }
 .pairs-seat .stack { min-height: 56px; display: flex; flex-wrap: wrap; row-gap: 4px; }
 .pairs-seat .scored { margin-top: 4px; min-height: 36px; }
 .pairs-seat .odds { margin: 2px 0 0; font-size: 0.8rem; color: var(--muted); }
@@ -48,10 +55,11 @@
 .pairs-hand { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px; }
 .pairs-seen { display: flex; flex-wrap: wrap; justify-content: center; }
 .hint.warn { color: var(--danger); font-weight: 600; }
+.felt .hint.warn { color: var(--brass); }
 
 .pairs-street { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px; }
 
 @media (max-width: 720px) {
-  .pairs-table { aspect-ratio: auto; display: flex; flex-direction: column; gap: 8px; }
+  .pairs-table { aspect-ratio: auto; display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 18px; }
   .pairs-center, .pairs-place { position: static; transform: none; width: auto; }
 }
