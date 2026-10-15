@@ -120,3 +120,13 @@ fn octopus_conforms_at_every_table_size() {
     check::<Octopus>(&Config { hands: Some(1) }, 4, 100, 87);
     check::<Octopus>(&Config { hands: Some(255) }, 6, 3, 88);
 }
+
+#[test]
+fn port_conforms_at_every_table_size() {
+    use pairs::port::{Config, Port};
+    for players in 2..=7u8 {
+        check::<Port>(&Config::default(), players, 30, 1100 + u64::from(players));
+    }
+    check::<Port>(&Config { target: Some(1) }, 3, 100, 97);
+    check::<Port>(&Config { target: Some(255) }, 2, 3, 98);
+}

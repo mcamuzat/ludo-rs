@@ -1,6 +1,7 @@
 //! The Pairs deck: one 1, two 2s, … ten 10s (55 cards), and the draw and
 //! discard piles every Pairs game shares.
 
+use ludo_core::Seat;
 use rand::seq::SliceRandom;
 use rand::{Rng, SeedableRng};
 use rand_chacha::ChaCha8Rng;
@@ -79,6 +80,96 @@ pub fn count_by_rank(cards: &[Rank]) -> [u8; 10] {
 pub fn pair_in(cards: &[Rank]) -> Option<Rank> {
     let counts = count_by_rank(cards);
     Rank::all().filter(|r| counts[r.index()] >= 2).max()
+}
+
+/// A card of an opening deal (see `open_round`).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Opening {
+    Dealt {
+        seat: Seat,
+        card: Rank,
+    },
+    /// A tie-break card that would pair: discarded and replaced.
+    Replaced {
+        seat: Seat,
+        card: Rank,
+    },
+    /// The discards became the draw pile.
+    Reshuffled,
+}
+
+/// Draws a card, noting a reshuffle in `log`.
+pub fn draw_logged(supply: &mut Supply, log: &mut Vec<Opening>) -> Option<Rank> {
+    let before = supply.shuffles();
+    let card = supply.draw();
+    if supply.shuffles() != before {
+        log.push(Opening::Reshuffled);
+    }
+    card
+}
+
+/// [R] A card for `seat` that does not pair `stack`: a pairing card is
+/// discarded face up and replaced. `None` when the supply has none left.
+pub fn draw_unpaired(
+    supply: &mut Supply,
+    stack: &mut Vec<Rank>,
+    seat: Seat,
+    log: &mut Vec<Opening>,
+) -> Option<Rank> {
+    for _ in 0..DECK_SIZE {
+        let card = draw_logged(supply, log)?;
+        if has_rank(stack, card) {
+            supply.discard([card]);
+            log.push(Opening::Replaced { seat, card });
+        } else {
+            stack.push(card);
+            log.push(Opening::Dealt { seat, card });
+            return Some(card);
+        }
+    }
+    None
+}
+
+/// [R] The opening of a Pairs round: one face-up card to each of `seats`
+/// (in `stacks`, indexed by seat); the lowest card goes first. Tied
+/// players get one more card each, compared among themselves, until the
+/// tie breaks; the extra cards stay in the stacks. Out of cards, the first
+/// of the tied players goes first.
+pub fn open_round(
+    supply: &mut Supply,
+    stacks: &mut [Vec<Rank>],
+    seats: &[Seat],
+    log: &mut Vec<Opening>,
+) -> Seat {
+    let lowest = |cards: &[(Seat, Rank)]| -> Vec<Seat> {
+        let low = cards.iter().map(|&(_, card)| card).min();
+        cards
+            .iter()
+            .filter(|&&(_, card)| Some(card) == low)
+            .map(|&(seat, _)| seat)
+            .collect()
+    };
+    let mut drawn: Vec<(Seat, Rank)> = Vec::new();
+    for &seat in seats {
+        if let Some(card) = draw_unpaired(supply, &mut stacks[seat.index()], seat, log) {
+            drawn.push((seat, card));
+        }
+    }
+    let mut tied = lowest(&drawn);
+    while tied.len() > 1 {
+        let mut round: Vec<(Seat, Rank)> = Vec::new();
+        for &seat in &tied {
+            match draw_unpaired(supply, &mut stacks[seat.index()], seat, log) {
+                Some(card) => round.push((seat, card)),
+                None => break,
+            }
+        }
+        if round.len() < tied.len() {
+            break;
+        }
+        tied = lowest(&round);
+    }
+    tied.first().or(seats.first()).copied().unwrap_or(Seat(0))
 }
 
 /// The draw pile and the discard pile. An empty draw pile is rebuilt from the

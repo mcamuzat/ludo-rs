@@ -524,3 +524,37 @@ Source : **[R]** *Pairs Companion Book*, chapitre « Octopus ».
    paie de pénalité.
 6. ❓ Plusieurs gagnants : le premier d'entre eux en partant de celui qui
    parlait en premier ouvre la main suivante.
+
+## Port (`pairs-port`, 2 à 7 joueurs)
+
+Source : **[R]** *Pairs Companion Book*, chapitre « Port » (jeu frère de
+Starboard, paru dans le deck *Pirate Pairs*).
+
+### Mise en place [R]
+- On mélange et on brûle 5 cartes ; on joue plusieurs manches sur le même
+  mélange, et on brûle 5 cartes à chaque nouveau mélange, comme à Pairs.
+- Chaque manche, chacun reçoit une carte visible. La plus basse commence ;
+  les égalités se départagent comme à Pairs (une carte de plus aux ex
+  æquo, une carte qui ferait paire est remplacée, ces cartes restent dans
+  la pile).
+
+### Tour [R]
+- Prendre une carte ou s'arrêter. Une paire fait sauter le joueur : il ne
+  marquera rien à cette manche. Qui s'arrête ne reçoit plus de carte.
+- La manche continue jusqu'à ce que tout le monde se soit arrêté ou ait
+  sauté.
+
+### Score [R]
+- Le plus gros total de cartes marque N points (N : le nombre de joueurs),
+  le suivant N−1, et ainsi de suite jusqu'à 1. À égalité, chacun reçoit le
+  plus haut des deux. Qui a sauté ne marque rien. (23, 22, 22, 17 et un
+  saut à cinq : 5, 4, 4, 2, 0.)
+- On joue jusqu'à 21 points. Si plusieurs joueurs sont à égalité au-delà de
+  20, eux seuls rejouent une manche pour se départager.
+
+### Choix sur les points non tranchés
+1. ❓ Dans une manche de départage, N est le nombre de joueurs de la
+   manche. On rejoue tant que l'égalité en tête demeure.
+2. ❓ S'il n'y a plus aucune carte à piocher (toutes en jeu), on ne peut
+   que s'arrêter.
+3. ❓ `Config { target }` change les 21 points (plafond 99).

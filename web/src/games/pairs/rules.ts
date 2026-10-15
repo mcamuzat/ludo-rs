@@ -86,3 +86,10 @@ export const OCTOPUS_RULES = [
   "Mains de séries (aucune carte seule), propres (aucun doublon) ou sales (le reste, toujours les pires). Qui appelle l'abattage choisit si les séries ou les propres gagnent ; à type égal, les cartes hautes sont mauvaises.",
   "La meilleure main prend le pot, la pire paiera 5 à la main suivante. 5 mains, classement aux jetons.",
 ];
+
+export const PORT_RULES = [
+  "Chacun reçoit une carte visible ; la plus basse commence (égalité : des cartes de plus, comme à Pairs).",
+  "À ton tour : prends une carte, ou arrête-toi. Une paire te fait sauter : 0 point pour la manche.",
+  "Quand tout le monde s'est arrêté ou a sauté, le plus gros total de cartes marque N points (N = nombre de joueurs), le suivant N−1, et ainsi de suite ; à égalité, chacun marque le rang le plus haut.",
+  "Le premier à 21 points gagne ; les ex æquo au-delà de 20 rejouent une manche entre eux.",
+];

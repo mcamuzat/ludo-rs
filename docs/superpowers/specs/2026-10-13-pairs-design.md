@@ -617,3 +617,26 @@ qui lui convient le mieux) ; appeler l'abattage dans ce type si la main
 n'est pas sale et que sa plus haute carte vaut 7 au plus, sinon faire
 passer. Mesuré : Difficile contre Facile 0,82 à 4 joueurs, 0,78 à 6 (200
 parties).
+
+## 20. Port (plan 12)
+
+Jeu de stop-ou-encore du livret (`pairs-port`, 2–7 joueurs), ajouté sans
+changement de plateforme. Source : *Pairs Companion Book*, chapitre
+« Port ». Règles et points non tranchés : `games/pairs/RULES.md`. Aucune
+statistique affichée.
+
+### Modèle
+
+`games/pairs/src/port/` sur `deck.rs`. Le départage d'ouverture de Pairs
+(une carte chacun, cartes de plus aux ex æquo, une carte qui ferait paire
+remplacée) vit désormais dans `deck::open_round`, partagé avec Jour de
+chance. Actions : `Hit`, `Lock`. Chaque siège a un `Status` (`Playing`,
+`Locked`, `Busted`, `Out` pour qui ne joue pas une manche de départage).
+Seuls l'ordre de la pioche et les cartes brûlées sont cachés.
+
+### IA
+
+Politique de simulation : s'arrêter si le risque de paire (vu de tous) est
+d'au moins ½, ou d'au moins ¼ quand le total dépasse déjà toutes les piles
+arrêtées ; sinon prendre. Mesuré : Difficile contre Facile 0,87 à 2
+joueurs, 0,75 à 5 (200 parties).

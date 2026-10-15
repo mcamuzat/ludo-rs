@@ -11,7 +11,7 @@ pub use view::{SeatView, View};
 use ludo_core::{Game, GameMeta, Illegal, Outcome, Pending, Seat, Viewer};
 use serde::{Deserialize, Serialize};
 
-use crate::deck::{full_deck, has_rank, Rank, Supply, DECK_SIZE};
+use crate::deck::{draw_logged, full_deck, has_rank, open_round, Opening, Rank, Supply};
 
 pub struct ContinuousPairs;
 
@@ -96,29 +96,12 @@ impl State {
             loser: None,
             events: Vec::new(),
         };
-        let mut drawn: Vec<(Seat, Rank)> = Vec::new();
-        for seat in (0..players).map(Seat) {
-            if let Some(card) = s.draw_unpaired(seat) {
-                drawn.push((seat, card));
-            }
-        }
-        let mut tied = lowest_of(&drawn);
-        // [R] Tied players get one more card each, compared among themselves.
-        while tied.len() > 1 {
-            let mut round: Vec<(Seat, Rank)> = Vec::new();
-            for &seat in &tied {
-                match s.draw_unpaired(seat) {
-                    Some(card) => round.push((seat, card)),
-                    None => break,
-                }
-            }
-            // ❓4: out of cards, the first of the tied players starts.
-            if round.len() < tied.len() {
-                break;
-            }
-            tied = lowest_of(&round);
-        }
-        s.turn = Some(tied.first().copied().unwrap_or(Seat(0)));
+        let seats: Vec<Seat> = (0..players).map(Seat).collect();
+        let mut log = Vec::new();
+        // ❓4: out of cards, the first of the tied players starts.
+        let first = open_round(&mut s.supply, &mut s.stacks, &seats, &mut log);
+        s.note(log);
+        s.turn = Some(first);
         s
     }
 
@@ -153,30 +136,19 @@ impl State {
         f64::from(weighted) / f64::from(total)
     }
 
-    fn draw(&mut self) -> Option<Rank> {
-        let before = self.supply.shuffles();
-        let card = self.supply.draw();
-        if self.supply.shuffles() != before {
-            self.events.push(Event::Reshuffled);
-        }
-        card
+    fn note(&mut self, log: Vec<Opening>) {
+        self.events.extend(log.into_iter().map(|o| match o {
+            Opening::Dealt { seat, card } => Event::Dealt { seat, card },
+            Opening::Replaced { seat, card } => Event::Replaced { seat, card },
+            Opening::Reshuffled => Event::Reshuffled,
+        }));
     }
 
-    /// [R] A card for `seat` that does not pair its stack: a pairing card is
-    /// discarded and replaced. `None` when the supply cannot provide one.
-    fn draw_unpaired(&mut self, seat: Seat) -> Option<Rank> {
-        for _ in 0..DECK_SIZE {
-            let card = self.draw()?;
-            if has_rank(&self.stacks[seat.index()], card) {
-                self.supply.discard([card]);
-                self.events.push(Event::Replaced { seat, card });
-            } else {
-                self.stacks[seat.index()].push(card);
-                self.events.push(Event::Dealt { seat, card });
-                return Some(card);
-            }
-        }
-        None
+    fn draw(&mut self) -> Option<Rank> {
+        let mut log = Vec::new();
+        let card = draw_logged(&mut self.supply, &mut log);
+        self.note(log);
+        card
     }
 
     fn hit(&mut self, seat: Seat, card: Rank) {
@@ -234,15 +206,6 @@ impl State {
         }
         self.turn = Some(seat);
     }
-}
-
-fn lowest_of(cards: &[(Seat, Rank)]) -> Vec<Seat> {
-    let low = cards.iter().map(|&(_, card)| card).min();
-    cards
-        .iter()
-        .filter(|&&(_, card)| Some(card) == low)
-        .map(|&(seat, _)| seat)
-        .collect()
 }
 
 impl Game for ContinuousPairs {

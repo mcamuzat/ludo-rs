@@ -9,6 +9,7 @@ import { GoblinPokerBoard } from "./pairs/goblin-poker/Board";
 import { KittyBoard } from "./pairs/kitty/Board";
 import { OctopusBoard } from "./pairs/octopus/Board";
 import { PendletonBoard } from "./pairs/pendleton/Board";
+import { PortBoard } from "./pairs/port/Board";
 import { ToTheMoonBoard } from "./pairs/to-the-moon/Board";
 import {
   AUBERGE_RULES,
@@ -20,6 +21,7 @@ import {
   KITTY_RULES,
   OCTOPUS_RULES,
   PENDLETON_RULES,
+  PORT_RULES,
   TO_THE_MOON_RULES,
   ZOMBIE_LIFE_RULES,
 } from "./pairs/rules";
@@ -65,6 +67,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "pairs-pendleton", family: "pairs", Board: PendletonBoard, rules: PENDLETON_RULES },
   { id: "pairs-kitty", family: "pairs", Board: KittyBoard, rules: KITTY_RULES },
   { id: "pairs-octopus", family: "pairs", Board: OctopusBoard, rules: OCTOPUS_RULES },
+  { id: "pairs-port", family: "pairs", Board: PortBoard, rules: PORT_RULES },
 ];
 
 export function gameUi(id: string): GameUi | undefined {
