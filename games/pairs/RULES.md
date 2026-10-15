@@ -473,3 +473,54 @@ Variants » (variante *Soft* ; ni *Sticky*, ni partenaires, ni jetons).
    deuxième mise unique prend l'autre.
 3. ❓ Une partie se joue en une seule donne ; classement aux points,
    égalités conservées.
+
+## Octopus (`pairs-octopus`, 4 à 6 joueurs)
+
+Source : **[R]** *Pairs Companion Book*, chapitre « Octopus ».
+
+### Mise en place [R]
+- Chacun mise 1 jeton. Exceptions : le perdant de la main précédente mise
+  5 ; à la première main, et après une main sans perdant, tout le monde
+  mise 2.
+- Chacun reçoit 8 cartes.
+
+### Déclaration [R]
+- Chacun à son tour, en partant du gagnant de la main précédente (du
+  donneur à la première main), reste ou se couche. Se coucher coûte 1
+  jeton au pot ; c'est la seule occasion de le faire.
+- Si tous se couchent sauf un, celui-là prend le pot et ouvre la main
+  suivante (où chacun mise 2).
+
+### Tours [R]
+- Chacun choisit une carte de sa main en secret ; on révèle ensemble.
+- La plus basse carte *unique* décide : **passer** (chacun passe une carte
+  au joueur encore en jeu à sa gauche, puis nouveau tour) ou **abattre**.
+- Sans carte unique, on rejoue un tour, sauf s'il ne reste qu'une carte en
+  main : abattage immédiat.
+
+### Abattage [R]
+- Mains *de séries* : aucune carte seule (99-888-33). Mains *propres* :
+  aucun doublon (3-4-5-7-9). Mains *sales* : le reste, toujours les pires.
+- Qui appelle l'abattage choisit si les séries ou les propres sont les
+  meilleures.
+- À type égal, les cartes hautes sont mauvaises : on compare la plus haute,
+  puis la suivante, etc. (999-44 perd contre 99-888).
+- La meilleure main prend le pot (les ex æquo le partagent) ; la pire
+  mise 5 à la main suivante (les ex æquo aussi).
+- Dernière main : la pénalité du perdant va au gagnant plutôt qu'au pot
+  suivant.
+
+### Choix sur les points non tranchés
+1. ❓ Une partie se joue en 5 mains (`Config { hands }`, plafond 15) ; la
+   dernière applique la règle « Last Hand ». Chacun part de 0 jeton et peut
+   passer en négatif ; classement final aux jetons, égalités conservées.
+2. ❓ La carte jouée à chaque tour est défaussée face visible (le livret
+   l'implique : les mains finissent par n'avoir qu'une carte).
+3. ❓ L'abattage est immédiat dès que les mains n'ont plus qu'une carte,
+   qu'il y ait une carte unique ou non ; une main d'une carte est propre et
+   la plus basse gagne.
+4. ❓ Un pot partagé laisse ses jetons impairs dans le pot.
+5. ❓ Si toutes les mains se valent, elles partagent le pot et personne ne
+   paie de pénalité.
+6. ❓ Plusieurs gagnants : le premier d'entre eux en partant de celui qui
+   parlait en premier ouvre la main suivante.

@@ -68,8 +68,9 @@
 .pendleton { width: min(100%, 860px); margin: 0 auto; padding: 16px; border-radius: 28px; display: flex; flex-direction: column; gap: 12px; }
 .pendleton-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .pendleton-head .pairs-seat { flex: 1; }
-.pendleton-columns { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
-.pendleton-column { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.pendleton-columns { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: auto auto auto; column-gap: 6px; }
+/* Une sous-grille par colonne : les cibles restent alignées quelle que soit la hauteur des côtés. */
+.pendleton-column { display: grid; grid-row: span 3; grid-template-rows: subgrid; justify-items: center; row-gap: 4px; }
 .pendleton-side { min-height: 120px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .pendleton-side.top { justify-content: flex-end; }
 .pendleton-points { font-size: 0.8rem; color: var(--table-muted); }

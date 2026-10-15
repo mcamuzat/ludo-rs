@@ -78,3 +78,11 @@ export const KITTY_RULES = [
   "Kitty douce (à 3, 5 ou 6) : cibles de 1, 2, 2 et 2 cartes ; la plus basse mise unique choisit, la deuxième prend l'autre.",
   "À la fin, qui a le plus de cartes d'un rang marque sa valeur (égalité : chacun la marque). Le plus haut total gagne.",
 ];
+
+export const OCTOPUS_RULES = [
+  "Mise : 2 jetons à la première main et après une main gagnée par abandon ; sinon 1, et 5 pour le perdant de la main précédente. 8 cartes chacun.",
+  "Chacun à son tour reste ou se couche (1 jeton). Si tous les autres se couchent, le dernier prend le pot.",
+  "À chaque tour, chacun joue une carte en secret. La plus basse carte unique décide : faire passer une carte à gauche, ou l'abattage.",
+  "Mains de séries (aucune carte seule), propres (aucun doublon) ou sales (le reste, toujours les pires). Qui appelle l'abattage choisit si les séries ou les propres gagnent ; à type égal, les cartes hautes sont mauvaises.",
+  "La meilleure main prend le pot, la pire paiera 5 à la main suivante. 5 mains, classement aux jetons.",
+];

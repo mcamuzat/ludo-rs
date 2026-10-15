@@ -110,3 +110,13 @@ fn kitty_conforms_at_every_table_size() {
         check::<Kitty>(&Config::default(), players, 40, 900 + u64::from(players));
     }
 }
+
+#[test]
+fn octopus_conforms_at_every_table_size() {
+    use pairs::octopus::{Config, Octopus};
+    for players in 4..=6u8 {
+        check::<Octopus>(&Config::default(), players, 40, 1000 + u64::from(players));
+    }
+    check::<Octopus>(&Config { hands: Some(1) }, 4, 100, 87);
+    check::<Octopus>(&Config { hands: Some(255) }, 6, 3, 88);
+}

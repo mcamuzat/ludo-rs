@@ -588,3 +588,32 @@ moins voulue ; miser sa plus basse carte si la cible vaut au moins 12,
 sinon une des trois moins voulues ; prendre la plus voulue ; donner la plus
 basse à un joueur au hasard. Mesuré : Difficile contre Facile 0,69 à 4
 joueurs, 0,69 à 3, 0,58 à 6 (200 parties).
+
+## 19. Octopus (plan 11)
+
+Jeu de main haute du livret (`pairs-octopus`, 4–6 joueurs), ajouté sans
+changement de plateforme. Source : *Pairs Companion Book*, chapitre
+« Octopus ». Règles et points non tranchés : `games/pairs/RULES.md`.
+Aucune statistique affichée.
+
+### Modèle
+
+`games/pairs/src/octopus/` sur `deck.rs`, une donne mélangée par main
+(`mix(seed, main)`), sans `Supply`. Phases : `Declare` (chacun à son tour),
+`Play` et `Pass` (choix simultanés, la carte reste en main jusqu'à la
+révélation), `Call` (la plus basse carte unique), `Over`. Actions : `Stay`,
+`Fold`, `Play { card }`, `CallPass`, `Show { best: Kind }`, `Pass
+{ card }`. `strength` classe une main (type choisi, puis l'autre type non
+sale, puis sale ; à type égal, cartes triées décroissantes, plus bas =
+mieux). Information cachée : les mains, les cartes non distribuées, les
+choix des autres ; `tracked` garde la carte que chacun a passée tant que
+son receveur n'a pas joué ce rang, et `determinize` la laisse en place.
+
+### IA
+
+Politique de simulation, à partir de ce que le siège voit : rester ; jouer
+et passer la carte dont la perte laisse la main la plus forte (sous le type
+qui lui convient le mieux) ; appeler l'abattage dans ce type si la main
+n'est pas sale et que sa plus haute carte vaut 7 au plus, sinon faire
+passer. Mesuré : Difficile contre Facile 0,82 à 4 joueurs, 0,78 à 6 (200
+parties).

@@ -14,8 +14,9 @@ impl Determinize for Kitty {
         let mut d = s.clone();
         let o = observer.index();
         let left = s.left(observer).index();
-        // Still there: it was not bid (bids are public).
-        let pinned: Option<Rank> = s.passed[o].filter(|card| s.hands[left].contains(card));
+        // Still there unless the player on the left bid that rank (bids
+        // are public; a card passed only leaves a hand as a bid).
+        let pinned: Option<Rank> = s.passed[o].filter(|&card| s.bids.get(left) != Some(&card));
         let mut pool: Vec<Rank> = Vec::new();
         for (i, hand) in d.hands.iter_mut().enumerate() {
             if i == o {
