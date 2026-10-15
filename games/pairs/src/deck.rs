@@ -231,6 +231,11 @@ impl Supply {
         self.unseen.extend(self.deck.drain(keep..));
     }
 
+    /// Every discard back into the draw pile, shuffled (with the burn).
+    pub fn reshuffle(&mut self) {
+        self.restock();
+    }
+
     pub fn can_draw(&self) -> bool {
         !(self.deck.is_empty() && self.seen.is_empty() && self.unseen.is_empty())
     }

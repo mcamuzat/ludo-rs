@@ -685,3 +685,27 @@ n'ont pas été rejouées, et `determinize` les laisse dans leur main.
 Politique de simulation : tirer sa plus haute carte si elle dépasse toutes
 les cibles, sinon sa plus basse ; ramasser la plus haute cible. Mesuré :
 Difficile contre Facile 0,70 à 3 joueurs, 0,61 à 5 (200 parties).
+
+## 23. Rocket (plan 15)
+
+Jeu de casino du livret (`pairs-rocket`, 1–6 joueurs contre une banque
+automatique), ajouté sans changement de plateforme. Source : *Pairs
+Companion Book*, chapitre « Rocket ». Règles et points non tranchés :
+`games/pairs/RULES.md`. Aucune statistique affichée ; la vue donne le coût
+d'un abandon (`fold_cost`), qui est une règle et non une estimation.
+
+### Modèle
+
+`games/pairs/src/rocket/` sur `deck.rs` ; `Supply::reshuffle` (nouveau)
+remélange le paquet quand il en reste moins de 20 %. La banque n'est pas un
+siège : le moteur la joue dans `apply`, après le dernier joueur encore en
+jeu. Actions : `Hit`, `Fold`. Seul l'ordre de la pioche est caché. À un seul
+joueur, le classement n'a pas de sens : seul compte le solde contre la
+banque.
+
+### IA
+
+Politique de simulation : se coucher quand le coût attendu d'un tirage
+(probabilité de chaque rang qui fait paire × sa valeur, vue de tous)
+dépasse le coût de l'abandon. Mesuré : Difficile contre Facile 0,73 à 2
+joueurs, 0,70 à 4 (400 parties).

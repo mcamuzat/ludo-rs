@@ -109,3 +109,11 @@ export const SWEEP_RULES = [
   "Ce qui reste est défaussé ; qui a ramassé la dernière cible commence la manche suivante. On joue jusqu'au bout du paquet.",
   "À la fin, qui a le plus de cartes d'un rang en main marque sa valeur (égalité : chacun la marque).",
 ];
+
+export const ROCKET_RULES = [
+  "Chacun joue contre la banque, qui suit des règles fixes. Une carte visible à chacun, puis à la banque.",
+  "À ton tour : tirer, ou te coucher en payant la plus basse carte en vue (ta pile ou celle de la banque).",
+  "Une paire te coûte sa valeur, et tu sors de la manche.",
+  "Après les joueurs, la banque tire toujours : une paire, ou un 3 (même en première carte), lui fait payer sa valeur à chaque joueur encore en jeu. Sinon on recommence le tour.",
+  "10 manches, classement aux jetons.",
+];

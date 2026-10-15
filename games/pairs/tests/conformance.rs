@@ -148,3 +148,13 @@ fn sweep_conforms_at_every_table_size() {
         check::<Sweep>(&Config::default(), players, 40, 1300 + u64::from(players));
     }
 }
+
+#[test]
+fn rocket_conforms_at_every_table_size() {
+    use pairs::rocket::{Config, Rocket};
+    for players in 1..=6u8 {
+        check::<Rocket>(&Config::default(), players, 30, 1400 + u64::from(players));
+    }
+    check::<Rocket>(&Config { rounds: Some(1) }, 3, 100, 117);
+    check::<Rocket>(&Config { rounds: Some(255) }, 6, 3, 118);
+}

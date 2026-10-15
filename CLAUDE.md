@@ -20,6 +20,7 @@ ludo-rs : plateforme de jeux traditionnels. Moteur Rust (`crates/ludo-core`, `ga
 - `cargo run --release -p ludo-cli -- arena pairs-port 200 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.87 mesuré ; 0.75 à 5 joueurs).
 - `cargo run --release -p ludo-cli -- arena pairs-starboard 400 hard easy 3` : Difficile doit marquer ≥ 0.55 contre Facile (0.59 mesuré à 3 joueurs, 0.57 à 2, 0.65 à 6).
 - `cargo run --release -p ludo-cli -- arena pairs-sweep 200 hard easy 3` : Difficile doit marquer ≥ 0.55 contre Facile (0.70 mesuré à 3 joueurs, 0.61 à 5).
+- `cargo run --release -p ludo-cli -- arena pairs-rocket 400 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.73 mesuré ; 0.70 à 4 joueurs).
 - `cargo run --release -p ludo-cli -- play yavalath 2 medium` : partie en terminal.
 - Web : `./scripts/build-wasm.sh` (ou `dev`), puis `cd web && pnpm dev` / `pnpm test` / `pnpm build`.
 

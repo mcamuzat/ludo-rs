@@ -627,3 +627,34 @@ Kitty).
    partie se joue en une seule donne ; classement aux points.
 4. ❓ Si personne ne ramasse rien, le même joueur commence la manche
    suivante.
+
+## Rocket (`pairs-rocket`, 1 à 6 joueurs contre la banque)
+
+Source : **[R]** *Pairs Companion Book*, chapitre « Rocket » (un seul paquet
+Pairs, sans l'option du bouton).
+
+### Manche [R]
+- Chaque joueur mise ; les paiements se comptent en dixièmes de la mise.
+- Une carte visible à chaque joueur, puis à la banque. On commence à gauche
+  de la banque (le premier siège).
+- À son tour, un joueur **tire** ou **se couche**. Se coucher coûte la plus
+  basse carte de sa pile ou de celle de la banque. Tirer une paire coûte la
+  valeur de la carte, et sort le joueur de la manche.
+- La banque agit après tous les joueurs et tire toujours. Une paire lui fait
+  payer sa valeur à chaque joueur encore en jeu. Un 3 la tue aussitôt, même
+  en première carte : elle paie 3 à chaque joueur encore en jeu (le 3 n'a
+  rien de spécial pour les joueurs).
+- Sinon, on reprend au premier joueur. La manche finit quand tous les
+  joueurs sont sortis, ou quand la banque perd.
+- On remélange quand il reste environ 20 % du paquet.
+
+### Choix sur les points non tranchés
+1. ❓ Tout le monde mise 10 : un dixième de mise vaut 1 jeton.
+2. ❓ Une partie se joue en 10 manches (`Config { rounds }`, plafond 30) ;
+   chacun part de 0 jeton contre la banque et peut passer en négatif ;
+   classement final aux jetons, égalités conservées.
+3. ❓ Le paquet est remélangé en début de manche s'il reste moins de 11
+   cartes (20 % de 55).
+4. ❓ S'il n'y a plus aucune carte à tirer (toutes en jeu), on ne peut que
+   se coucher ; si c'est la banque qui ne peut plus tirer, la manche finit
+   sans paiement.
