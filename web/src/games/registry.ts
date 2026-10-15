@@ -15,6 +15,7 @@ import { RocketBoard } from "./pairs/rocket/Board";
 import { StarboardBoard } from "./pairs/starboard/Board";
 import { SweepBoard } from "./pairs/sweep/Board";
 import { ToTheMoonBoard } from "./pairs/to-the-moon/Board";
+import { TrollGutsBoard } from "./pairs/troll-guts/Board";
 import {
   AUBERGE_RULES,
   CAPTAINS_ORDERS_RULES,
@@ -31,6 +32,7 @@ import {
   STARBOARD_RULES,
   SWEEP_RULES,
   TO_THE_MOON_RULES,
+  TROLL_GUTS_RULES,
   ZOMBIE_LIFE_RULES,
 } from "./pairs/rules";
 import { ZombieLifeBoard } from "./pairs/zombie-life/Board";
@@ -80,6 +82,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "pairs-sweep", family: "pairs", Board: SweepBoard, rules: SWEEP_RULES },
   { id: "pairs-rocket", family: "pairs", Board: RocketBoard, rules: ROCKET_RULES },
   { id: "pairs-monster", family: "pairs", Board: MonsterBoard, rules: MONSTER_RULES },
+  { id: "pairs-troll-guts", family: "pairs", Board: TrollGutsBoard, rules: TROLL_GUTS_RULES },
 ];
 
 export function gameUi(id: string): GameUi | undefined {

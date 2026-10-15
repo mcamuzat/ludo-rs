@@ -702,3 +702,35 @@ Source : **[R]** *Pairs Companion Book*, chapitre « Monster ».
 3. ❓ Le siège 0 a le bouton à la première partie.
 4. ❓ Le cas des deux derniers Champions battus est généralisé : quand plus
    personne ne reste, les joueurs de la manche la rejouent.
+
+## Troll Guts (`pairs-troll-guts`, 3 à 6 joueurs)
+
+Source : **[R]** *Pairs Companion Book*, chapitre « Troll Guts » (une version
+plus chaotique de Goblin Poker : on ne peut pas se coucher).
+
+### Mise en place [R]
+- Chacun mise 1 jeton, reçoit 5 cartes face cachée et une carte visible. La
+  plus basse carte visible jouera en premier, puis on tourne à gauche ; les
+  égalités se départagent comme à Pairs, en gardant les cartes en plus.
+- Chacun empile ses cartes cachées dans l'ordre où elles seront révélées.
+  Une fois rangée, une pile ne se range plus (on peut toujours la
+  regarder).
+
+### Tour [R]
+- Chacun prend une carte visible, d'une de trois façons : **piocher** (la
+  pioche), **voler** (le dessus de la pile cachée de quelqu'un), **acheter**
+  (payer 1 jeton au pot et prendre le dessus de sa propre pile).
+- Si la carte fait une paire avec ses cartes visibles, le joueur perd : il
+  paie la valeur de la paire au pot et retourne ses cartes face cachée.
+- Le survivant prend le pot.
+
+### Choix sur les points non tranchés
+1. ❓ Une partie se joue en 5 mains (`Config { hands }`, plafond 15).
+   Chacun part de 0 jeton et peut passer en négatif ; classement final aux
+   jetons, égalités conservées.
+2. ❓ On range sa pile en secret, tous en même temps, après avoir vu les
+   cartes visibles ; on ne vole que la pile d'un joueur encore en jeu.
+3. ❓ Si plus aucune carte ne peut être prise (pioche, défausse et piles
+   vides), les survivants se partagent le pot ; les jetons impairs restent.
+4. ❓ Les cartes d'un joueur éliminé vont à la défausse, face cachée ; une
+   pioche vide est refaite avec la défausse.

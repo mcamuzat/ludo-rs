@@ -125,3 +125,11 @@ export const MONSTER_RULES = [
   "Le Champion qui bat le Monstre prend le pot. Sinon il paie 5 jetons et sort ; les joueurs couchés sortent aussi, et les autres rejouent une manche.",
   "Le dernier joueur restant gagne le pot. 3 parties, classement aux jetons.",
 ];
+
+export const TROLL_GUTS_RULES = [
+  "Chacun mise 1 jeton et reçoit 5 cartes cachées et une visible ; la plus basse jouera en premier.",
+  "D'abord, chacun range en secret sa pile cachée dans l'ordre où ses cartes seront révélées. Plus de retour en arrière ensuite.",
+  "À ton tour, prends une carte visible : piocher, voler le dessus de la pile d'un autre, ou acheter le dessus de la tienne pour 1 jeton.",
+  "Si la carte fait une paire avec tes cartes visibles, tu paies sa valeur au pot et tu sors. On ne peut pas se coucher.",
+  "Le dernier survivant prend le pot. 5 mains, classement aux jetons.",
+];

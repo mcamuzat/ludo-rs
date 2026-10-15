@@ -17,6 +17,7 @@ pub mod starboard;
 pub mod sweep;
 pub mod testing;
 pub mod to_the_moon;
+pub mod troll_guts;
 pub mod zombie_life;
 
 pub use auberge::Auberge;
@@ -34,4 +35,5 @@ pub use rocket::Rocket;
 pub use starboard::Starboard;
 pub use sweep::Sweep;
 pub use to_the_moon::ToTheMoon;
+pub use troll_guts::TrollGuts;
 pub use zombie_life::ZombieLife;

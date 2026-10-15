@@ -20,6 +20,7 @@ static PAIRS_STARBOARD: GameEntry<pairs::Starboard> = GameEntry::new();
 static PAIRS_SWEEP: GameEntry<pairs::Sweep> = GameEntry::new();
 static PAIRS_ROCKET: GameEntry<pairs::Rocket> = GameEntry::new();
 static PAIRS_MONSTER: GameEntry<pairs::Monster> = GameEntry::new();
+static PAIRS_TROLL_GUTS: GameEntry<pairs::TrollGuts> = GameEntry::new();
 
 pub static GAMES: &[&dyn AnyGame] = &[
     &YAVALATH,
@@ -40,6 +41,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &PAIRS_SWEEP,
     &PAIRS_ROCKET,
     &PAIRS_MONSTER,
+    &PAIRS_TROLL_GUTS,
 ];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {

@@ -169,3 +169,13 @@ fn monster_conforms_at_every_table_size() {
     check::<Monster>(&Config { games: Some(255) }, 8, 3, 128);
 }
 
+#[test]
+fn troll_guts_conforms_at_every_table_size() {
+    use pairs::troll_guts::{Config, TrollGuts};
+    for players in 3..=6u8 {
+        check::<TrollGuts>(&Config::default(), players, 20, 1600 + u64::from(players));
+    }
+    check::<TrollGuts>(&Config { hands: Some(1) }, 3, 60, 137);
+    check::<TrollGuts>(&Config { hands: Some(255) }, 6, 2, 138);
+}
+

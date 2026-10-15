@@ -733,3 +733,28 @@ Politique de simulation : écarter le moins de cartes possible en gardant la
 plus haute main (le Monstre reçoit moins), se coucher si aucun écart ne
 défait les paires. Mesuré : Difficile contre Facile 0,68 à 4 joueurs comme
 à 6 (200 parties).
+
+## 25. Troll Guts (plan 17)
+
+Jeu de jetons du livret (`pairs-troll-guts`, 3–6 joueurs), ajouté sans
+changement de plateforme. Source : *Pairs Companion Book*, chapitre « Troll
+Guts ». Règles et points non tranchés : `games/pairs/RULES.md`.
+
+### Modèle
+
+`games/pairs/src/troll_guts/` sur `deck.rs` (`open_round` pour l'ouverture).
+Phases : `Arrange` (chacun range sa pile cachée en secret, en même temps ;
+l'action donne l'ordre complet, vérifié comme permutation de la pile),
+`Play`, `Over`. Actions : `Arrange { order }`, `Draw`, `Steal { from }`,
+`Buy`. Information cachée : les piles des autres (cartes et ordre), la
+pioche, les ordres pas encore révélés. Le web range la pile carte par carte,
+puis cherche l'ordre dans la liste légale.
+
+### IA
+
+Politique de simulation : ranger la pile en mettant au-dessus les cartes
+qui ne font pas paire avec ses cartes visibles ; acheter le dessus de sa
+pile s'il est sûr et qu'une carte inconnue risque la paire (plus de 15 %),
+sinon piocher ou voler au hasard. La recherche ne délibère que trois
+rangements (sûr, croissant, décroissant). Mesuré : Difficile contre Facile
+0,61 à 3 joueurs (200 parties), 0,58 à 5 (400) : le jeu est très chaotique.
