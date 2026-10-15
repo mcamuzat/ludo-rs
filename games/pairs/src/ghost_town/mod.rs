@@ -8,8 +8,8 @@ mod view;
 
 pub use view::{SeatView, View};
 
-use ludo_core::{Game, GameMeta, Illegal, Outcome, Pending, Seat, Viewer};
-use serde::{Deserialize, Serialize};
+use ludo_core::{Game, GameMeta, GameOption, Illegal, OptionKind, Outcome, Pending, Seat, Viewer};
+use serde::{Deserialize, Deserializer, Serialize};
 
 use crate::deck::{full_deck, has_rank, Rank, Supply};
 
@@ -25,11 +25,28 @@ pub const HAND: usize = 5;
 pub const DEFAULT_HANDS: u8 = 5;
 pub const MAX_HANDS: u8 = 15;
 
-#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(default)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Config {
-    /// Hands in a game, capped at `MAX_HANDS`. `None` (or 0): 5.
-    pub hands: Option<u8>,
+    /// Hands in a game, 1 to `MAX_HANDS`.
+    #[serde(default = "default_hands", deserialize_with = "hands_or_default")]
+    pub hands: u8,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            hands: DEFAULT_HANDS,
+        }
+    }
+}
+
+fn default_hands() -> u8 {
+    DEFAULT_HANDS
+}
+
+/// Logs written before the lobby offered options hold `null`: the default.
+fn hands_or_default<'de, D: Deserializer<'de>>(d: D) -> Result<u8, D::Error> {
+    Ok(Option::<u8>::deserialize(d)?.unwrap_or(DEFAULT_HANDS))
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -417,11 +434,30 @@ impl Game for GhostTown {
         }
     }
 
+    fn options() -> Vec<GameOption> {
+        vec![GameOption {
+            key: "hands",
+            kind: OptionKind::Number {
+                min: 1,
+                max: u32::from(MAX_HANDS),
+                default: u32::from(DEFAULT_HANDS),
+            },
+        }]
+    }
+
+    fn check_config(config: &Config, _players: u8) -> Result<(), Illegal> {
+        if (1..=MAX_HANDS).contains(&config.hands) {
+            Ok(())
+        } else {
+            Err(Illegal::new(format!(
+                "Ghost Town se joue en 1 à {MAX_HANDS} mains."
+            )))
+        }
+    }
+
     fn new(config: &Config, players: u8, seed: u64) -> State {
-        let hands_total = config
-            .hands
-            .filter(|&h| h > 0)
-            .map_or(DEFAULT_HANDS, |h| h.min(MAX_HANDS));
+        // `check_config` keeps it in bounds; clamp anyway, `new` cannot fail.
+        let hands_total = config.hands.clamp(1, MAX_HANDS);
         let mut s = State {
             players,
             hands_total,

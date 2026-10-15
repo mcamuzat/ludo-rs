@@ -34,8 +34,7 @@ fn ghost_town_conforms_at_every_table_size() {
     for players in 2..=6u8 {
         check::<GhostTown>(&Config::default(), players, 40, 200 + u64::from(players));
     }
-    check::<GhostTown>(&Config { hands: Some(1) }, 3, 100, 17);
-    check::<GhostTown>(&Config { hands: Some(255) }, 2, 5, 18);
+    check::<GhostTown>(&Config { hands: 1 }, 3, 100, 17);
 }
 
 #[test]

@@ -128,9 +128,9 @@ La main s'arrête quand le pot est vide, ou quand il ne reste qu'un joueur,
 qui prend alors le pot.
 
 ### Choix sur les points non tranchés
-1. ❓ Une partie se joue en plusieurs mains (5 par défaut). Chacun part de 0
-   jeton et peut passer en négatif ; classement final aux jetons, égalités
-   conservées.
+1. ❓ Une partie se joue en plusieurs mains (5 par défaut, réglable dans le
+   lobby de 1 à 15). Chacun part de 0 jeton et peut passer en négatif ;
+   classement final aux jetons, égalités conservées.
 2. ❓ Si le pot contient moins que la carte piochée, on prend ce qui reste.
 3. ❓ Pioche vide : la défausse est remélangée. S'il n'y a plus rien à
    piocher, piocher n'est pas proposé (on peut toujours se coucher).

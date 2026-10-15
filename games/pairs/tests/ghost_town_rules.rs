@@ -59,12 +59,30 @@ fn a_new_game_antes_and_deals_five_cards() {
 }
 
 #[test]
-fn the_number_of_hands_comes_from_the_config_within_bounds() {
+fn the_number_of_hands_comes_from_the_config() {
     let hands = |h| GhostTown::new(&Config { hands: h }, 2, 1).hands_total;
-    assert_eq!(hands(None), 5);
-    assert_eq!(hands(Some(0)), 5);
-    assert_eq!(hands(Some(2)), 2);
-    assert_eq!(hands(Some(255)), 15);
+    assert_eq!(Config::default().hands, 5);
+    assert_eq!(hands(2), 2);
+    assert_eq!(hands(15), 15);
+}
+
+#[test]
+fn a_config_out_of_bounds_is_refused() {
+    use ludo_core::Match;
+    for hands in [0, 16] {
+        let e = Match::<GhostTown>::new(Config { hands }, 2, 1)
+            .err()
+            .expect("refused");
+        assert_eq!(e.0, "Ghost Town se joue en 1 à 15 mains.");
+    }
+}
+
+#[test]
+fn an_old_log_with_null_hands_replays_with_five() {
+    let config: Config = serde_json::from_value(json!({ "hands": null })).unwrap();
+    assert_eq!(config.hands, 5);
+    let config: Config = serde_json::from_value(json!({})).unwrap();
+    assert_eq!(config.hands, 5);
 }
 
 #[test]
@@ -320,7 +338,7 @@ fn chips_and_cards_are_conserved() {
     let mut rng = SmallRng::seed_from_u64(9);
     for players in 2..=6u8 {
         for _ in 0..20 {
-            let mut s = GhostTown::new(&Config { hands: Some(2) }, players, rng.gen());
+            let mut s = GhostTown::new(&Config { hands: 2 }, players, rng.gen());
             let mut steps = 0;
             while let Some(&seat) = GhostTown::pending(&s).0.first() {
                 let legal = GhostTown::legal_actions(&s, seat);
