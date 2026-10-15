@@ -1,10 +1,10 @@
 // Host ↔ guest protocol. The host runs the engine (the authority); a guest
 // only sends actions and displays the updates of its own seat.
-import type { Update } from "../engine/types";
+import type { GameConfig, Update } from "../engine/types";
 import type { SeatInfo } from "./session";
 
 /** Bumped on any incompatible change: host and guest must match. */
-export const PROTOCOL_VERSION = 2;
+export const PROTOCOL_VERSION = 3;
 
 /** Prefix of PeerJS ids, so a short code doesn't collide with other apps. */
 export const PEER_PREFIX = "ludo-";
@@ -15,7 +15,7 @@ export type GuestMessage =
   | { type: "ping"; t: number };
 
 export type HostMessage =
-  | { type: "lobby"; gameId: string; seats: SeatInfo[]; started: boolean }
+  | { type: "lobby"; gameId: string; seats: SeatInfo[]; started: boolean; config: GameConfig | null }
   | { type: "seated"; seat: number; seatToken: string }
   | { type: "update"; update: Update }
   /** `fatal`: the connection is refused and the guest must leave. */

@@ -1,5 +1,6 @@
 // Per-device conveniences. Storage may be unavailable (private window,
 // blocked site data): every access is guarded and the page works without it.
+import type { GameConfig } from "../engine/types";
 import type { ClockSettings } from "./clock";
 import type { HostSeat } from "./seats";
 
@@ -10,6 +11,13 @@ export interface SavedHost {
   log: unknown;
   clock: ClockSettings | null;
   banks: [number, number][];
+  /** Absent in saves made before game options. */
+  config?: GameConfig | null;
+}
+
+/** The options of a saved game; saves made before game options have none. */
+export function savedConfig(saved: SavedHost): GameConfig | null {
+  return saved.config ?? null;
 }
 
 const NAME_KEY = "ludo-name";

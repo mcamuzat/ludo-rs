@@ -1,4 +1,4 @@
-import type { Seat, Update } from "../engine/types";
+import type { GameConfig, Seat, Update } from "../engine/types";
 import { errorMessage } from "./names";
 
 export type SeatKind = "local" | "ai" | "remote" | "open";
@@ -26,6 +26,8 @@ export interface SessionState {
   /** Room code to share (host) or joined (guest). */
   shareCode: string | null;
   latencyMs: number | null;
+  /** The game's options (null: a game without options). */
+  config: GameConfig | null;
 }
 
 const INITIAL: SessionState = {
@@ -39,6 +41,7 @@ const INITIAL: SessionState = {
   error: null,
   shareCode: null,
   latencyMs: null,
+  config: null,
 };
 
 /**

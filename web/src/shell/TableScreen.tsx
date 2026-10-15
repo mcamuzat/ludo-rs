@@ -4,6 +4,7 @@ import { clockLabel } from "../session/clock";
 import { gameUi } from "../games/registry";
 import { HostSession } from "../session/host";
 import type { SeatInfo, Session, SessionState } from "../session/session";
+import { GameOptions } from "./GameOptions";
 import { HostLobby } from "./HostLobby";
 import { RulesReminder } from "./RulesReminder";
 
@@ -30,13 +31,17 @@ export function TableScreen({ session, games, onLeave }: Props) {
       {state.status && <p className="status">{state.status}</p>}
       {state.notice && <p className="notice">{state.notice}</p>}
       {state.phase === "lobby" &&
-        (session instanceof HostSession ? <HostLobby session={session} state={state} /> : <GuestLobby state={state} />)}
-      {state.phase === "playing" && <Playing session={session} state={state} />}
+        (session instanceof HostSession ? (
+          <HostLobby session={session} state={state} meta={meta} />
+        ) : (
+          <GuestLobby state={state} meta={meta} />
+        ))}
+      {state.phase === "playing" && <Playing session={session} state={state} meta={meta} />}
     </main>
   );
 }
 
-function Playing({ session, state }: { session: Session; state: SessionState }) {
+function Playing({ session, state, meta }: { session: Session; state: SessionState; meta: GameMeta | undefined }) {
   const update = state.update;
   // Clocks count down from when the update arrived.
   const receivedAt = useMemo(() => performance.now(), [update]);
@@ -47,6 +52,7 @@ function Playing({ session, state }: { session: Session; state: SessionState }) 
     <>
       <SeatList seats={state.seats} update={update} me={state.me} receivedAt={receivedAt} />
       <RulesReminder rules={ui?.rules} />
+      {meta && <GameOptions meta={meta} config={state.config} />}
       {update && Board && (
         <Board
           view={update.view}
@@ -124,7 +130,7 @@ function SeatList({
   );
 }
 
-function GuestLobby({ state }: { state: SessionState }) {
+function GuestLobby({ state, meta }: { state: SessionState; meta: GameMeta | undefined }) {
   return (
     <section className="panel">
       <h3>Sièges</h3>
@@ -136,6 +142,7 @@ function GuestLobby({ state }: { state: SessionState }) {
           </li>
         ))}
       </ol>
+      {meta && <GameOptions meta={meta} config={state.config} />}
       <p className="hint">L'hôte lance la partie.</p>
     </section>
   );

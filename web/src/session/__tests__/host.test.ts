@@ -9,7 +9,7 @@ const { HostSession } = await import("../host");
 describe("HostSession", () => {
   it("gives one connection one seat only", () => {
     peers.length = 0;
-    const host = new HostSession("yavalath", "Ana", [{ kind: "open" }, { kind: "open" }], null);
+    const host = new HostSession("yavalath", "Ana", [{ kind: "open" }, { kind: "open" }], null, null);
     peers[0].emit("open");
     const conn = new FakeConn();
     conn.open = true;
@@ -18,6 +18,19 @@ describe("HostSession", () => {
     conn.emit("data", { type: "hello", protocol: PROTOCOL_VERSION, name: "Bo" });
     expect(host.getState().seats.map((s) => s.kind)).toEqual(["local", "remote", "open"]);
     expect(conn.sent).toContainEqual({ type: "rejected", reason: "Tu es déjà assis.", fatal: false });
+    host.dispose();
+  });
+
+  it("tells guests the game's options", () => {
+    peers.length = 0;
+    const host = new HostSession("pairs-ghost-town", "Ana", [{ kind: "open" }], null, { hands: 3 });
+    peers[0].emit("open");
+    const conn = new FakeConn();
+    conn.open = true;
+    peers[0].emit("connection", conn);
+    conn.emit("data", { type: "hello", protocol: PROTOCOL_VERSION, name: "Bo" });
+    expect(host.getState().config).toEqual({ hands: 3 });
+    expect(conn.sent).toContainEqual(expect.objectContaining({ type: "lobby", config: { hands: 3 } }));
     host.dispose();
   });
 });

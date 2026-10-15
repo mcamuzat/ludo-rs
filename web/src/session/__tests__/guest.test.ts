@@ -44,4 +44,13 @@ describe("GuestSession", () => {
     expect(peers.length).toBe(2);
     session.dispose();
   });
+
+  it("shows the options the host chose", () => {
+    const { session, conn } = connected();
+    conn.emit("data", { type: "lobby", gameId: "pairs-ghost-town", seats: [], started: false, config: { hands: 3 } });
+    expect(session.getState().config).toEqual({ hands: 3 });
+    conn.emit("data", { type: "lobby", gameId: "yavalath", seats: [], started: false, config: null });
+    expect(session.getState().config).toBeNull();
+    session.dispose();
+  });
 });

@@ -1,5 +1,5 @@
 import { randomSeed } from "../engine/clients";
-import type { Seat, Snapshot } from "../engine/types";
+import type { GameConfig, Seat, Snapshot } from "../engine/types";
 import { errorMessage } from "./names";
 import { Session } from "./session";
 import { Table, type TableSeat } from "./table";
@@ -12,12 +12,13 @@ export class LocalSession extends Session {
   constructor(
     private gameId: string,
     private seats: TableSeat[],
-    private config: unknown = null,
+    private config: GameConfig | null = null,
   ) {
     super();
     this.set({
       phase: "playing",
       gameId,
+      config,
       seats: seats.map((s) => ({ name: s.name, kind: s.kind, connected: true })),
     });
     this.table = this.begin();

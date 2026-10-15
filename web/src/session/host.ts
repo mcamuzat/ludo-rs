@@ -1,6 +1,6 @@
 import Peer, { type DataConnection } from "peerjs";
 import { randomSeed } from "../engine/clients";
-import type { Seat, Snapshot } from "../engine/types";
+import type { GameConfig, Seat, Snapshot } from "../engine/types";
 import { errorMessage } from "./names";
 import {
   PEER_PREFIX,
@@ -12,7 +12,7 @@ import {
 } from "./protocol";
 import { SeatRegistry, type HostChoice, type HostSeat } from "./seats";
 import { Session } from "./session";
-import { clearHost, saveHost, type SavedHost } from "./storage";
+import { clearHost, saveHost, savedConfig, type SavedHost } from "./storage";
 import type { ClockSettings } from "./clock";
 import { Table } from "./table";
 
@@ -42,13 +42,14 @@ export class HostSession extends Session {
     hostName: string,
     others: HostChoice[],
     private clock: ClockSettings | null,
+    private config: GameConfig | null,
     saved?: SavedHost,
   ) {
     super();
     if (saved) {
       this.code = saved.code;
       this.registry = SeatRegistry.fromJSON(saved.seats);
-      this.set({ phase: "playing", gameId, seats: this.registry.info() });
+      this.set({ phase: "playing", gameId, config: this.config, seats: this.registry.info() });
       this.table = this.newTable(saved.banks);
       this.table.resume(saved.log).catch((e) => {
         // A save that cannot be replayed would be offered forever: drop it.
@@ -58,14 +59,14 @@ export class HostSession extends Session {
     } else {
       this.code = newCode();
       this.registry = new SeatRegistry([{ kind: "host", name: hostName.trim() || "Hôte" }, ...others]);
-      this.set({ phase: "lobby", gameId, seats: this.registry.info() });
+      this.set({ phase: "lobby", gameId, config: this.config, seats: this.registry.info() });
     }
     this.set({ status: "Ouverture de la salle…" });
     this.listen();
   }
 
   static resume(saved: SavedHost): HostSession {
-    return new HostSession(saved.gameId, "", [], saved.clock, saved);
+    return new HostSession(saved.gameId, "", [], saved.clock, savedConfig(saved), saved);
   }
 
   hostSeats(): readonly HostSeat[] {
@@ -87,7 +88,7 @@ export class HostSession extends Session {
     this.table = this.newTable();
     this.set({ phase: "playing", status: null });
     this.broadcastLobby();
-    this.table.start(randomSeed()).catch((e) => this.fail(e));
+    this.table.start(randomSeed(), this.config).catch((e) => this.fail(e));
   }
 
   submit(seat: Seat, action: unknown) {
@@ -98,7 +99,7 @@ export class HostSession extends Session {
     if (!this.table) return;
     this.table.dispose();
     this.table = this.newTable();
-    this.table.start(randomSeed()).catch((e) => this.fail(e));
+    this.table.start(randomSeed(), this.config).catch((e) => this.fail(e));
   }
 
   dispose() {
@@ -266,6 +267,7 @@ export class HostSession extends Session {
       gameId: this.gameId,
       seats: this.registry.info(),
       started: this.table !== null,
+      config: this.config,
     };
     for (const conn of this.conns.keys()) this.send(conn, msg);
   }
@@ -280,6 +282,7 @@ export class HostSession extends Session {
         log,
         clock: this.clock,
         banks: this.table?.banks() ?? [],
+        config: this.config,
       });
   }
 

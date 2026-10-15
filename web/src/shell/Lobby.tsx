@@ -1,9 +1,11 @@
 import { useState } from "react";
-import type { GameMeta, Level } from "../engine/types";
+import type { GameConfig, GameMeta, Level } from "../engine/types";
 import { aiName, aiSeatName } from "../session/names";
 import { CLOCK_PRESETS, type ClockSettings } from "../session/clock";
 import type { TableSeat } from "../session/table";
+import { defaultConfig } from "../games/options";
 import { gameUi } from "../games/registry";
+import { GameOptions } from "./GameOptions";
 import { RulesReminder } from "./RulesReminder";
 
 /** What the host picks for each seat after their own. */
@@ -11,9 +13,9 @@ export type SeatChoice = "local" | "open" | Level;
 
 interface Props {
   game: GameMeta;
-  onLocal(seats: TableSeat[]): void;
+  onLocal(seats: TableSeat[], config: GameConfig | null): void;
   /** Absent: online play is not offered. */
-  onHost?(choices: SeatChoice[], clock: ClockSettings | null): void;
+  onHost?(choices: SeatChoice[], clock: ClockSettings | null, config: GameConfig | null): void;
   onBack(): void;
 }
 
@@ -23,6 +25,7 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
   const [players, setPlayers] = useState(game.minPlayers);
   const [choices, setChoices] = useState<SeatChoice[]>(() => Array(game.maxPlayers - 1).fill("Medium"));
   const [clockId, setClockId] = useState(CLOCK_PRESETS[0].id);
+  const [config, setConfig] = useState(() => defaultConfig(game));
   const others = choices.slice(0, players - 1);
 
   const options: { value: SeatChoice; label: string }[] = [
@@ -84,6 +87,12 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
             ))}
           </ol>
         </section>
+        {config && (
+          <section className="panel">
+            <h3>Options</h3>
+            <GameOptions meta={game} config={config} onChange={setConfig} />
+          </section>
+        )}
         <section className="panel">
           <h3>Lancer</h3>
           {onHost && game.clock && (
@@ -99,14 +108,18 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
             </div>
           )}
           <div className="row">
-            <button className="primary" disabled={others.includes("open")} onClick={() => onLocal(localSeats())}>
+            <button className="primary" disabled={others.includes("open")} onClick={() => onLocal(localSeats(), config)}>
               Jouer sur cet appareil
             </button>
             {onHost && (
               <button
                 disabled={others.includes("local")}
                 onClick={() =>
-                  onHost(others, game.clock ? (CLOCK_PRESETS.find((p) => p.id === clockId)?.settings ?? null) : null)
+                  onHost(
+                    others,
+                    game.clock ? (CLOCK_PRESETS.find((p) => p.id === clockId)?.settings ?? null) : null,
+                    config,
+                  )
                 }
               >
                 Héberger en ligne

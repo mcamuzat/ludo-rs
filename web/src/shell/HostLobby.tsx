@@ -1,8 +1,9 @@
-import type { Level } from "../engine/types";
+import type { GameMeta, Level } from "../engine/types";
 import type { HostSession } from "../session/host";
 import { aiName } from "../session/names";
 import type { HostChoice } from "../session/seats";
 import type { SessionState } from "../session/session";
+import { GameOptions } from "./GameOptions";
 
 const LEVELS: Level[] = ["Easy", "Medium", "Hard"];
 
@@ -10,7 +11,15 @@ function parseChoice(value: string): HostChoice {
   return value === "open" ? { kind: "open" } : { kind: "ai", level: value as Level };
 }
 
-export function HostLobby({ session, state }: { session: HostSession; state: SessionState }) {
+export function HostLobby({
+  session,
+  state,
+  meta,
+}: {
+  session: HostSession;
+  state: SessionState;
+  meta: GameMeta | undefined;
+}) {
   const link = state.shareCode ? `${location.origin}${location.pathname}?join=${state.shareCode}` : null;
   const seats = session.hostSeats();
   return (
@@ -55,6 +64,7 @@ export function HostLobby({ session, state }: { session: HostSession; state: Ses
             <p className="hint">Les autres joueurs saisissent le code dans « Rejoindre une partie », ou ouvrent le lien.</p>
           </>
         )}
+        {meta && <GameOptions meta={meta} config={state.config} />}
         <div className="row">
           <button className="primary" disabled={!session.ready()} onClick={() => session.start()}>
             Lancer la partie

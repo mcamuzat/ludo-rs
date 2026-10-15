@@ -104,6 +104,7 @@ export class GuestSession extends Session {
         this.set({
           gameId: msg.gameId,
           seats: msg.seats,
+          config: msg.config ?? null,
           phase: msg.started ? "playing" : "lobby",
           status: msg.started ? null : "En attente du lancement par l'hôte.",
         });

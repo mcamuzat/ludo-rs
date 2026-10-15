@@ -69,8 +69,10 @@ export function App() {
         <Lobby
           game={screen.game}
           onBack={home}
-          onLocal={(seats) => open(new LocalSession(screen.game.id, seats))}
-          onHost={(choices, clock) => open(new HostSession(screen.game.id, name, choices.map(hostChoice), clock))}
+          onLocal={(seats, config) => open(new LocalSession(screen.game.id, seats, config))}
+          onHost={(choices, clock, config) =>
+            open(new HostSession(screen.game.id, name, choices.map(hostChoice), clock, config))
+          }
         />
       );
     case "table":
