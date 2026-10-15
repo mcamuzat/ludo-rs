@@ -658,3 +658,47 @@ Pairs, sans l'option du bouton).
 4. ❓ S'il n'y a plus aucune carte à tirer (toutes en jeu), on ne peut que
    se coucher ; si c'est la banque qui ne peut plus tirer, la manche finit
    sans paiement.
+
+## Monster (`pairs-monster`, 4 à 8 joueurs)
+
+Source : **[R]** *Pairs Companion Book*, chapitre « Monster ».
+
+### Partie [R]
+- Une *partie* dure jusqu'à ce que quelqu'un gagne le pot. On mise au début
+  de la partie : 2 jetons à 4 ou 5 joueurs, 1 jeton de 6 à 8. Le bouton
+  avance après chaque partie.
+
+### Manche [R]
+- On mélange et on donne 6 cartes à chaque joueur encore en jeu. Le joueur
+  à gauche du bouton agit le premier.
+- Chacun agit une fois, à son tour : écarter 0 à 3 cartes, ou se coucher.
+  On ne peut pas garder une main qui contient une paire ; si c'est le seul
+  choix, on doit se coucher. Les cartes écartées vont face cachée au
+  milieu : c'est la main du Monstre. Les cartes d'un joueur couché sortent
+  du jeu (pas au Monstre). Ce n'est pas du poker : les cartes écartées ne
+  sont pas remplacées.
+
+### Abattage [R]
+- Les mains se comparent par la plus haute carte, puis la suivante, etc. ;
+  une carte vaut mieux que rien (10-8-7-4 bat 10-8-7). Le Monstre ne compte
+  qu'une carte par rang.
+- La meilleure main est le *Champion*. Pour prendre le pot, il doit battre
+  le Monstre ; le Monstre gagne les égalités. Battu, le Champion paie 5
+  jetons au pot et sort de la partie.
+- Les joueurs couchés sortent aussi ; les autres rejouent une manche, avec
+  un nouveau mélange (le Monstre ne garde pas ses cartes).
+- S'il ne reste qu'un joueur, il gagne. S'il n'en reste aucun (tous couchés,
+  ou le dernier n'a pas battu ses propres écarts), les joueurs de la manche
+  la rejouent.
+- Deux Champions identiques qui gagnent partagent le pot ; s'ils perdent,
+  ils paient 5 chacun et sortent, sauf s'ils sont les deux derniers : ils
+  paient mais rejouent.
+
+### Choix sur les points non tranchés
+1. ❓ Un match compte 3 parties (`Config { games }`, plafond 15). Chacun
+   part de 0 jeton et peut passer en négatif ; classement final aux jetons,
+   égalités conservées.
+2. ❓ Un pot partagé laisse ses jetons impairs pour la partie suivante.
+3. ❓ Le siège 0 a le bouton à la première partie.
+4. ❓ Le cas des deux derniers Champions battus est généralisé : quand plus
+   personne ne reste, les joueurs de la manche la rejouent.

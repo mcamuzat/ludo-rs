@@ -14,6 +14,7 @@
 }
 .pairs-card.playable { cursor: pointer; outline: 2px solid var(--brass); outline-offset: 1px; transition: transform 0.12s; }
 .pairs-card.playable:hover { transform: translateY(-3px); }
+.pairs-card.raised, .pairs-card.raised:hover { transform: translateY(-10px); outline-color: var(--danger); }
 /* Encre foncée : les faces restent claires même en mode foncé. */
 .pairs-card.r1 { --rank: hsl(100 45% 34%); }
 .pairs-card.r2 { --rank: hsl(25 80% 42%); }

@@ -117,3 +117,11 @@ export const ROCKET_RULES = [
   "Après les joueurs, la banque tire toujours : une paire, ou un 3 (même en première carte), lui fait payer sa valeur à chaque joueur encore en jeu. Sinon on recommence le tour.",
   "10 manches, classement aux jetons.",
 ];
+
+export const MONSTER_RULES = [
+  "Mise de départ : 2 jetons à 4 ou 5 joueurs, 1 au-delà. Six cartes chacun ; on commence à gauche du bouton.",
+  "Chacun à son tour écarte 0 à 3 cartes face cachée, qui forment la main du Monstre, ou se couche. Une main gardée ne doit contenir aucune paire.",
+  "Abattage : la plus haute main (plus haute carte, puis la suivante… ; une carte vaut mieux que rien) est le Champion. Le Monstre ne compte chaque rang qu'une fois, et gagne les égalités.",
+  "Le Champion qui bat le Monstre prend le pot. Sinon il paie 5 jetons et sort ; les joueurs couchés sortent aussi, et les autres rejouent une manche.",
+  "Le dernier joueur restant gagne le pot. 3 parties, classement aux jetons.",
+];

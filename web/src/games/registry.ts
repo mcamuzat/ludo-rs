@@ -7,6 +7,7 @@ import { DeadfallBoard } from "./pairs/deadfall/Board";
 import { GhostTownBoard } from "./pairs/ghost-town/Board";
 import { GoblinPokerBoard } from "./pairs/goblin-poker/Board";
 import { KittyBoard } from "./pairs/kitty/Board";
+import { MonsterBoard } from "./pairs/monster/Board";
 import { OctopusBoard } from "./pairs/octopus/Board";
 import { PendletonBoard } from "./pairs/pendleton/Board";
 import { PortBoard } from "./pairs/port/Board";
@@ -22,6 +23,7 @@ import {
   GHOST_TOWN_RULES,
   GOBLIN_POKER_RULES,
   KITTY_RULES,
+  MONSTER_RULES,
   OCTOPUS_RULES,
   PENDLETON_RULES,
   PORT_RULES,
@@ -77,6 +79,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "pairs-starboard", family: "pairs", Board: StarboardBoard, rules: STARBOARD_RULES },
   { id: "pairs-sweep", family: "pairs", Board: SweepBoard, rules: SWEEP_RULES },
   { id: "pairs-rocket", family: "pairs", Board: RocketBoard, rules: ROCKET_RULES },
+  { id: "pairs-monster", family: "pairs", Board: MonsterBoard, rules: MONSTER_RULES },
 ];
 
 export function gameUi(id: string): GameUi | undefined {

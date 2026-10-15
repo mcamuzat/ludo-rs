@@ -709,3 +709,27 @@ Politique de simulation : se coucher quand le coût attendu d'un tirage
 (probabilité de chaque rang qui fait paire × sa valeur, vue de tous)
 dépasse le coût de l'abandon. Mesuré : Difficile contre Facile 0,73 à 2
 joueurs, 0,70 à 4 (400 parties).
+
+## 24. Monster (plan 16)
+
+Jeu d'argent du livret (`pairs-monster`, 4–8 joueurs), ajouté sans
+changement de plateforme. Source : *Pairs Companion Book*, chapitre
+« Monster ». Règles et points non tranchés : `games/pairs/RULES.md`.
+
+### Modèle
+
+`games/pairs/src/monster/` sur `deck.rs`, un paquet complet mélangé par
+manche (`mix(seed, donne)`). Une seule phase de jeu : chacun agit une fois,
+`Discard { cards }` (0 à 3 cartes, triées, ne laissant aucune paire ; la
+liste est calculée par le moteur) ou `Fold`. L'abattage, les pénalités, les
+sorties, le rejeu et le gain du pot se résolvent seuls. Information cachée :
+les mains, les écarts des autres (la main du Monstre), les cartes couchées
+et les cartes non distribuées. Le web choisit les cartes à écarter, puis
+cherche l'action correspondante dans la liste légale.
+
+### IA
+
+Politique de simulation : écarter le moins de cartes possible en gardant la
+plus haute main (le Monstre reçoit moins), se coucher si aucun écart ne
+défait les paires. Mesuré : Difficile contre Facile 0,68 à 4 joueurs comme
+à 6 (200 parties).

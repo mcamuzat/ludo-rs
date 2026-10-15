@@ -158,3 +158,14 @@ fn rocket_conforms_at_every_table_size() {
     check::<Rocket>(&Config { rounds: Some(1) }, 3, 100, 117);
     check::<Rocket>(&Config { rounds: Some(255) }, 6, 3, 118);
 }
+
+#[test]
+fn monster_conforms_at_every_table_size() {
+    use pairs::monster::{Config, Monster};
+    for players in 4..=8u8 {
+        check::<Monster>(&Config::default(), players, 30, 1500 + u64::from(players));
+    }
+    check::<Monster>(&Config { games: Some(1) }, 4, 100, 127);
+    check::<Monster>(&Config { games: Some(255) }, 8, 3, 128);
+}
+

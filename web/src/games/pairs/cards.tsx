@@ -7,13 +7,16 @@ export function Card({
   onClick,
   title,
   small,
+  raised,
 }: {
   rank: number;
   onClick?: () => void;
   title?: string;
   small?: boolean;
+  /** Picked out of a hand (to discard, say). */
+  raised?: boolean;
 }) {
-  const cls = `pairs-card r${rank}${small ? " small" : ""}`;
+  const cls = `pairs-card r${rank}${small ? " small" : ""}${raised ? " raised" : ""}`;
   if (!onClick) return <span className={cls}>{rank}</span>;
   return (
     <button type="button" className={`${cls} playable`} onClick={onClick} title={title} aria-label={title}>
