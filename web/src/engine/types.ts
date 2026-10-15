@@ -3,6 +3,21 @@
 export type Seat = number;
 export type Level = "Easy" | "Medium" | "Hard";
 
+/** A setting the lobby offers (`ludo_core::OptionKind`). */
+export type OptionKind =
+  | { type: "toggle"; default: boolean }
+  | { type: "choice"; values: string[]; default: string }
+  | { type: "number"; min: number; max: number; default: number };
+
+export interface GameOption {
+  /** A field of the game's `Config`. */
+  key: string;
+  kind: OptionKind;
+}
+
+/** A game's `Config`, as sent to `newMatch`. */
+export type GameConfig = Record<string, boolean | string | number>;
+
 export interface GameMeta {
   id: string;
   name: string;
@@ -10,6 +25,7 @@ export interface GameMeta {
   maxPlayers: number;
   hiddenInfo: boolean;
   clock: boolean;
+  options: GameOption[];
 }
 
 /** One viewer's share of a snapshot (`viewer: null` = spectator). */
