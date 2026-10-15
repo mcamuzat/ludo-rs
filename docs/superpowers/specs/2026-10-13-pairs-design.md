@@ -560,3 +560,31 @@ Politique de simulation : la colonne où la carte fait gagner le plus de
 points nets (au hasard parmi les ex æquo). `evaluate` arrête la simulation
 à la fin de la manche en cours, sur l'écart de points qu'elle a donné.
 Mesuré : Difficile 0,93 contre Facile (100 parties).
+
+## 18. Kitty (plan 10)
+
+Jeu d'enchères du livret (`pairs-kitty`, 3–6 joueurs), variante douce hors
+4 joueurs, ajouté sans changement de plateforme. Source : *Pairs Companion
+Book*, chapitres « Kitty » et « Kitty Variants ». Règles et points non
+tranchés : `games/pairs/RULES.md`.
+
+### Modèle
+
+`games/pairs/src/kitty/` sur `deck.rs`, sans `Supply` (une seule donne, pas
+de remélange). Phases : `Pass` et `Bid` (choix simultanés, la carte choisie
+reste en main jusqu'à la révélation), `Claim` (les mises gagnantes, de la
+plus basse à la plus haute ; une prise sans choix se fait seule), `Over`.
+Actions : `Pass { card }`, `Bid { card }`, `Take { card }`, `Give { card,
+to }`. Information cachée : les mains, l'ordre de la kitty, les cartes
+écartées, les choix des autres. Chacun sait ce qu'il a passé et reçu à la
+manche : `determinize` laisse la carte passée par l'observateur chez son
+voisin de gauche tant qu'il ne l'a pas misée, et redistribue le reste.
+
+### IA
+
+Politique de simulation, à partir de ce que le siège voit : l'envie d'une
+carte est son rang, multiplié par un plus le nombre déjà en main. Passer la
+moins voulue ; miser sa plus basse carte si la cible vaut au moins 12,
+sinon une des trois moins voulues ; prendre la plus voulue ; donner la plus
+basse à un joueur au hasard. Mesuré : Difficile contre Facile 0,69 à 4
+joueurs, 0,69 à 3, 0,58 à 6 (200 parties).

@@ -70,3 +70,11 @@ export const PENDLETON_RULES = [
   "Dans chaque colonne, qui a posé le plus de points marque la valeur de la cible ; à égalité, chacun la moitié (arrondie en dessous).",
   "Qui a marqué le moins commence la manche suivante. Le premier à 100 points gagne.",
 ];
+
+export const KITTY_RULES = [
+  "Sept cartes face cachée forment la kitty ; le reste est distribué. À chaque manche, on retourne la cible.",
+  "Chacun passe une carte à son voisin de gauche, puis mise une carte en secret ; on révèle ensemble.",
+  "La plus basse mise unique prend la cible (les mises à égalité ne gagnent pas). Gagner avec le 1 oblige à donner la cible à un autre joueur.",
+  "Kitty douce (à 3, 5 ou 6) : cibles de 1, 2, 2 et 2 cartes ; la plus basse mise unique choisit, la deuxième prend l'autre.",
+  "À la fin, qui a le plus de cartes d'un rang marque sa valeur (égalité : chacun la marque). Le plus haut total gagne.",
+];

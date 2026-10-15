@@ -102,3 +102,11 @@ fn pendleton_conforms() {
         78,
     );
 }
+
+#[test]
+fn kitty_conforms_at_every_table_size() {
+    use pairs::kitty::{Config, Kitty};
+    for players in 3..=6u8 {
+        check::<Kitty>(&Config::default(), players, 40, 900 + u64::from(players));
+    }
+}

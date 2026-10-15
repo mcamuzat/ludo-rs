@@ -434,3 +434,42 @@ Source : **[R]** *Pairs Companion Book*, chapitre « Pendleton » (autrefois
    parle d'égalité, mais personne n'y a « posé le plus de points »).
 4. ❓ Si la pioche s'épuise (rarissime : 50 cartes), la manche s'arrête
    comme sur une carte injouable.
+
+## Kitty (`pairs-kitty`, 3 à 6 joueurs)
+
+Source : **[R]** *Pairs Companion Book*, chapitres « Kitty » et « Kitty
+Variants » (variante *Soft* ; ni *Sticky*, ni partenaires, ni jetons).
+
+### Mise en place [R]
+- On pose 7 cartes face cachée : la *kitty*. Le reste est distribué : 12
+  cartes chacun à 4 joueurs. À 5 joueurs, 3 cartes sont écartées sans être
+  vues pour que les mains tombent juste (9 chacun ; 16 à 3, 8 à 6).
+
+### Manche [R]
+- On retourne la carte du dessus de la kitty : la *cible*.
+- **Passe** : chacun choisit en secret une carte de sa main et la passe à
+  son voisin de gauche.
+- **Mise** : chacun choisit en secret une carte à miser ; on révèle
+  ensemble.
+- **Prise** : la plus basse mise *unique* prend la cible et l'ajoute à sa
+  main ; des mises à égalité ne peuvent pas gagner. Sans mise unique, la
+  cible est défaussée. Le 1 est imbattable mais ne prend pas : qui gagne
+  avec le 1 doit donner la cible à un autre joueur.
+- Les mises sont défaussées.
+
+### Kitty douce [R]
+- Après la première, chaque cible compte deux cartes (1-2-2-2 : quatre
+  manches au lieu de sept). La plus basse mise unique choisit une carte, la
+  deuxième plus basse prend l'autre ; une carte non prise est défaussée.
+
+### Score [R]
+- Qui a le plus de cartes d'un rang en main marque la valeur de ce rang ; à
+  égalité, chacun la marque en entier. Le plus haut total gagne.
+
+### Choix sur les points non tranchés
+1. ❓ La variante dépend du nombre de joueurs : dure à 4 (règles de base),
+   douce à 3, 5 et 6 (le livret la propose pour jouer de 3 à 6).
+2. ❓ Kitty douce : qui gagne avec le 1 choisit la carte qu'il donne, et la
+   deuxième mise unique prend l'autre.
+3. ❓ Une partie se joue en une seule donne ; classement aux points,
+   égalités conservées.
