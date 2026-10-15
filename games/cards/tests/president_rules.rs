@@ -436,3 +436,177 @@ fn the_clock_passes_or_plays_the_weakest_cards() {
     act(&mut s, 0, play(Rank::Three, 1));
     assert_eq!(President::timeout_action(&s, Seat(1)), Some(Action::Pass));
 }
+
+/// Plays the clock's choice until the current round is scored.
+fn finish_round(s: &mut State) {
+    let round = s.round_no;
+    while s.round_no == round && s.phase != Phase::Over {
+        let seat = President::pending(s).0[0];
+        let a = President::timeout_action(s, seat).expect("a pending seat has a move");
+        act(s, seat.0, a);
+    }
+}
+
+fn revolution() -> Config {
+    Config {
+        revolution: true,
+        ..one_round()
+    }
+}
+
+#[test]
+fn four_of_a_kind_starts_a_revolution_only_with_the_option() {
+    let hands = ["7s 7h 7d 7c 9s", "3s 4s 2s", "5s", "6s"];
+    let mut off = table(one_round(), &hands, 0);
+    act(&mut off, 0, play(Rank::Seven, 4));
+    assert!(!off.reversed);
+    let mut on = table(revolution(), &hands, 0);
+    act(&mut on, 0, play(Rank::Seven, 4));
+    assert!(on.reversed);
+    assert!(on.events.contains(&Event::Revolution { reversed: true }));
+}
+
+#[test]
+fn a_revolution_reverses_the_ranks() {
+    let mut s = table(revolution(), &["9s 9h 9d 9c 8s", "3s 2s Ks", "5s", "6s"], 0);
+    act(&mut s, 0, play(Rank::Nine, 4));
+    for seat in 1..=3 {
+        act(&mut s, seat, Action::Pass);
+    }
+    act(&mut s, 0, play(Rank::Eight, 1));
+    // The 3 is now the best card, the 2 the worst.
+    assert_eq!(
+        President::legal_actions(&s, Seat(1)),
+        vec![play(Rank::Three, 1), Action::Pass]
+    );
+    assert_eq!(
+        President::view(&s, Viewer::Seat(Seat(1))).hand,
+        cards("2s Ks 3s")
+    );
+}
+
+#[test]
+fn a_second_four_of_a_kind_turns_the_ranks_back() {
+    let mut s = table(revolution(), &["4s 4h 4d 4c 9s", "5s", "6s", "8s"], 0);
+    s.reversed = true;
+    act(&mut s, 0, play(Rank::Four, 4));
+    assert!(!s.reversed);
+    assert!(s.events.contains(&Event::Revolution { reversed: false }));
+}
+
+#[test]
+fn a_four_of_a_kind_with_wild_jokers_is_a_revolution() {
+    let cfg = Config {
+        jokers: Jokers::Wild,
+        ..revolution()
+    };
+    let mut s = table(cfg, &["9s 9h 9d Jo 4s", "5s", "6s", "8s"], 0);
+    act(&mut s, 0, wild(Rank::Nine, 3, 1));
+    assert!(s.reversed);
+}
+
+#[test]
+fn strong_jokers_stay_on_top_during_a_revolution() {
+    let cfg = Config {
+        jokers: Jokers::High,
+        ..revolution()
+    };
+    let mut s = table(cfg, &["3s 4s", "Jo 5s", "6s", "8s"], 0);
+    s.reversed = true;
+    act(&mut s, 0, play(Rank::Three, 1));
+    assert_eq!(
+        President::legal_actions(&s, Seat(1)),
+        vec![jokers(1), Action::Pass]
+    );
+}
+
+#[test]
+fn a_new_round_restores_the_normal_order() {
+    let cfg = Config {
+        rounds: 2,
+        ..revolution()
+    };
+    let mut s = table(cfg, &["4s 4h 4d 4c", "5s 6s", "7s 8s", "9s Ts"], 0);
+    act(&mut s, 0, play(Rank::Four, 4));
+    assert!(s.reversed);
+    finish_round(&mut s);
+    assert_eq!(s.round_no, 2);
+    assert!(!s.reversed);
+}
+
+fn no_two() -> Config {
+    Config {
+        no_finish_on_two: true,
+        ..one_round()
+    }
+}
+
+#[test]
+fn going_out_on_a_two_makes_you_the_scum() {
+    let mut s = table(no_two(), &["2s", "3s 4s", "5s 6s", "7s 8s"], 0);
+    act(&mut s, 0, play(Rank::Two, 1));
+    assert_eq!(s.fouled, vec![Seat(0)]);
+    assert!(s.events.contains(&Event::Finished {
+        seat: Seat(0),
+        fouled: true
+    }));
+    finish_round(&mut s);
+    assert_eq!(s.titles[0], Scum);
+    assert_eq!(s.scores[0], 0);
+    let mut free = table(one_round(), &["2s", "3s 4s", "5s 6s", "7s 8s"], 0);
+    act(&mut free, 0, play(Rank::Two, 1));
+    assert_eq!(free.out, vec![Seat(0)]);
+}
+
+#[test]
+fn during_a_revolution_the_forbidden_card_is_the_three() {
+    let cfg = Config {
+        revolution: true,
+        ..no_two()
+    };
+    let mut s = table(cfg.clone(), &["3s", "4s 5s", "6s 7s", "8s 9s"], 0);
+    s.reversed = true;
+    act(&mut s, 0, play(Rank::Three, 1));
+    assert_eq!(s.fouled, vec![Seat(0)]);
+    let mut s = table(cfg, &["2s", "4s 5s", "6s 7s", "8s 9s"], 0);
+    s.reversed = true;
+    act(&mut s, 0, play(Rank::Two, 1));
+    assert_eq!(s.out, vec![Seat(0)]);
+}
+
+#[test]
+fn going_out_on_a_joker_is_forbidden_too() {
+    let cfg = Config {
+        jokers: Jokers::High,
+        ..no_two()
+    };
+    let mut s = table(cfg, &["Jo", "4s 5s", "6s 7s", "8s 9s"], 0);
+    act(&mut s, 0, jokers(1));
+    assert_eq!(s.fouled, vec![Seat(0)]);
+}
+
+#[test]
+fn the_forbidden_card_is_judged_before_its_own_revolution() {
+    // ❓4: four 3s going out are judged in the normal order: allowed.
+    let cfg = Config {
+        revolution: true,
+        ..no_two()
+    };
+    let mut s = table(cfg, &["3s 3h 3d 3c", "4s 5s", "6s 7s", "8s 9s"], 0);
+    act(&mut s, 0, play(Rank::Three, 4));
+    assert_eq!(s.out, vec![Seat(0)]);
+    assert!(s.reversed);
+}
+
+#[test]
+fn the_first_to_foul_finishes_last() {
+    let mut s = table(no_two(), &["2s", "2h", "5s 6s", "7s 8s"], 0);
+    act(&mut s, 0, play(Rank::Two, 1));
+    for seat in 1..=3 {
+        act(&mut s, seat, Action::Pass);
+    }
+    act(&mut s, 1, play(Rank::Two, 1));
+    assert_eq!(s.fouled, vec![Seat(0), Seat(1)]);
+    finish_round(&mut s);
+    assert_eq!((s.titles[0], s.titles[1]), (Scum, Secretary));
+}

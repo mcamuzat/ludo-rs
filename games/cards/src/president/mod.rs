@@ -362,16 +362,41 @@ impl State {
             rank,
             cards: cards.clone(),
         });
+        // [W] Going out on the top card (❓3: the 3 during a revolution) or a
+        // joker; ❓4 judged in the order in force when the cards are laid.
+        let top = self.top_rank();
+        let fouled = self.config.no_finish_on_two
+            && cards
+                .iter()
+                .any(|&c| c == Card::Joker || c.rank() == Some(top));
+        // [W] Four cards of a rank (❓7: jokers included) reverse the order
+        // until the end of the round; ❓2 another four turn it back.
+        if self.config.revolution && cards.len() == 4 {
+            self.reversed = !self.reversed;
+            self.events.push(Event::Revolution {
+                reversed: self.reversed,
+            });
+        }
         self.trick = Some(Trick { seat, rank, cards });
         self.passes.clear();
         if self.hands[seat.index()].is_empty() {
-            self.out.push(seat);
-            self.events.push(Event::Finished {
-                seat,
-                fouled: false,
-            });
+            if fouled {
+                self.fouled.push(seat);
+            } else {
+                self.out.push(seat);
+            }
+            self.events.push(Event::Finished { seat, fouled });
         }
         self.after_play(seat);
+    }
+
+    /// [W] The strongest natural rank: the 2, or the 3 during a revolution.
+    pub(crate) fn top_rank(&self) -> Rank {
+        if self.reversed {
+            Rank::Three
+        } else {
+            Rank::Two
+        }
     }
 
     fn after_play(&mut self, seat: Seat) {
