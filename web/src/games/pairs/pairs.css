@@ -63,3 +63,21 @@
   .pairs-table { aspect-ratio: auto; display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 18px; }
   .pairs-center, .pairs-place { position: static; transform: none; width: auto; }
 }
+
+/* Pendleton : cinq colonnes, l'adversaire en haut, les cibles au milieu. */
+.pendleton { width: min(100%, 860px); margin: 0 auto; padding: 16px; border-radius: 28px; display: flex; flex-direction: column; gap: 12px; }
+.pendleton-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.pendleton-head .pairs-seat { flex: 1; }
+.pendleton-columns { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.pendleton-column { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.pendleton-side { min-height: 120px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.pendleton-side.top { justify-content: flex-end; }
+.pendleton-points { font-size: 0.8rem; color: var(--table-muted); }
+.pendleton-target .pairs-card { width: 46px; height: 64px; font-size: 1.5rem; outline: 2px dashed var(--table-muted); outline-offset: 2px; }
+.pendleton-target .pairs-card.playable { outline: 2px solid var(--brass); }
+.pendleton-center { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+@media (max-width: 720px) {
+  .pendleton { padding: 8px; }
+  .pendleton-side { min-height: 80px; }
+  .pendleton-target .pairs-card { width: 38px; height: 54px; font-size: 1.25rem; }
+}

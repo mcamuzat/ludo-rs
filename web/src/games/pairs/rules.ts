@@ -62,3 +62,11 @@ export const CAPTAINS_ORDERS_RULES = [
   "Main vide : tu te déclares Capitaine, et gagnes si c'est vrai. Accuser juste fait gagner un Mutin ; sinon le Mutin qui a le plus de points (son rang par carte) gagne, sauf celui qui s'est trompé.",
   "Le premier à 3 manches gagnées l'emporte.",
 ];
+
+export const PENDLETON_RULES = [
+  "Cinq cibles de rangs différents, triées. À ton tour, tu pioches une carte et la poses de ton côté d'une colonne.",
+  "Une colonne n'accepte pas une carte dont le rang y est déjà : la cible, ou une carte de l'un ou l'autre côté.",
+  "La manche s'arrête quand quelqu'un pioche une carte injouable partout.",
+  "Dans chaque colonne, qui a posé le plus de points marque la valeur de la cible ; à égalité, chacun la moitié (arrondie en dessous).",
+  "Qui a marqué le moins commence la manche suivante. Le premier à 100 points gagne.",
+];

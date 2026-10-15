@@ -6,6 +6,7 @@ import { ContinuousBoard } from "./pairs/continuous/Board";
 import { DeadfallBoard } from "./pairs/deadfall/Board";
 import { GhostTownBoard } from "./pairs/ghost-town/Board";
 import { GoblinPokerBoard } from "./pairs/goblin-poker/Board";
+import { PendletonBoard } from "./pairs/pendleton/Board";
 import { ToTheMoonBoard } from "./pairs/to-the-moon/Board";
 import {
   AUBERGE_RULES,
@@ -14,6 +15,7 @@ import {
   DEADFALL_RULES,
   GHOST_TOWN_RULES,
   GOBLIN_POKER_RULES,
+  PENDLETON_RULES,
   TO_THE_MOON_RULES,
   ZOMBIE_LIFE_RULES,
 } from "./pairs/rules";
@@ -56,6 +58,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "pairs-to-the-moon", family: "pairs", Board: ToTheMoonBoard, rules: TO_THE_MOON_RULES },
   { id: "pairs-deadfall", family: "pairs", Board: DeadfallBoard, rules: DEADFALL_RULES },
   { id: "pairs-captains-orders", family: "pairs", Board: CaptainsOrdersBoard, rules: CAPTAINS_ORDERS_RULES },
+  { id: "pairs-pendleton", family: "pairs", Board: PendletonBoard, rules: PENDLETON_RULES },
 ];
 
 export function gameUi(id: string): GameUi | undefined {

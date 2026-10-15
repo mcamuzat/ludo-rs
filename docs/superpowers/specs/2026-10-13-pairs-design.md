@@ -538,3 +538,25 @@ décision. L'ISMCTS à observateur unique ne prête pas de croyances aux
 adversaires simulés : bluffer n'y rapporte rien, et il faudrait un autre
 algorithme (MO-ISMCTS, ou une recherche qui modélise les croyances) pour
 qu'il apprenne à le faire.
+
+## 17. Pendleton (plan 9)
+
+Jeu à deux du livret (`pairs-pendleton`), ajouté sans changement de
+plateforme. Source : *Pairs Companion Book*, chapitre « Pendleton ». Règles
+et points non tranchés : `games/pairs/RULES.md`.
+
+### Modèle
+
+`games/pairs/src/pendleton/` sur `deck.rs`. Une seule action, `Play
+{ column }` : la carte est piochée par le moteur au début du tour
+(`drawn`, visible de tous), et une carte injouable termine la manche aussitôt.
+Seul l'ordre de la pioche est caché : `determinize` la remélange et tire une
+nouvelle graine pour les donnes à venir. Les cibles sont tirées d'un premier
+mélange, la pioche des 50 autres cartes d'un second.
+
+### IA
+
+Politique de simulation : la colonne où la carte fait gagner le plus de
+points nets (au hasard parmi les ex æquo). `evaluate` arrête la simulation
+à la fin de la manche en cours, sur l'écart de points qu'elle a donné.
+Mesuré : Difficile 0,93 contre Facile (100 parties).

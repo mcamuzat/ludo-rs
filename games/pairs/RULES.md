@@ -399,3 +399,38 @@ joueur à sa gauche.
 6. ❓ La partie se joue en 3 manches gagnées par défaut (`Config
    { wins }`, plafond 9). Plusieurs joueurs peuvent l'atteindre ensemble :
    classement aux manches gagnées, égalités conservées.
+
+## Pendleton (`pairs-pendleton`, 2 joueurs)
+
+Source : **[R]** *Pairs Companion Book*, chapitre « Pendleton » (autrefois
+« Five Cards »).
+
+### Mise en place [R]
+- On distribue cinq cartes de rangs différents en ligne (les doublons sont
+  écartés, puis remélangés dans la pioche) et on les trie de la plus basse à
+  la plus haute : ce sont les *cibles*, une par colonne.
+- Un joueur tiré au sort commence. Aux manches suivantes, celui qui a marqué
+  le moins de points à la manche précédente commence.
+
+### Tour [R]
+- On pioche une carte et on la pose face visible de son côté d'une colonne.
+- Une colonne n'accepte pas une carte de même rang qu'une de ses cartes : la
+  cible ou une carte de l'un ou l'autre côté.
+- La manche s'arrête dès qu'un joueur pioche une carte qu'aucune colonne
+  n'accepte.
+
+### Score [R]
+- Dans chaque colonne, qui a posé le plus de points de son côté marque la
+  valeur de la cible ; à égalité, chacun en marque la moitié, arrondie en
+  dessous.
+- On rejoue des manches ; le premier à 100 points gagne.
+
+### Choix sur les points non tranchés
+1. ❓ La partie s'arrête à la fin de la manche où un joueur atteint 100
+   points (`Config { target }`, plafond 1000) avec plus de points que
+   l'autre. À égalité, on joue une manche de plus.
+2. ❓ Après une manche nulle, celui qui jouait en second commence.
+3. ❓ Une colonne où personne n'a posé de carte ne rapporte rien (le livret
+   parle d'égalité, mais personne n'y a « posé le plus de points »).
+4. ❓ Si la pioche s'épuise (rarissime : 50 cartes), la manche s'arrête
+   comme sur une carte injouable.

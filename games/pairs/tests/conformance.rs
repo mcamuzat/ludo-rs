@@ -87,3 +87,18 @@ fn captains_orders_conforms_at_every_table_size() {
     check::<CaptainsOrders>(&Config { wins: Some(1) }, 4, 100, 67);
     check::<CaptainsOrders>(&Config { wins: Some(255) }, 8, 5, 68);
 }
+
+#[test]
+fn pendleton_conforms() {
+    use pairs::pendleton::{Config, Pendleton};
+    check::<Pendleton>(&Config::default(), 2, 40, 800);
+    check::<Pendleton>(&Config { target: Some(1) }, 2, 100, 77);
+    check::<Pendleton>(
+        &Config {
+            target: Some(65535),
+        },
+        2,
+        3,
+        78,
+    );
+}
