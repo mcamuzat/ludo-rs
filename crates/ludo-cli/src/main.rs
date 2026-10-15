@@ -1,4 +1,4 @@
-//! `ludo list` | `ludo arena <jeu> <parties> <niveau A> <niveau B> [joueurs]` | `ludo play <jeu> <joueurs> <niveau>`
+//! `ludo list` | `ludo arena <jeu> <parties> <niveau A> <niveau B> [joueurs] [--config '<json>']` | `ludo play <jeu> <joueurs> <niveau>`
 
 use std::io::{self, BufRead, Write};
 use std::str::FromStr;
@@ -10,7 +10,7 @@ use serde_json::Value;
 
 const USAGE: &str = "usage :
   ludo list
-  ludo arena <jeu> <parties> <easy|medium|hard> <easy|medium|hard> [joueurs]
+  ludo arena <jeu> <parties> <easy|medium|hard> <easy|medium|hard> [joueurs] [--config '<json>']
   ludo play <jeu> <joueurs> <easy|medium|hard>";
 
 fn main() {
@@ -35,8 +35,8 @@ fn run(args: &[String]) -> Result<(), String> {
             Ok(())
         }
         ["arena", game, games, a, b, rest @ ..] => {
-            let players = rest.first().map(|p| parse(p)).transpose()?.unwrap_or(2);
-            arena(game, parse(games)?, level(a)?, level(b)?, players)
+            let (players, config) = arena_extras(rest)?;
+            arena(game, parse(games)?, level(a)?, level(b)?, players, &config)
         }
         ["play", game, players, lvl] => play(game, parse(players)?, level(lvl)?),
         _ => Err(USAGE.into()),
@@ -57,18 +57,44 @@ fn level(s: &str) -> Result<Level, String> {
     }
 }
 
+/// `[joueurs] [--config '<json>']`, in any order; 2 players and the default
+/// config when absent.
+fn arena_extras(rest: &[&str]) -> Result<(u8, Value), String> {
+    let mut players = 2;
+    let mut config = Value::Null;
+    let mut args = rest.iter();
+    while let Some(&arg) = args.next() {
+        if arg == "--config" {
+            let text = args
+                .next()
+                .ok_or_else(|| format!("--config attend un objet JSON\n{USAGE}"))?;
+            config = serde_json::from_str(text).map_err(|e| format!("config invalide : {e}"))?;
+        } else {
+            players = parse(arg)?;
+        }
+    }
+    Ok((players, config))
+}
+
 fn game(id: &str) -> Result<&'static dyn AnyGame, String> {
     ludo_registry::find(id).map_err(|e| e.to_string())
 }
 
 /// Level A against level B; A takes each seat in turn. Prints A's mean reward
 /// (1 = always first, 0.5 = even).
-fn arena(id: &str, games: u32, a: Level, b: Level, players: u8) -> Result<(), String> {
+fn arena(
+    id: &str,
+    games: u32,
+    a: Level,
+    b: Level,
+    players: u8,
+    config: &Value,
+) -> Result<(), String> {
     let game = game(id)?;
     let score = |g: u32| -> Result<f64, String> {
         let a_seat = Seat((g % u32::from(players)) as u8);
         let mut m = game
-            .new_match(Value::Null, players, u64::from(g))
+            .new_match(config.clone(), players, u64::from(g))
             .map_err(|e| e.to_string())?;
         while let Some(&seat) = m.pending().first() {
             let lvl = if seat == a_seat { a } else { b };
@@ -183,4 +209,23 @@ fn play(id: &str, players: u8, lvl: Level) -> Result<(), String> {
     );
     println!("classement : {:?}", m.outcome());
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use super::arena_extras;
+
+    #[test]
+    fn arena_reads_players_and_config_in_any_order() {
+        assert_eq!(arena_extras(&[]).unwrap(), (2, serde_json::Value::Null));
+        assert_eq!(arena_extras(&["4"]).unwrap(), (4, serde_json::Value::Null));
+        assert_eq!(
+            arena_extras(&["--config", r#"{"hands":3}"#, "3"]).unwrap(),
+            (3, json!({ "hands": 3 }))
+        );
+        assert!(arena_extras(&["--config"]).is_err());
+        assert!(arena_extras(&["--config", "{"]).is_err());
+    }
 }

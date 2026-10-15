@@ -53,7 +53,7 @@ pub fn list_games() -> String {
     text(
         &ludo_registry::GAMES
             .iter()
-            .map(|g| g.meta())
+            .map(|g| g.info())
             .collect::<Vec<_>>(),
     )
 }
