@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { BoardProps } from "../../registry";
 import { CardBack, Table } from "../../pairs/cards";
 import { PlayingCard, cardName } from "../PlayingCard";
@@ -68,27 +68,37 @@ export function describePresidentEvent(e: PresidentEvent, names: string[]): stri
       return e.reversed ? "Révolution : l'ordre des cartes est inversé." : "Contre-révolution : l'ordre normal revient.";
     case "Finished":
       return e.fouled
-        ? `${names[e.seat]} finit sur une carte interdite : Trou du cul.`
+        ? `${names[e.seat]} finit sur une carte interdite : classé derrière les autres.`
         : `${names[e.seat]} n'a plus de cartes.`;
     case "RoundScored":
       return `Fin de manche : ${e.order.map((seat) => `${names[seat]} +${e.points[seat]}`).join(", ")}.`;
   }
 }
 
+/**
+ * What a selection belongs to: my hand and my choices. Another player's
+ * move (the other half of the exchange, a pass) keeps my selection.
+ */
+export function decisionKey(view: PresidentView, legal: PresidentAction[]): string {
+  return JSON.stringify([view.hand, legal]);
+}
+
 export function PresidentBoard({ view, legalActions, me, seatNames, submit }: BoardProps) {
   const v = view as PresidentView;
   const legal = legalActions as PresidentAction[];
-  const [picked, setPicked] = useState<number[]>([]);
-  // Every update starts a new decision: nothing selected.
-  useEffect(() => setPicked([]), [view]);
+  // A selection is kept only for the decision it was made for.
+  const key = decisionKey(v, legal);
+  const [chosen, setChosen] = useState<{ key: string; picked: number[] }>({ key, picked: [] });
+  const picked = chosen.key === key ? chosen.picked : [];
 
   const selection = picked.flatMap((i) => (v.hand[i] ? [v.hand[i]] : []));
   const action = selectionAction(selection, legal);
   const gift = legal.find((a): a is { Give: { faces: Face[] } } => a !== "Pass" && "Give" in a);
   const playing = legal.some((a) => a === "Pass" || "Play" in a);
-  const toggle = (i: number) => setPicked((p) => (p.includes(i) ? p.filter((x) => x !== i) : [...p, i]));
+  const toggle = (i: number) =>
+    setChosen({ key, picked: picked.includes(i) ? picked.filter((x) => x !== i) : [...picked, i] });
   const send = (a: PresidentAction) => {
-    setPicked([]);
+    setChosen({ key, picked: [] });
     submit(a);
   };
 
@@ -151,7 +161,11 @@ export function PresidentBoard({ view, legalActions, me, seatNames, submit }: Bo
         </div>
       )}
       {/* Template strings: one text node each, so the hint reads as one string. */}
-      {gift && <p className="hint">{`Rends ${plural(gift.Give.faces.length, "carte")} de ton choix.`}</p>}
+      {gift && (
+        <p className="hint">{`Rends ${plural(gift.Give.faces.length, "carte")} ${
+          me !== null && v.titles[me] === "President" ? "au Trou du cul" : "au Secrétaire"
+        }.`}</p>
+      )}
       {playing && !v.trick && <p className="hint">À toi d'ouvrir : une à quatre cartes de même valeur.</p>}
       {playing && v.trick && (
         <p className="hint">{`Pose ${plural(v.trick.cards.length, "carte")} de valeur plus forte, ou passe.`}</p>

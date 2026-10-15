@@ -236,3 +236,5 @@ Deux plans, chacun fusionné sur `main` quand il est vert :
 - L'IA arrête ses simulations à la fin de la manche en cours (`evaluate`) : la donne suivante relève du hasard.
 - Mesures de l'arène (200 parties à 4 joueurs) : Difficile 0.87 contre Facile ; 0.85 avec révolution et jokers wild.
 - Les modes de jokers (forts, wild) sont livrés avec les règles de base (`combos.rs`), et non avec les variantes : la génération des coups les contient d'emblée.
+- ❓8 (nouveau, à valider) : après une révolution, la combinaison déjà sur la table se juge dans le nouvel ordre (un carré de 9 n'est battu que par un carré plus faible dans l'ordre normal).
+- L'écran d'échange nomme le destinataire (« au Trou du cul », « au Secrétaire ») ; le message d'un joueur sorti sur une carte interdite ne lui promet plus le titre de Trou du cul (❓5 : le second fautif finit Secrétaire).

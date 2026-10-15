@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { PresidentBoard, describePresidentEvent, selectionAction } from "../president/Board";
+import { PresidentBoard, decisionKey, describePresidentEvent, selectionAction } from "../president/Board";
 import type { PresidentAction, PresidentView } from "../president/types";
 import type { Card, Rank, Suit } from "../types";
 
@@ -111,5 +111,26 @@ describe("describePresidentEvent", () => {
     expect(describePresidentEvent({ type: "Played", seat: 0, rank: null, cards: [JOKER] }, NAMES)).toBe(
       "Ana joue joker.",
     );
+  });
+});
+
+describe("review fixes", () => {
+  it("names who receives the cards handed back", () => {
+    expect(board(EXCHANGE, [GIVE], 0)).toContain("Rends 2 cartes au Trou du cul.");
+    const one: PresidentAction = { Give: { faces: [{ kind: "Natural", rank: "Three" }] } };
+    expect(board(EXCHANGE, [one], 3)).toContain("Rends 1 carte au Secrétaire.");
+  });
+
+  it("does not promise the Scum title to every player out on a forbidden card", () => {
+    const text = describePresidentEvent({ type: "Finished", seat: 3, fouled: true }, NAMES);
+    expect(text).toContain("interdite");
+    expect(text).not.toContain("Trou du cul");
+  });
+
+  it("keeps a selection while only the other players' state changes", () => {
+    const same = { ...EXCHANGE, toGive: [0], events: [{ type: "Exchanged", from: 3, to: 2, count: 1 }] } as PresidentView;
+    expect(decisionKey(same, [GIVE])).toBe(decisionKey(EXCHANGE, [GIVE]));
+    expect(decisionKey({ ...EXCHANGE, hand: [N("Ace")] }, [GIVE])).not.toBe(decisionKey(EXCHANGE, [GIVE]));
+    expect(decisionKey(EXCHANGE, PLAY_LEGAL)).not.toBe(decisionKey(EXCHANGE, [GIVE]));
   });
 });

@@ -62,7 +62,9 @@ ont été validés par l'utilisateur le 2026-10-15 (spec 4, §3).
 - **Révolution** [W] : quatre cartes de même valeur inversent l'ordre (le 3
   devient la plus forte, le 2 la plus faible) jusqu'à la fin de la manche ;
   les jokers forts restent au-dessus de tout. ❓2 Un nouveau carré inverse de
-  nouveau l'ordre.
+  nouveau l'ordre. ❓8 Le changement d'ordre vaut aussi pour la combinaison
+  déjà sur la table : après un carré de 9, seul un carré plus faible dans
+  l'ordre normal peut le battre.
 - **Interdiction de finir sur un 2** [W] : qui pose sa dernière carte avec un
   ou plusieurs 2, ou un ou plusieurs jokers, est Trou du cul.
   ❓3 Pendant une révolution, la carte interdite est le 3 ; les jokers restent
