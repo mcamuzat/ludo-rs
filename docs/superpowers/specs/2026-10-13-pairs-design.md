@@ -758,3 +758,26 @@ pile s'il est sûr et qu'une carte inconnue risque la paire (plus de 15 %),
 sinon piocher ou voler au hasard. La recherche ne délibère que trois
 rangements (sûr, croissant, décroissant). Mesuré : Difficile contre Facile
 0,61 à 3 joueurs (200 parties), 0,58 à 5 (400) : le jeu est très chaotique.
+
+## 26. Blackstone (plan 18)
+
+Jeu de « chicken » du livret (`pairs-blackstone`, 2–8 joueurs), ajouté sans
+changement de plateforme. Source : *Pairs Companion Book*, chapitre
+« Blackstone ». Règles et points non tranchés : `games/pairs/RULES.md`.
+
+### Modèle
+
+`games/pairs/src/blackstone/` sur `deck.rs`. Actions : `Take { count }`
+(de `min_take` à la taille du paquet) et `Fold`. L'ouverture a son propre
+départage : les paires de pierres blanches restent, les 10 en trop
+retournent au paquet (`Supply::reshuffle`). Les mises devant les joueurs ne
+sont pas dans le pot : jetons + pot + mises devant = 0. Seul l'ordre du
+paquet est caché ; la vue donne le coût d'un abandon (une règle).
+
+### IA
+
+Politique de simulation : prendre le minimum sauf si la probabilité
+(hypergéométrique, vue de tous) d'une seconde pierre noire dépasse ½, sinon
+se coucher. La recherche ne délibère que jusqu'à 3 cartes au-dessus du
+minimum. Mesuré : Difficile contre Facile 0,74 à 2 joueurs, 0,67 à 5 (200
+parties).

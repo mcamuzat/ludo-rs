@@ -179,3 +179,12 @@ fn troll_guts_conforms_at_every_table_size() {
     check::<TrollGuts>(&Config { hands: Some(255) }, 6, 2, 138);
 }
 
+#[test]
+fn blackstone_conforms_at_every_table_size() {
+    use pairs::blackstone::{Blackstone, Config};
+    for players in 2..=8u8 {
+        check::<Blackstone>(&Config::default(), players, 30, 1700 + u64::from(players));
+    }
+    check::<Blackstone>(&Config { hands: Some(1) }, 3, 100, 147);
+    check::<Blackstone>(&Config { hands: Some(255) }, 8, 3, 148);
+}

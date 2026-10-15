@@ -734,3 +734,44 @@ plus chaotique de Goblin Poker : on ne peut pas se coucher).
    vides), les survivants se partagent le pot ; les jetons impairs restent.
 4. ❓ Les cartes d'un joueur éliminé vont à la défausse, face cachée ; une
    pioche vide est refaite avec la défausse.
+
+## Blackstone (`pairs-blackstone`, 2 à 8 joueurs)
+
+Source : **[R]** *Pairs Companion Book*, chapitre « Blackstone » (le plus
+vieux jeu du livret, joué à l'origine avec un vrai sac de pierres).
+
+### Principe [R]
+- Les 10 sont des *pierres noires*, toutes les autres cartes des *pierres
+  blanches*. La main s'arrête dès qu'un joueur a deux pierres noires : il a
+  perdu.
+
+### Mise en place [R]
+- Chacun mise 5 jetons, laissés devant lui tant qu'il est en jeu.
+- On mélange et on donne une carte visible à chacun ; la plus basse
+  commence. Les égalités se départagent avec des cartes en plus, comme à
+  Pairs, mais les paires de pierres blanches restent (elles ne font pas de
+  mal). Qui reçoit plus d'un 10 pendant le départage n'est pas éliminé : les
+  10 en trop retournent au paquet, remélangé une fois le premier joueur
+  désigné.
+- Les pierres blanches vont au milieu ; chacun garde ses pierres noires.
+
+### Tour [R]
+- **Prendre** : annoncer un nombre de cartes, au moins autant que le joueur
+  précédent (au moins une pour le premier), avant d'en voir aucune. Les
+  cartes viennent une à une : les blanches au milieu, les noires gardées. On
+  arrête de distribuer dès la seconde pierre noire.
+- **Se coucher** : quitter la main en payant au pot sa mise plus la moitié
+  des pierres blanches distribuées, arrondie au-dessus.
+- Le perdant paie sa mise plus un jeton par pierre blanche distribuée. Les
+  survivants reprennent leur mise et partagent le pot ; les jetons impairs
+  restent pour la main suivante. S'il ne reste qu'un joueur, il gagne.
+
+### Choix sur les points non tranchés
+1. ❓ Une partie se joue en 5 mains (`Config { hands }`, plafond 15).
+   Chacun part de 0 jeton et peut passer en négatif ; classement final aux
+   jetons, égalités conservées.
+2. ❓ On ne peut pas annoncer plus de cartes qu'il n'en reste au paquet.
+   (Le paquet ne s'épuise jamais avant la fin : au plus 8 pierres noires
+   sont tenues sans perdre, il y en a 10.)
+3. ❓ « Le joueur précédent » est le dernier qui a pris des cartes : se
+   coucher ne change pas le minimum.

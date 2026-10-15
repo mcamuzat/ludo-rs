@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 import type { Seat } from "../engine/types";
 import { AubergeBoard } from "./pairs/auberge/Board";
+import { BlackstoneBoard } from "./pairs/blackstone/Board";
 import { CaptainsOrdersBoard } from "./pairs/captains-orders/Board";
 import { ContinuousBoard } from "./pairs/continuous/Board";
 import { DeadfallBoard } from "./pairs/deadfall/Board";
@@ -18,6 +19,7 @@ import { ToTheMoonBoard } from "./pairs/to-the-moon/Board";
 import { TrollGutsBoard } from "./pairs/troll-guts/Board";
 import {
   AUBERGE_RULES,
+  BLACKSTONE_RULES,
   CAPTAINS_ORDERS_RULES,
   CONTINUOUS_RULES,
   DEADFALL_RULES,
@@ -83,6 +85,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "pairs-rocket", family: "pairs", Board: RocketBoard, rules: ROCKET_RULES },
   { id: "pairs-monster", family: "pairs", Board: MonsterBoard, rules: MONSTER_RULES },
   { id: "pairs-troll-guts", family: "pairs", Board: TrollGutsBoard, rules: TROLL_GUTS_RULES },
+  { id: "pairs-blackstone", family: "pairs", Board: BlackstoneBoard, rules: BLACKSTONE_RULES },
 ];
 
 export function gameUi(id: string): GameUi | undefined {

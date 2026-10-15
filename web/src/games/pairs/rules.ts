@@ -133,3 +133,11 @@ export const TROLL_GUTS_RULES = [
   "Si la carte fait une paire avec tes cartes visibles, tu paies sa valeur au pot et tu sors. On ne peut pas se coucher.",
   "Le dernier survivant prend le pot. 5 mains, classement aux jetons.",
 ];
+
+export const BLACKSTONE_RULES = [
+  "Les 10 sont des pierres noires, le reste des pierres blanches. Qui en a deux noires perd la main.",
+  "Chacun mise 5 jetons, gardés devant soi, et reçoit une carte : la plus basse commence. On ne garde que ses pierres noires ; les blanches vont au milieu.",
+  "À ton tour : annonce un nombre de cartes, au moins autant que le joueur précédent (1 pour le premier), puis tire-les une à une. Une seconde pierre noire arrête tout.",
+  "Te coucher coûte ta mise plus la moitié des pierres blanches (arrondie au-dessus). Le perdant paie sa mise plus un jeton par pierre blanche.",
+  "Les survivants reprennent leur mise et partagent le pot. 5 mains, classement aux jetons.",
+];
