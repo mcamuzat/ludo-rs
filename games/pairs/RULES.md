@@ -558,3 +558,34 @@ Starboard, paru dans le deck *Pirate Pairs*).
 2. ❓ S'il n'y a plus aucune carte à piocher (toutes en jeu), on ne peut
    que s'arrêter.
 3. ❓ `Config { target }` change les 21 points (plafond 99).
+
+## Starboard (`pairs-starboard`, 2 à 7 joueurs)
+
+Source : **[R]** *Pairs Companion Book*, chapitre « Starboard » (jeu frère
+de Port).
+
+### Mise en place [R]
+- Chacun mise 1 jeton au pot. Le bouton, tiré au hasard à la première
+  manche, avance d'un siège vers la gauche à chaque manche.
+- On mélange et on pose deux cartes visibles au milieu ; si elles font une
+  paire, on en défausse une et on la remplace. C'est l'unique main que
+  tout le monde joue.
+
+### Tour [R]
+- En partant du bouton, chacun à son tour **tire** ou **se bloque**.
+- Tirer : payer 1 jeton au pot et poser une carte au milieu. Si elle fait
+  une paire, le tireur est éliminé (la carte est défaussée). Sinon, tous
+  les joueurs bloqués sont éliminés.
+- Se bloquer : prétendre que le milieu ne peut plus prendre de carte sans
+  paire. On ne rejoue plus de la manche.
+- La manche finit quand chacun a sauté ou s'est bloqué ; le dernier joueur
+  encore en jeu se bloque d'office.
+- Les survivants se partagent le pot ; les jetons impairs restent pour le
+  pot suivant.
+
+### Choix sur les points non tranchés
+1. ❓ Une partie se joue en deux tours de bouton (2 manches par joueur,
+   `Config { rounds }`, plafond 30). Chacun part de 0 jeton et peut passer
+   en négatif ; classement final aux jetons, égalités conservées.
+2. ❓ Si personne ne survit, tout le pot reste pour la manche suivante.
+3. ❓ Chaque manche se joue sur un paquet complet fraîchement mélangé.

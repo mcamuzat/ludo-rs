@@ -93,3 +93,11 @@ export const PORT_RULES = [
   "Quand tout le monde s'est arrêté ou a sauté, le plus gros total de cartes marque N points (N = nombre de joueurs), le suivant N−1, et ainsi de suite ; à égalité, chacun marque le rang le plus haut.",
   "Le premier à 21 points gagne ; les ex æquo au-delà de 20 rejouent une manche entre eux.",
 ];
+
+export const STARBOARD_RULES = [
+  "Chacun mise 1 jeton ; deux cartes de rangs différents vont au milieu : c'est la main que tout le monde joue.",
+  "En partant du bouton, chacun à son tour tire ou se bloque. Tirer coûte 1 jeton et ajoute une carte au milieu.",
+  "Si la carte fait une paire, tu es éliminé. Sinon, tous les joueurs bloqués sont éliminés.",
+  "Se bloquer, c'est parier que le milieu ne peut plus prendre de carte sans paire. Le dernier en jeu se bloque d'office.",
+  "Les survivants bloqués se partagent le pot (les jetons impairs restent). Le bouton tourne ; deux tours de table, classement aux jetons.",
+];

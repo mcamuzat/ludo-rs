@@ -640,3 +640,25 @@ Politique de simulation : s'arrêter si le risque de paire (vu de tous) est
 d'au moins ½, ou d'au moins ¼ quand le total dépasse déjà toutes les piles
 arrêtées ; sinon prendre. Mesuré : Difficile contre Facile 0,87 à 2
 joueurs, 0,75 à 5 (200 parties).
+
+## 21. Starboard (plan 13)
+
+Jeu de bluff collectif du livret (`pairs-starboard`, 2–7 joueurs), ajouté
+sans changement de plateforme. Source : *Pairs Companion Book*, chapitre
+« Starboard ». Règles et points non tranchés : `games/pairs/RULES.md`.
+Aucune statistique affichée.
+
+### Modèle
+
+`games/pairs/src/starboard/` sur `deck.rs`, un paquet complet mélangé par
+manche (`mix(seed, manche)`). Actions : `Hit`, `Lock`. Chaque siège a un
+`Status` (`In`, `Locked`, `Busted`, `Knocked`) ; le dernier encore en jeu se
+bloque d'office. Seuls l'ordre de la pioche et les mélanges à venir sont
+cachés.
+
+### IA
+
+Politique de simulation : se bloquer quand le risque de paire au prochain
+tirage (vu de tous) atteint 0,55, ou 0,7 s'il y a des joueurs bloqués à
+éliminer ; sinon tirer. Mesuré : Difficile contre Facile 0,59 à 3 joueurs,
+0,57 à 2 (400 parties), 0,65 à 6 (200) : le hasard pèse lourd.

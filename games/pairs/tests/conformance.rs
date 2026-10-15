@@ -130,3 +130,14 @@ fn port_conforms_at_every_table_size() {
     check::<Port>(&Config { target: Some(1) }, 3, 100, 97);
     check::<Port>(&Config { target: Some(255) }, 2, 3, 98);
 }
+
+#[test]
+fn starboard_conforms_at_every_table_size() {
+    use pairs::starboard::{Config, Starboard};
+    for players in 2..=7u8 {
+        check::<Starboard>(&Config::default(), players, 30, 1200 + u64::from(players));
+    }
+    check::<Starboard>(&Config { rounds: Some(1) }, 3, 100, 107);
+    check::<Starboard>(&Config { rounds: Some(255) }, 2, 3, 108);
+}
+
