@@ -20,6 +20,7 @@ interface Props {
 const SHELVES: { title: string; families: GameFamily[] }[] = [
   { title: "Plateau et tuiles", families: ["board", "tiles"] },
   { title: "Deck Pairs", families: ["pairs"] },
+  { title: "Cartes traditionnelles", families: ["cards"] },
 ];
 
 export function Home({ catalog, error, name, onName, onPick, onJoin, saved, onResume, onAbandon }: Props) {

@@ -3,6 +3,13 @@ import type { GameConfig, GameMeta } from "../engine/types";
 /** Lobby labels by `<game id>.<key>`, and `<game id>.<key>.<value>` for choices. Missing: the key itself. */
 const LABELS: Record<string, string> = {
   "pairs-ghost-town.hands": "Mains",
+  "cards-president.rounds": "Manches",
+  "cards-president.revolution": "Révolution",
+  "cards-president.no_finish_on_two": "Pas de fin sur un 2",
+  "cards-president.jokers": "Jokers",
+  "cards-president.jokers.Off": "Sans",
+  "cards-president.jokers.High": "Forts",
+  "cards-president.jokers.Wild": "Wild (remplacent une valeur)",
 };
 
 export function optionLabel(gameId: string, key: string): string {

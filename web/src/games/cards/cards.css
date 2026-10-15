@@ -1,0 +1,12 @@
+.playing-card { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; width: 40px; height: 58px; padding: 0; border: 1px solid var(--face-line); border-radius: 6px; background: var(--face); color: #1f2421; font: 800 1rem/1 var(--f-display); box-shadow: 0 1px 2px rgb(0 0 0 / 25%); }
+.playing-card .suit { font-size: 1.15rem; }
+.playing-card.red { color: #b3261e; }
+.playing-card.joker { color: #6b3fa0; font-size: 0.7rem; }
+.playing-card.small { width: 28px; height: 40px; font-size: 0.8rem; }
+.playing-card.small .suit { font-size: 0.85rem; }
+.playing-card.playable { cursor: pointer; transition: transform 0.12s; }
+.playing-card.playable:hover { transform: translateY(-4px); }
+.playing-card.selected, .playing-card.selected:hover { transform: translateY(-10px); outline: 2px solid var(--brass); outline-offset: 1px; }
+.president-hand { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; padding-top: 10px; }
+.president-trick { display: flex; gap: 4px; justify-content: center; align-items: center; min-height: 60px; }
+.president-banner { margin: 0; font-weight: 700; color: var(--brass); }

@@ -14,8 +14,9 @@ export function Die() {
   );
 }
 
-/** A game's thumbnail on the home screen: one drawing per family, the game's initial on Pairs cards. */
+/** A game's thumbnail on the home screen: one drawing per family, the game's initial on cards. */
 export function Emblem({ family, name }: { family: GameFamily; name: string }) {
+  const initial = name.replace(/^L['’]/, "").charAt(0).toUpperCase();
   if (family === "board") {
     return (
       <svg viewBox="0 0 44 44" aria-hidden="true">
@@ -39,7 +40,20 @@ export function Emblem({ family, name }: { family: GameFamily; name: string }) {
       </svg>
     );
   }
-  const initial = name.replace(/^L['’]/, "").charAt(0).toUpperCase();
+  if (family === "cards") {
+    return (
+      <svg viewBox="0 0 44 44" aria-hidden="true">
+        <rect width="44" height="44" rx="10" style={{ fill: "var(--accent-soft)" }} />
+        <rect x="12" y="7" width="20" height="30" rx="3" style={{ fill: "var(--face)", stroke: "var(--accent)" }} strokeWidth="1.5" />
+        <text x="22" y="22" fontWeight="800" fontSize="11" fill="#b3261e" style={{ fontFamily: "var(--f-display)" }} textAnchor="middle">
+          {initial}
+        </text>
+        <text x="22" y="33" fontSize="9" fill="#b3261e" textAnchor="middle">
+          ♥
+        </text>
+      </svg>
+    );
+  }
   return (
     <svg viewBox="0 0 44 44" aria-hidden="true">
       <rect width="44" height="44" rx="10" style={{ fill: "var(--brass-soft)" }} />

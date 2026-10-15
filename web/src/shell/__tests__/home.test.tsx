@@ -16,6 +16,7 @@ const CATALOG = [
   meta("pairs-auberge", "L'Auberge des Pirates"),
   meta("pairs-deadfall", "Deadfall"),
   meta("pairs-ghost-town", "Ghost Town"),
+  meta("cards-president", "Président"),
 ];
 
 function home(): string {
@@ -40,7 +41,15 @@ describe("Home", () => {
     const html = home();
     expect(html).not.toContain("Mahjong Riichi");
     const names = [...html.matchAll(/<strong>([^<]+)<\/strong>/g)].map((m) => m[1].replace("&#x27;", "'"));
-    expect(names).toEqual(["Yavalath", "Deadfall", "Ghost Town", "Jour de chance", "L'Auberge des Pirates", "Zombie Life"]);
+    expect(names).toEqual([
+      "Yavalath",
+      "Deadfall",
+      "Ghost Town",
+      "Jour de chance",
+      "L'Auberge des Pirates",
+      "Zombie Life",
+      "Président",
+    ]);
   });
 
   it("shows a rules reminder only when there are rules", () => {
@@ -48,5 +57,12 @@ describe("Home", () => {
     const html = renderToStaticMarkup(<RulesReminder rules={["Une règle.", "Une autre."]} />);
     expect(html).toContain("Rappel des règles");
     expect(html).toContain("<li>Une autre.</li>");
+  });
+
+  it("shelves the classic card games after the Pairs deck", () => {
+    const html = home();
+    expect(html).toContain("Cartes traditionnelles");
+    expect(html.indexOf("Deck Pairs")).toBeLessThan(html.indexOf("Cartes traditionnelles"));
+    expect(html.indexOf("Cartes traditionnelles")).toBeLessThan(html.indexOf("Président"));
   });
 });

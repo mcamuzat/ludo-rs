@@ -1,3 +1,5 @@
+import { PresidentBoard } from "./cards/president/Board";
+import { PRESIDENT_RULES } from "./cards/president/rules";
 import type { ComponentType } from "react";
 import type { Seat } from "../engine/types";
 import { AubergeBoard } from "./pairs/auberge/Board";
@@ -52,7 +54,7 @@ export interface BoardProps {
 }
 
 /** How the home screen groups and illustrates a game. */
-export type GameFamily = "board" | "tiles" | "pairs";
+export type GameFamily = "board" | "tiles" | "pairs" | "cards";
 
 export interface GameUi {
   id: string;
@@ -86,6 +88,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "pairs-monster", family: "pairs", Board: MonsterBoard, rules: MONSTER_RULES },
   { id: "pairs-troll-guts", family: "pairs", Board: TrollGutsBoard, rules: TROLL_GUTS_RULES },
   { id: "pairs-blackstone", family: "pairs", Board: BlackstoneBoard, rules: BLACKSTONE_RULES },
+  { id: "cards-president", family: "cards", Board: PresidentBoard, rules: PRESIDENT_RULES },
 ];
 
 export function gameUi(id: string): GameUi | undefined {
