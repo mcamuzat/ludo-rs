@@ -107,6 +107,18 @@ impl<G: Game> AnyMatch for Match<G> {
     }
 }
 
+/// Reads a config, refusing a field the game does not know: serde would
+/// silently drop it, and a mistyped option would quietly play the default.
+fn known_config<G: Game>(given: Value) -> Result<G::Config, LudoError> {
+    let config: G::Config = from_json(given.clone())?;
+    if let (Value::Object(given), Value::Object(kept)) = (&given, to_json(&config)) {
+        if let Some(key) = given.keys().find(|k| !kept.contains_key(*k)) {
+            return Err(LudoError::Illegal(format!("Option inconnue : {key}.")));
+        }
+    }
+    Ok(config)
+}
+
 /// What the lobby needs to know of a game: its metadata and its options.
 #[derive(Clone, Debug, Serialize)]
 pub struct GameInfo {
@@ -177,7 +189,7 @@ impl<G: Game + Determinize + Heuristics> AnyGame for GameEntry<G> {
         let config = if config.is_null() {
             G::Config::default()
         } else {
-            from_json(config)?
+            known_config::<G>(config)?
         };
         Ok(Box::new(Match::<G>::new(config, players, seed)?))
     }
@@ -249,6 +261,19 @@ mod tests {
             game.new_match(json!({ "pile": 0 }), 2, 1),
             Err(LudoError::Illegal(_))
         ));
+    }
+
+    #[test]
+    fn new_match_refuses_an_unknown_option() {
+        let game = find(GAMES, "nim").unwrap();
+        match game.new_match(json!({ "pile": 5, "piles": 3 }), 2, 1) {
+            Err(LudoError::Illegal(message)) => assert_eq!(message, "Option inconnue : piles."),
+            other => panic!(
+                "expected a refusal, got {:?}",
+                other.map(|m| m.state_json())
+            ),
+        }
+        assert!(game.new_match(json!({ "pile": 5 }), 2, 1).is_ok());
     }
 
     #[test]

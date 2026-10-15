@@ -22,7 +22,7 @@ export const GHOST_TOWN_RULES = [
   "Jouer : paie 2 jetons et pose une carte dans ta maison, sans paire ni rang de la rue.",
   "Piocher : la carte va dans ta maison. Paire avec ta maison ou la rue : tu paies son rang et tu sors. Sinon tu gagnes son rang en jetons, pris au pot.",
   "Se coucher : quitter la main.",
-  "La main finit quand le pot est vide, ou quand il reste un seul joueur, qui prend le pot. 5 mains, classement aux jetons.",
+  "La main finit quand le pot est vide, ou quand il reste un seul joueur, qui prend le pot. 5 mains par défaut (réglable dans le lobby), classement aux jetons.",
 ];
 
 export const ZOMBIE_LIFE_RULES = [
