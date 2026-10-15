@@ -22,7 +22,8 @@ Jeux :
 - **Rocket** (1–6 joueurs contre une banque automatique, deck Pairs) ;
 - **Monster** (4–8 joueurs, deck Pairs) ;
 - **Troll Guts** (3–6 joueurs, jeu à jetons, deck Pairs) ;
-- **Blackstone** (2–8 joueurs, jeu à jetons, deck Pairs).
+- **Blackstone** (2–8 joueurs, jeu à jetons, deck Pairs) ;
+- **Président** (4–7 joueurs, cartes traditionnelles, règles d'après Wikipédia et Pagat ; révolution, fin sur un 2 et jokers en options).
 
 ## Lancer en local
 ```bash

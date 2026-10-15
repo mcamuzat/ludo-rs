@@ -25,6 +25,7 @@ ludo-rs : plateforme de jeux traditionnels. Moteur Rust (`crates/ludo-core`, `ga
 - `cargo run --release -p ludo-cli -- arena pairs-monster 200 hard easy 4` : Difficile doit marquer ≥ 0.55 contre Facile (0.68 mesuré à 4 joueurs comme à 6).
 - `cargo run --release -p ludo-cli -- arena pairs-troll-guts 400 hard easy 5` : Difficile doit marquer ≥ 0.55 contre Facile (0.58 mesuré à 5 joueurs, 0.61 à 3 ; jeu très chaotique).
 - `cargo run --release -p ludo-cli -- arena pairs-blackstone 200 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.74 mesuré ; 0.67 à 5 joueurs).
+- `cargo run --release -p ludo-cli -- arena cards-president 200 hard easy 4` : Difficile doit marquer ≥ 0.55 contre Facile (0.87 mesuré ; 0.85 avec `--config '{"revolution":true,"jokers":"Wild"}'`).
 - `cargo run --release -p ludo-cli -- play yavalath 2 medium` : partie en terminal.
 - Web : `./scripts/build-wasm.sh` (ou `dev`), puis `cd web && pnpm dev` / `pnpm test` / `pnpm build`.
 
@@ -55,3 +56,12 @@ Comme « Ajouter un jeu », mais sans nouvelle crate :
 3. `crates/ludo-registry/src/lib.rs` : un `static` et une entrée dans `GAMES`.
 4. `web/src/games/pairs/<jeu>/types.ts` + `Board.tsx` (cartes et table : `../cards.tsx`), un test dans `__tests__/`, une entrée dans `web/src/games/registry.ts` avec son rappel de règles (`web/src/games/pairs/rules.ts`, à garder d'accord avec `RULES.md`). L'accueil trie les jeux par nom ; `hidden: true` retire un jeu de l'accueil (Riichi, pour l'instant).
 5. `ludo-cli arena pairs-<jeu> 400 hard easy`, et la ligne correspondante dans « Commandes ».
+
+## Ajouter un jeu de cartes classique
+Comme « Ajouter un jeu Pairs », dans `games/cards` :
+1. `games/cards/src/<jeu>/` : `mod.rs`, `view.rs`, `determinize.rs`, `heuristics.rs`, `testing.rs` ; `pub mod <jeu>;` et la réexportation dans `games/cards/src/lib.rs`. Le paquet vient de `deck.rs` (`Card`, `Face`, `pack_52`/`pack_32`/`pack_54`, `deal_evenly`, `redeal`) : l'étendre là plutôt que de le recopier. L'ordre des valeurs appartient au jeu.
+2. Une section dans `games/cards/RULES.md` ; `tests/<jeu>_rules.rs` ; un cas dans `tests/conformance.rs` par nombre de joueurs et par variante.
+3. Les options passent par `Game::options` et `check_config`, avec leurs libellés dans `web/src/games/options.ts`.
+4. `crates/ludo-registry/src/lib.rs` : un `static` et une entrée dans `GAMES`.
+5. `web/src/games/cards/<jeu>/` : `types.ts`, `Board.tsx` (cartes : `../PlayingCard`), `rules.ts`, un test dans `__tests__/`, une entrée `family: "cards"` dans `web/src/games/registry.ts`.
+6. `ludo-cli arena cards-<jeu> 200 hard easy`, et la ligne correspondante dans « Commandes ».

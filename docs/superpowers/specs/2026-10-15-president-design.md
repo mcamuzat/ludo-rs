@@ -1,7 +1,7 @@
 # ludo-rs — Cartes traditionnelles : le Président et les options de partie (spec 4)
 
 Date : 2026-10-15
-Statut : en relecture
+Statut : plan 2 livré
 Précédent : `2026-10-13-pairs-design.md` (cycle 3)
 
 ## 1. Objectif
@@ -228,3 +228,11 @@ Deux plans, chacun fusionné sur `main` quand il est vert :
    `president/`, `RULES.md`), registre, famille et étagère, plateau. Mise à
    jour du `README.md` (liste des jeux) et du `CLAUDE.md` (procédure « Ajouter un
    jeu de cartes classique », ligne d'arène dans « Commandes »).
+
+## 9. Ajustements faits au plan 2
+
+- ❓4 (nouveau, à valider) : la carte interdite se juge selon l'ordre en vigueur quand elle est posée, avant la révolution que ce coup déclenche.
+- Le plateau sélectionne des cartes et n'active « Jouer » que si la sélection forme un coup permis ; comme une action désigne une valeur, des naturels et des jokers, une sélection correspond toujours à un seul coup : la liste de choix prévue au §6 pour les jokers wild n'est pas nécessaire.
+- L'IA arrête ses simulations à la fin de la manche en cours (`evaluate`) : la donne suivante relève du hasard.
+- Mesures de l'arène (200 parties à 4 joueurs) : Difficile 0.87 contre Facile ; 0.85 avec révolution et jokers wild.
+- Les modes de jokers (forts, wild) sont livrés avec les règles de base (`combos.rs`), et non avec les variantes : la génération des coups les contient d'emblée.
