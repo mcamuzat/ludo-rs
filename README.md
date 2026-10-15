@@ -8,11 +8,19 @@ Jeux :
 - **Mahjong Riichi** (4 joueurs, règles Mahjong Soul, moteur [riichienv-core](https://github.com/smly/RiichiEnv)), retiré de l'accueil pour l'instant ;
 - **Jour de chance** (Continuous Pairs, 2–8 joueurs, James Ernest et Paul Peterson, deck Pairs) ;
 - **L'Auberge des Pirates** (2–8 joueurs, Regent multijoueur, deck Pairs) ;
-- **Ghost Town** (2–6 joueurs, jeu à jetons de James Ernest, deck Pairs).
-- **Zombie Life** (3–6 joueurs, variante Origames de Pairs : Refuges, Horde, 21 points).
-- **Goblin Poker** (3–8 joueurs, jeu à jetons de James Ernest, deck Pairs).
-- **To the Moon!** (2–6 joueurs, jeu de plis Cheapass Games, deck Pairs).
-- **Deadfall** (2–7 joueurs, jeu de bluff de James Ernest, deck Pairs).
+- **Ghost Town** (2–6 joueurs, jeu à jetons de James Ernest, deck Pairs) ;
+- **Zombie Life** (3–6 joueurs, variante Origames de Pairs : Refuges, Horde, 21 points) ;
+- **Goblin Poker** (3–8 joueurs, jeu à jetons de James Ernest, deck Pairs) ;
+- **To the Moon!** (2–6 joueurs, jeu de plis Cheapass Games, deck Pairs) ;
+- **Deadfall** (2–7 joueurs, jeu de bluff de James Ernest, deck Pairs) ;
+- **Captain's Orders** (4–8 joueurs, Cheapass Games, deck Pairs) ;
+- **Pendleton** (2 joueurs, deck Pairs) ;
+- **Kitty** (3–6 joueurs, deck Pairs) ;
+- **Octopus** (4–6 joueurs, jeu à jetons, deck Pairs) ;
+- **Port** et **Starboard** (2–7 joueurs, deck Pairs) ;
+- **Sweep** (3–6 joueurs, deck Pairs) ;
+- **Rocket** (1–6 joueurs contre une banque automatique, deck Pairs) ;
+- **Monster** (4–8 joueurs, deck Pairs).
 
 ## Lancer en local
 ```bash
