@@ -9,7 +9,8 @@ use serde_json::Value;
 
 use crate::ai::{self, Level, Search};
 use crate::{
-    Determinize, Game, GameMeta, Heuristics, Illegal, Match, MatchLog, Outcome, Seat, Viewer,
+    Determinize, Game, GameMeta, GameOption, Heuristics, Illegal, Match, MatchLog, Outcome, Seat,
+    Viewer,
 };
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -106,8 +107,24 @@ impl<G: Game> AnyMatch for Match<G> {
     }
 }
 
+/// What the lobby needs to know of a game: its metadata and its options.
+#[derive(Clone, Debug, Serialize)]
+pub struct GameInfo {
+    #[serde(flatten)]
+    pub meta: GameMeta,
+    pub options: Vec<GameOption>,
+}
+
 pub trait AnyGame: Sync {
     fn meta(&self) -> GameMeta;
+    fn options(&self) -> Vec<GameOption>;
+
+    fn info(&self) -> GameInfo {
+        GameInfo {
+            meta: self.meta(),
+            options: self.options(),
+        }
+    }
     /// `config` = `Value::Null` for the game's default options.
     fn new_match(
         &self,
@@ -145,6 +162,10 @@ impl<G> Default for GameEntry<G> {
 impl<G: Game + Determinize + Heuristics> AnyGame for GameEntry<G> {
     fn meta(&self) -> GameMeta {
         G::meta()
+    }
+
+    fn options(&self) -> Vec<GameOption> {
+        G::options()
     }
 
     fn new_match(
@@ -208,6 +229,26 @@ mod tests {
         assert_eq!(m.rev(), 1);
         assert_eq!(m.pending(), vec![Seat(1)]);
         assert_eq!(m.view_json(Viewer::Spectator)["pile"], json!(3));
+    }
+
+    #[test]
+    fn info_lists_meta_and_options() {
+        let info = serde_json::to_value(find(GAMES, "nim").unwrap().info()).unwrap();
+        assert_eq!(info["id"], json!("nim"));
+        assert_eq!(info["minPlayers"], json!(2));
+        assert_eq!(
+            info["options"],
+            json!([{ "key": "pile", "kind": { "type": "number", "min": 1, "max": 30, "default": 10 } }])
+        );
+    }
+
+    #[test]
+    fn new_match_refuses_a_config_out_of_bounds() {
+        let game = find(GAMES, "nim").unwrap();
+        assert!(matches!(
+            game.new_match(json!({ "pile": 0 }), 2, 1),
+            Err(LudoError::Illegal(_))
+        ));
     }
 
     #[test]

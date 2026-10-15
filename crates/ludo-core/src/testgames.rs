@@ -5,7 +5,10 @@ use rand::seq::SliceRandom;
 use rand::{Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
 
-use crate::{Determinize, Game, GameMeta, Heuristics, Illegal, Outcome, Pending, Seat, Viewer};
+use crate::{
+    Determinize, Game, GameMeta, GameOption, Heuristics, Illegal, OptionKind, Outcome, Pending,
+    Seat, Viewer,
+};
 
 /// Take 1 to 3 stones; whoever takes the last one wins, everyone else ties second.
 pub struct Nim;
@@ -43,6 +46,25 @@ impl Game for Nim {
             max_players: 4,
             hidden_info: false,
             clock: true,
+        }
+    }
+
+    fn options() -> Vec<GameOption> {
+        vec![GameOption {
+            key: "pile",
+            kind: OptionKind::Number {
+                min: 1,
+                max: 30,
+                default: 10,
+            },
+        }]
+    }
+
+    fn check_config(config: &NimConfig, _players: u8) -> Result<(), Illegal> {
+        if (1..=30).contains(&config.pile) {
+            Ok(())
+        } else {
+            Err(Illegal::new("Nim se joue avec un tas de 1 à 30."))
         }
     }
 

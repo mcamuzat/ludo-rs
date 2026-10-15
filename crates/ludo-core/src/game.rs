@@ -38,6 +38,33 @@ pub struct GameMeta {
     pub clock: bool,
 }
 
+/// A setting the lobby offers for a game. `key` is the name of a field of the
+/// game's `Config`; `kind` gives the values it takes and its default, which
+/// must be the field's value in `Config::default()` (checked by conformance).
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+pub struct GameOption {
+    pub key: &'static str,
+    pub kind: OptionKind,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum OptionKind {
+    Toggle {
+        default: bool,
+    },
+    /// `values` are the serialized names of an enum's variants.
+    Choice {
+        values: &'static [&'static str],
+        default: &'static str,
+    },
+    Number {
+        min: u32,
+        max: u32,
+        default: u32,
+    },
+}
+
 /// Seats that must decide now. Several seats when the game waits for
 /// simultaneous answers; empty exactly when the game is over.
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -148,6 +175,18 @@ pub trait Game: 'static {
     /// asked is itself information (who can call a discard) narrow it.
     fn visible_pending(s: &Self::State, _viewer: Viewer) -> Pending {
         Self::pending(s)
+    }
+
+    /// The settings the lobby offers. Default: none.
+    fn options() -> Vec<GameOption> {
+        Vec::new()
+    }
+
+    /// Refuses a config the game cannot be played with (a value out of the
+    /// bounds `options` announces). Called by `Match::new`, so by every new
+    /// match and every replayed log.
+    fn check_config(_config: &Self::Config, _players: u8) -> Result<(), Illegal> {
+        Ok(())
     }
 }
 

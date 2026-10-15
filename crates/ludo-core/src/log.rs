@@ -41,6 +41,7 @@ impl<G: Game> Match<G> {
                 meta.name, meta.min_players, meta.max_players
             )));
         }
+        G::check_config(&config, players)?;
         let state = G::new(&config, players, seed);
         let log = MatchLog {
             game_id: meta.id.to_owned(),
@@ -139,6 +140,17 @@ mod tests {
         let mut log = played().log().clone();
         log.game_id = "chess".into();
         assert!(replay::<Nim>(&log).is_err());
+    }
+
+    #[test]
+    fn check_config_guards_new_matches() {
+        assert!(Match::<Nim>::new(NimConfig { pile: 30 }, 2, 1).is_ok());
+        for pile in [0, 31] {
+            let e = Match::<Nim>::new(NimConfig { pile }, 2, 1)
+                .err()
+                .expect("refused");
+            assert_eq!(e.0, "Nim se joue avec un tas de 1 à 30.");
+        }
     }
 
     #[test]
