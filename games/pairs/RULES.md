@@ -589,3 +589,41 @@ de Port).
    en négatif ; classement final aux jetons, égalités conservées.
 2. ❓ Si personne ne survit, tout le pot reste pour la manche suivante.
 3. ❓ Chaque manche se joue sur un paquet complet fraîchement mélangé.
+
+## Sweep (`pairs-sweep`, 3 à 6 joueurs)
+
+Source : **[R]** *Pairs Companion Book*, chapitre « Sweep » (jeu proche de
+Kitty).
+
+### Mise en place [R]
+- Chacun reçoit 5 cartes. Un joueur tiré au sort commence la première
+  manche.
+
+### Manche [R]
+- On pose 5 cartes visibles au milieu : les *cibles*.
+- **Tir** : en partant de celui qui a ramassé la dernière cible à la manche
+  précédente, chacun à son tour joue une carte de sa main face visible, son
+  *tireur*.
+- **Prise**, dans l'ordre croissant des tireurs : le plus bas ramasse toutes
+  les cibles du rang le plus haut ; chacun des autres ramasse toutes les
+  cibles plus basses que lui. Les cartes ramassées vont en main. Après sa
+  prise, un tireur tombe au milieu et devient une cible.
+- Tireurs de même rang : ils ramassent à tour de rôle, en commençant par
+  celui qui a joué le premier. Plusieurs plus bas tireurs à égalité se
+  partagent ainsi les cibles du rang le plus haut de la donne d'origine.
+- Les cibles restantes sont défaussées. On recommence jusqu'à épuiser le
+  paquet (11 − N manches à N joueurs).
+
+### Score [R]
+- Qui a le plus de cartes d'un rang marque la valeur du rang ; à égalité,
+  chacun la marque.
+
+### Choix sur les points non tranchés
+1. ❓ À tour de rôle, des tireurs à égalité ramassent une cible chacun, au
+   choix quand elles n'ont pas toutes le même rang, jusqu'à ce qu'il n'en
+   reste plus à leur portée ; puis ils tombent au milieu ensemble.
+2. ❓ Un joueur sans carte en main ne tire pas.
+3. ❓ Le score compte toute la main (cartes reçues et ramassées). Une
+   partie se joue en une seule donne ; classement aux points.
+4. ❓ Si personne ne ramasse rien, le même joueur commence la manche
+   suivante.

@@ -101,3 +101,11 @@ export const STARBOARD_RULES = [
   "Se bloquer, c'est parier que le milieu ne peut plus prendre de carte sans paire. Le dernier en jeu se bloque d'office.",
   "Les survivants bloqués se partagent le pot (les jetons impairs restent). Le bouton tourne ; deux tours de table, classement aux jetons.",
 ];
+
+export const SWEEP_RULES = [
+  "5 cartes chacun. À chaque manche, 5 cibles visibles ; chacun à son tour tire une carte de sa main, face visible.",
+  "Le plus bas tireur ramasse toutes les cibles du rang le plus haut ; puis, du plus bas au plus haut, chaque tireur ramasse toutes les cibles plus basses que lui. Après avoir tiré, un tireur devient une cible.",
+  "Tireurs à égalité : ils ramassent une cible chacun à tour de rôle, en commençant par celui qui a joué le premier.",
+  "Ce qui reste est défaussé ; qui a ramassé la dernière cible commence la manche suivante. On joue jusqu'au bout du paquet.",
+  "À la fin, qui a le plus de cartes d'un rang en main marque sa valeur (égalité : chacun la marque).",
+];

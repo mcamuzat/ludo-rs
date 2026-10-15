@@ -141,3 +141,10 @@ fn starboard_conforms_at_every_table_size() {
     check::<Starboard>(&Config { rounds: Some(255) }, 2, 3, 108);
 }
 
+#[test]
+fn sweep_conforms_at_every_table_size() {
+    use pairs::sweep::{Config, Sweep};
+    for players in 3..=6u8 {
+        check::<Sweep>(&Config::default(), players, 40, 1300 + u64::from(players));
+    }
+}

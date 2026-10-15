@@ -662,3 +662,26 @@ Politique de simulation : se bloquer quand le risque de paire au prochain
 tirage (vu de tous) atteint 0,55, ou 0,7 s'il y a des joueurs bloqués à
 éliminer ; sinon tirer. Mesuré : Difficile contre Facile 0,59 à 3 joueurs,
 0,57 à 2 (400 parties), 0,65 à 6 (200) : le hasard pèse lourd.
+
+## 22. Sweep (plan 14)
+
+Jeu de collection du livret (`pairs-sweep`, 3–6 joueurs), ajouté sans
+changement de plateforme. Source : *Pairs Companion Book*, chapitre
+« Sweep ». Règles et points non tranchés : `games/pairs/RULES.md`.
+
+### Modèle
+
+`games/pairs/src/sweep/` sur `deck.rs`, une seule donne. Phases : `Play`
+(chacun tire à son tour, face visible), `Capture` (un tireur à égalité
+choisit sa cible ; une prise sans choix se fait seule), `Over`. Actions :
+`Shoot { card }`, `Capture { card }`. Les prises se résolvent par groupes de
+tireurs de même rang, du plus bas au plus haut (`groups`, `tie`). Un tireur
+qui tombe au milieu quitte `shooters`. Information cachée : les mains et la
+pioche ; `known` garde les cartes ramassées (vues de tous) tant qu'elles
+n'ont pas été rejouées, et `determinize` les laisse dans leur main.
+
+### IA
+
+Politique de simulation : tirer sa plus haute carte si elle dépasse toutes
+les cibles, sinon sa plus basse ; ramasser la plus haute cible. Mesuré :
+Difficile contre Facile 0,70 à 3 joueurs, 0,61 à 5 (200 parties).
