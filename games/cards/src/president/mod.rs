@@ -3,6 +3,8 @@
 //! sources: RULES.md.
 
 mod combos;
+mod determinize;
+mod heuristics;
 pub mod testing;
 mod view;
 
