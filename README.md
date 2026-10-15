@@ -20,7 +20,9 @@ Jeux :
 - **Port** et **Starboard** (2–7 joueurs, deck Pairs) ;
 - **Sweep** (3–6 joueurs, deck Pairs) ;
 - **Rocket** (1–6 joueurs contre une banque automatique, deck Pairs) ;
-- **Monster** (4–8 joueurs, deck Pairs).
+- **Monster** (4–8 joueurs, deck Pairs) ;
+- **Troll Guts** (3–6 joueurs, jeu à jetons, deck Pairs) ;
+- **Blackstone** (2–8 joueurs, jeu à jetons, deck Pairs).
 
 ## Lancer en local
 ```bash
