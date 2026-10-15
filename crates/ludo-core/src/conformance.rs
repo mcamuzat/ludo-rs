@@ -4,17 +4,80 @@ use rand::rngs::SmallRng;
 use rand::seq::SliceRandom;
 use rand::{Rng, SeedableRng};
 use serde::Serialize;
-use serde_json::Value;
+use serde_json::{json, Value};
 
-use crate::{replay, Determinize, Game, Match, MatchLog, Outcome, Pending, Seat, Viewer};
+use crate::{
+    replay, Determinize, Game, GameOption, Match, MatchLog, OptionKind, Outcome, Pending, Seat,
+    Viewer,
+};
 
 fn json<T: Serialize + ?Sized>(value: &T) -> Value {
     serde_json::to_value(value).expect("engine types serialize to JSON")
 }
 
+/// The options the lobby offers agree with the game's `Config`: each one
+/// names a field whose `Config::default()` value is the announced default,
+/// every offered value is a valid config, and a number just outside its
+/// bounds is refused by `check_config`.
+pub fn check_options<G: Game>(players: u8) {
+    let default = json(&G::Config::default());
+    for GameOption { key, kind } in G::options() {
+        let field = default
+            .get(key)
+            .unwrap_or_else(|| panic!("option {key} : aucun champ de ce nom dans Config"));
+        let (announced, offered, outside) = match kind {
+            OptionKind::Toggle { default } => {
+                (json!(default), vec![json!(false), json!(true)], vec![])
+            }
+            OptionKind::Choice { values, default } => (
+                json!(default),
+                values.iter().map(|v| json!(v)).collect(),
+                vec![],
+            ),
+            OptionKind::Number { min, max, default } => (
+                json!(default),
+                vec![json!(min), json!(max)],
+                [min.checked_sub(1), max.checked_add(1)]
+                    .into_iter()
+                    .flatten()
+                    .map(|v| json!(v))
+                    .collect(),
+            ),
+        };
+        assert_eq!(
+            field, &announced,
+            "option {key} : le défaut annoncé diffère de Config::default()"
+        );
+        let with = |value: &Value| {
+            let mut config = default.clone();
+            config[key] = value.clone();
+            serde_json::from_value::<G::Config>(config)
+        };
+        for value in &offered {
+            let config = with(value).unwrap_or_else(|e| {
+                panic!("option {key} : la valeur {value} n'est pas une config : {e}")
+            });
+            assert!(
+                G::check_config(&config, players).is_ok(),
+                "option {key} : la valeur proposée {value} est refusée"
+            );
+        }
+        for value in &outside {
+            // A value the field's type cannot hold is refused already.
+            if let Ok(config) = with(value) {
+                assert!(
+                    G::check_config(&config, players).is_err(),
+                    "option {key} : la valeur hors bornes {value} est acceptée"
+                );
+            }
+        }
+    }
+}
+
 /// Plays `games` random matches to the end and panics at the first breach
 /// of the `Game` contract.
 pub fn check<G: Game + Determinize>(config: &G::Config, players: u8, games: usize, seed: u64) {
+    check_options::<G>(players);
     let mut rng = SmallRng::seed_from_u64(seed);
     for g in 0..games {
         let mut m = Match::<G>::new(config.clone(), players, rng.gen())
@@ -204,6 +267,17 @@ mod tests {
     #[should_panic(expected = "action par défaut")]
     fn an_illegal_timeout_action_is_caught() {
         check::<crate::testgames::BadClock>(&(), 2, 5, 4);
+    }
+
+    #[test]
+    #[should_panic(expected = "option pile")]
+    fn wrong_option_defaults_are_caught() {
+        check::<crate::testgames::BadOptions>(&NimConfig::default(), 2, 1, 5);
+    }
+
+    #[test]
+    fn nim_options_conform() {
+        super::check_options::<Nim>(2);
     }
 
     #[test]

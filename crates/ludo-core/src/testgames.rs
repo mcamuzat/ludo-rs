@@ -252,6 +252,57 @@ impl Determinize for BadClock {
     }
 }
 
+/// Nim announcing a default pile that `NimConfig::default()` does not have.
+pub struct BadOptions;
+
+impl Game for BadOptions {
+    type State = NimState;
+    type Action = u8;
+    type View = NimState;
+    type Config = NimConfig;
+
+    fn meta() -> GameMeta {
+        GameMeta {
+            id: "badoptions",
+            ..Nim::meta()
+        }
+    }
+    fn options() -> Vec<GameOption> {
+        vec![GameOption {
+            key: "pile",
+            kind: OptionKind::Number {
+                min: 1,
+                max: 30,
+                default: 7,
+            },
+        }]
+    }
+    fn new(config: &NimConfig, players: u8, seed: u64) -> NimState {
+        Nim::new(config, players, seed)
+    }
+    fn pending(s: &NimState) -> Pending {
+        Nim::pending(s)
+    }
+    fn legal_actions(s: &NimState, seat: Seat) -> Vec<u8> {
+        Nim::legal_actions(s, seat)
+    }
+    fn apply(s: &mut NimState, seat: Seat, a: &u8) -> Result<(), Illegal> {
+        Nim::apply(s, seat, a)
+    }
+    fn view(s: &NimState, viewer: Viewer) -> NimState {
+        Nim::view(s, viewer)
+    }
+    fn outcome(s: &NimState) -> Option<Outcome> {
+        Nim::outcome(s)
+    }
+}
+
+impl Determinize for BadOptions {
+    fn determinize<R: Rng + ?Sized>(s: &NimState, _observer: Seat, _rng: &mut R) -> NimState {
+        s.clone()
+    }
+}
+
 /// Each seat is dealt one hidden card from 0..=6, then every seat answers
 /// Stay or Fold at the same time. Highest card among stayers wins; folders
 /// tie behind the winner; other stayers finish last. Nobody stays: all tie.
