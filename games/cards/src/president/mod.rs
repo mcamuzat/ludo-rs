@@ -90,13 +90,7 @@ pub fn title(place: usize, players: usize) -> Title {
     }
 }
 
-/// Ranks from scores (0: first); equal scores share a rank.
-pub fn standings(scores: &[u32]) -> Vec<u8> {
-    scores
-        .iter()
-        .map(|&mine| scores.iter().filter(|&&theirs| theirs > mine).count() as u8)
-        .collect()
-}
+pub use crate::standings;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Phase {

@@ -6,6 +6,8 @@ Sources :
   cartes) » y redirige), consulté le 2026-10-15.
 - **[P]** Pagat.com, « President », https://www.pagat.com/climbing/president.html,
   consulté le 2026-10-15.
+- **[C]** David Parlett, « Collusion »,
+  https://www.parlettgames.uk/oricards/collude.html, consultée le 2026-10-16.
 
 Un point que les sources ne tranchent pas est marqué ❓ ; ceux du Président
 ont été validés par l'utilisateur le 2026-10-15 (spec 4, §3).
@@ -84,3 +86,34 @@ ont été validés par l'utilisateur le 2026-10-15 (spec 4, §3).
 
 Putsch, passage de tour, « 2 utilisé comme atout », « … ou rien »,
 changement de places, échanges négociés, parties à 3 joueurs ou à plus de 7.
+
+## Collusion (`cards-collusion`, 4 joueurs)
+
+- **Matériel** [C] : paquet de 52 cartes ; dans chaque couleur, A R D V 10 9 8
+  7 6 5 4 3 2.
+- **Donne** [C] : 13 cartes à chacun.
+- ❓ Le siège 0 donne la première donne, puis la donne passe à gauche.
+- **Jeu** [C] : le joueur à gauche du donneur entame le premier pli, le
+  gagnant de chaque pli entame le suivant. Il faut fournir à la couleur si on
+  peut, sinon on joue n'importe quelle carte. Pas d'atout : la plus forte
+  carte de la couleur demandée gagne.
+- **But** [C] : finir avec exactement autant de plis qu'un autre joueur (mais
+  pas que deux autres).
+- **Score d'une donne** [C] : un point par pli, plus au plus un bonus :
+  - exactement deux joueurs au même nombre de plis : 10 à chacun d'eux ;
+  - aucun joueur au même nombre qu'un autre : 20 à celui qui en a le moins ;
+  - trois joueurs au même nombre : 30 au quatrième.
+
+  Les quatre totaux font 13 : ni deux paires ni égalité à quatre.
+- **Cible** [C] : 100 points, ou 50 en option. On n'atteint la cible qu'avec
+  un bonus : sans bonus, des plis qui l'atteindraient sont retranchés du
+  total au lieu d'y être ajoutés. [C] le dit pour 100 ; on l'applique à la
+  cible choisie.
+- ❓ **Fin** : la partie s'arrête après la donne où un joueur atteint la
+  cible ; le plus haut total gagne, les ex æquo partagent leur rang.
+- **Parler** [C] : on peut s'entendre à voix haute, sans rien dire de sa main,
+  et rien n'engage. Sur le site, à son tour et avant de jouer, on peut dire
+  une phrase : « Je vise N plis » (de ses plis pris à ses plis pris plus ses
+  cartes en main), « Je ne sais pas encore » ou « Qui vise N ? » (0 à 13). On
+  ne parle pas quand on n'a qu'une carte jouable. Les phrases s'effacent à la
+  donne suivante.

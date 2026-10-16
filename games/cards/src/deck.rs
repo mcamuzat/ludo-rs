@@ -83,6 +83,13 @@ impl Card {
             Card::Joker => None,
         }
     }
+
+    pub fn suit(self) -> Option<Suit> {
+        match self {
+            Card::Natural { suit, .. } => Some(suit),
+            Card::Joker => None,
+        }
+    }
 }
 
 pub fn pack_52() -> Vec<Card> {
