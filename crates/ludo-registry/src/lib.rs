@@ -23,6 +23,7 @@ static PAIRS_MONSTER: GameEntry<pairs::Monster> = GameEntry::new();
 static PAIRS_TROLL_GUTS: GameEntry<pairs::TrollGuts> = GameEntry::new();
 static PAIRS_BLACKSTONE: GameEntry<pairs::Blackstone> = GameEntry::new();
 static CARDS_PRESIDENT: GameEntry<cards::President> = GameEntry::new();
+static CARDS_COLLUSION: GameEntry<cards::Collusion> = GameEntry::new();
 static PENNYWISE: GameEntry<pennywise::Pennywise> = GameEntry::new();
 
 pub static GAMES: &[&dyn AnyGame] = &[
@@ -47,6 +48,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &PAIRS_TROLL_GUTS,
     &PAIRS_BLACKSTONE,
     &CARDS_PRESIDENT,
+    &CARDS_COLLUSION,
     &PENNYWISE,
 ];
 

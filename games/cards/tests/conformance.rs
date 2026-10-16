@@ -25,3 +25,10 @@ fn president_conforms_with_every_variant() {
     };
     check::<President>(&strong, 6, 15, 9);
 }
+
+#[test]
+fn collusion_conforms() {
+    use cards::collusion::{Collusion, Config as CollusionConfig};
+    check::<Collusion>(&CollusionConfig::default(), 4, 10, 21);
+    check::<Collusion>(&CollusionConfig { target: 50 }, 4, 10, 22);
+}

@@ -2,6 +2,8 @@
 //! by taking exactly as many tricks as one other player. Players talk at
 //! the table with set phrases. Rules and their sources: RULES.md.
 
+mod determinize;
+mod heuristics;
 pub mod testing;
 mod view;
 
