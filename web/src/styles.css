@@ -159,6 +159,31 @@ label { color: var(--muted); font-size: 0.85rem; font-weight: 500; }
 .stone.in-line { stroke: var(--brass); stroke-width: 4; }
 .last-move { fill: var(--brass); }
 
+/* Bantu */
+.bantu { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.bantu-board { width: min(100%, 680px); height: auto; border-radius: 18px; }
+.bantu-disc { fill: #8f4a1c; }
+.bantu-square { fill: #d8332b; }
+.bantu-square-number { font: 800 34px var(--f-display); fill: #1f1a17; }
+.bantu-link { stroke: #9cc8f0; stroke-width: 7; }
+.bantu-head { fill: #6f9fcc; }
+.bantu-row { stroke: #7a1414; stroke-width: 40; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+.bantu-line { stroke: #d8332b; stroke-width: 46; stroke-linecap: round; fill: none; }
+.bantu-cell { fill: #bcdcf7; stroke: #6f9fcc; stroke-width: 2; }
+.bantu-cell.arrow { fill: #4c78e0; }
+.bantu-cell.last { stroke: var(--brass); stroke-width: 5; }
+.bantu-cell.target { stroke: var(--brass); stroke-width: 6; cursor: pointer; fill: #fff3c4; }
+.bantu-finish polygon { fill: #3166f0; }
+.bantu-finish text { font: 800 28px var(--f-display); fill: #fff; letter-spacing: 2px; }
+.bantu-finish.target { cursor: pointer; }
+.bantu-finish.target polygon { stroke: var(--brass); stroke-width: 6; }
+.bantu-guard { fill: none; stroke: #fff; stroke-width: 2; stroke-dasharray: 5 4; pointer-events: none; }
+.piece-disc { stroke: rgb(0 0 0 / 45%); stroke-width: 2; }
+.piece-disc.selected { stroke: var(--brass); stroke-width: 5; }
+.piece-number { font-weight: 800; fill: #fff; pointer-events: none; paint-order: stroke; stroke: rgb(0 0 0 / 50%); stroke-width: 2; }
+.piece.movable { cursor: pointer; }
+.piece.movable .piece-disc { stroke: #fff; stroke-width: 3; }
+
 @media (max-width: 720px) {
   .lobby { grid-template-columns: 1fr; }
 }

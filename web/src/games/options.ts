@@ -4,6 +4,7 @@ import type { GameConfig, GameMeta } from "../engine/types";
 const LABELS: Record<string, string> = {
   "pairs-ghost-town.hands": "Mains",
   "cards-collusion.target": "Points à atteindre",
+  "bantu.short": "Partie courte (pions 1 à 3)",
   "cards-president.rounds": "Manches",
   "cards-president.revolution": "Révolution",
   "cards-president.no_finish_on_two": "Pas de fin sur un 2",

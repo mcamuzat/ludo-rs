@@ -1,5 +1,7 @@
 import { CollusionBoard } from "./cards/collusion/Board";
 import { COLLUSION_RULES } from "./cards/collusion/rules";
+import { BantuBoard } from "./bantu/Board";
+import { BANTU_RULES } from "./bantu/rules";
 import { PresidentBoard } from "./cards/president/Board";
 import { PRESIDENT_RULES } from "./cards/president/rules";
 import type { ComponentType } from "react";
@@ -73,6 +75,7 @@ export interface GameUi {
 /** Adding a game: one entry here (and one in crates/ludo-registry). */
 export const GAME_UIS: GameUi[] = [
   { id: "yavalath", family: "board", Board: YavalathBoard },
+  { id: "bantu", family: "board", Board: BantuBoard, rules: BANTU_RULES },
   { id: "riichi", family: "tiles", Board: RiichiBoard, hidden: true },
   { id: "pairs-continuous", family: "pairs", Board: ContinuousBoard, rules: CONTINUOUS_RULES },
   { id: "pairs-auberge", family: "pairs", Board: AubergeBoard, rules: AUBERGE_RULES },
