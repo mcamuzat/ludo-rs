@@ -507,6 +507,69 @@ impl Determinize for Leaky {
     }
 }
 
+/// Nim whose AI is steered: it takes 3 from a pile of 10 without searching,
+/// and its random moves always take 1.
+pub struct SteeredNim;
+
+impl Game for SteeredNim {
+    type State = NimState;
+    type Action = u8;
+    type View = NimState;
+    type Config = NimConfig;
+
+    fn meta() -> GameMeta {
+        GameMeta {
+            id: "steered-nim",
+            name: "Steered Nim",
+            ..Nim::meta()
+        }
+    }
+
+    fn new(config: &NimConfig, players: u8, seed: u64) -> NimState {
+        Nim::new(config, players, seed)
+    }
+
+    fn pending(s: &NimState) -> Pending {
+        Nim::pending(s)
+    }
+
+    fn legal_actions(s: &NimState, seat: Seat) -> Vec<u8> {
+        Nim::legal_actions(s, seat)
+    }
+
+    fn apply(s: &mut NimState, seat: Seat, take: &u8) -> Result<(), Illegal> {
+        Nim::apply(s, seat, take)
+    }
+
+    fn view(s: &NimState, viewer: Viewer) -> NimState {
+        Nim::view(s, viewer)
+    }
+
+    fn outcome(s: &NimState) -> Option<Outcome> {
+        Nim::outcome(s)
+    }
+}
+
+impl Determinize for SteeredNim {
+    fn determinize<R: Rng + ?Sized>(s: &NimState, _observer: Seat, _rng: &mut R) -> NimState {
+        s.clone()
+    }
+}
+
+impl Heuristics for SteeredNim {
+    fn rollout_action<R: Rng + ?Sized>(s: &NimState, seat: Seat, rng: &mut R) -> u8 {
+        Nim::rollout_action(s, seat, rng)
+    }
+
+    fn scripted_action(s: &NimState, _seat: Seat) -> Option<u8> {
+        (s.pile == 10).then_some(3)
+    }
+
+    fn random_actions(_s: &NimState, _seat: Seat) -> Vec<u8> {
+        vec![1]
+    }
+}
+
 #[cfg(test)]
 mod nim_tests {
     use super::*;

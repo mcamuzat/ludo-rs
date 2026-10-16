@@ -220,6 +220,18 @@ pub trait Heuristics: Game {
     fn search_actions(s: &Self::State, seat: Seat) -> Vec<Self::Action> {
         Self::legal_actions(s, seat)
     }
+
+    /// A legal action the AI plays for `seat` without searching (a table
+    /// phrase, say), depending only on what `seat` can see. Default: none.
+    fn scripted_action(_s: &Self::State, _seat: Seat) -> Option<Self::Action> {
+        None
+    }
+
+    /// The actions a random (blunder) move is drawn from: a non-empty subset
+    /// of `legal_actions`. Default: every legal action.
+    fn random_actions(s: &Self::State, seat: Seat) -> Vec<Self::Action> {
+        Self::legal_actions(s, seat)
+    }
 }
 
 #[cfg(test)]

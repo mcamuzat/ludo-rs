@@ -109,8 +109,13 @@ pub fn choose<G: Game + Determinize + Heuristics>(
     if legal.len() == 1 {
         return Ok(legal[0].clone());
     }
+    if let Some(action) = G::scripted_action(state, seat) {
+        return Ok(action);
+    }
     if search.blunder > 0.0 && rng.gen_bool(search.blunder) {
-        return Ok(legal.choose(&mut rng).expect("non-empty").clone());
+        if let Some(action) = G::random_actions(state, seat).choose(&mut rng) {
+            return Ok(action.clone());
+        }
     }
     let Some(budget) = search.budget else {
         // Policy alone, on what `seat` can see.
@@ -368,6 +373,39 @@ mod tests {
         };
         let action = choose::<Nim>(&s, Seat(0), &search, &no_clock).unwrap();
         assert!(Nim::legal_actions(&s, Seat(0)).contains(&action));
+    }
+
+    #[test]
+    fn scripted_action_is_played_without_search() {
+        use crate::testgames::SteeredNim;
+        let s = SteeredNim::new(&NimConfig { pile: 10 }, 2, 0);
+        let search = Search {
+            budget: Some(Budget::Iterations(10)),
+            blunder: 1.0,
+            seed: 4,
+        };
+        assert_eq!(
+            choose::<SteeredNim>(&s, Seat(0), &search, &no_clock).unwrap(),
+            3
+        );
+    }
+
+    #[test]
+    fn blunder_draws_from_random_actions() {
+        use crate::testgames::SteeredNim;
+        let s = SteeredNim::new(&NimConfig { pile: 9 }, 2, 0);
+        for seed in 0..50 {
+            let search = Search {
+                budget: Some(Budget::Iterations(10)),
+                blunder: 1.0,
+                seed,
+            };
+            assert_eq!(
+                choose::<SteeredNim>(&s, Seat(0), &search, &no_clock).unwrap(),
+                1,
+                "seed {seed}"
+            );
+        }
     }
 
     #[test]
