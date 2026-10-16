@@ -40,6 +40,16 @@ export function Emblem({ family, name }: { family: GameFamily; name: string }) {
       </svg>
     );
   }
+  if (family === "coins") {
+    return (
+      <svg viewBox="0 0 44 44" aria-hidden="true">
+        <rect width="44" height="44" rx="10" style={{ fill: "var(--accent-soft)" }} />
+        <ellipse cx="22" cy="31" rx="11" ry="4.5" fill="#7a4a26" stroke="#fff" strokeWidth="1.2" strokeDasharray="2 2" />
+        <ellipse cx="22" cy="25" rx="11" ry="4.5" fill="#3b5bab" stroke="#fff" strokeWidth="1.2" strokeDasharray="2 2" />
+        <ellipse cx="22" cy="19" rx="11" ry="4.5" fill="#c8322b" stroke="#fff" strokeWidth="1.2" strokeDasharray="2 2" />
+      </svg>
+    );
+  }
   if (family === "cards") {
     return (
       <svg viewBox="0 0 44 44" aria-hidden="true">

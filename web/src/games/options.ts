@@ -10,6 +10,7 @@ const LABELS: Record<string, string> = {
   "cards-president.jokers.Off": "Sans",
   "cards-president.jokers.High": "Forts",
   "cards-president.jokers.Wild": "Wild (remplacent une valeur)",
+  "pennywise.character": "Personnage",
 };
 
 export function optionLabel(gameId: string, key: string): string {

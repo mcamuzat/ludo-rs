@@ -1,0 +1,18 @@
+.coin { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; border-radius: 50%; border: 3px dashed rgb(255 255 255 / 70%); color: #fff; font: 800 0.8rem/1 var(--f-display); box-shadow: 0 0 0 2px rgb(0 0 0 / 25%), 0 1px 3px rgb(0 0 0 / 35%); }
+.coin.coin-1 { background: #f4f1ea; color: #b3261e; border-color: #b3261e; }
+.coin.coin-2 { background: #b9a3d6; color: #3b2a55; }
+.coin.coin-3 { background: #3f8a4a; }
+.coin.coin-5 { background: #c8322b; }
+.coin.coin-10 { background: #3b5bab; }
+.coin.coin-20 { background: #5b3a8c; }
+.coin.coin-25 { background: #7a4a26; }
+.coin.playable { cursor: pointer; transition: transform 0.12s; }
+.coin.playable:hover:not(:disabled) { transform: translateY(-3px); border-color: rgb(255 255 255 / 70%); }
+.coin.coin-1.playable:hover:not(:disabled) { border-color: #b3261e; }
+.coin.selected { outline: 2px solid var(--brass); outline-offset: 2px; }
+.pennywise-coins { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center; min-height: 40px; }
+.pennywise-stack { display: inline-flex; align-items: center; gap: 2px; }
+.pennywise-stack .count { font-weight: 700; font-size: 0.8rem; }
+.pennywise-pot { font-weight: 700; margin: 0 0 4px; }
+.pennywise-choices { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 8px; }
+.pennywise-ranking { margin: 6px 0 0; padding-left: 0; list-style: none; }

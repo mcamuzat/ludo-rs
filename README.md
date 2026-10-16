@@ -23,7 +23,7 @@ Jeux :
 - **Monster** (4–8 joueurs, deck Pairs) ;
 - **Troll Guts** (3–6 joueurs, jeu à jetons, deck Pairs) ;
 - **Blackstone** (2–8 joueurs, jeu à jetons, deck Pairs) ;
-- **Président** (4–7 joueurs, cartes traditionnelles, règles d'après Wikipédia et Pagat ; révolution, fin sur un 2 et jokers en options).
+- **Président** (4–7 joueurs, cartes traditionnelles, règles d'après Wikipédia et Pagat ; révolution, fin sur un 2 et jokers en options) ;
 - **Pennywise** (2–6 joueurs, James Ernest / Cheapass Games, jeu de pièces ; personnage Cody, Darlene, Sugar ou Taylor en option).
 
 ## Lancer en local

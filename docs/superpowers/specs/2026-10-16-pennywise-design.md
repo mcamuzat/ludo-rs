@@ -1,7 +1,7 @@
 # ludo-rs — Pennywise (spec 5)
 
 Date : 2026-10-16
-Statut : spec validée
+Statut : plan livré
 Précédent : `2026-10-15-president-design.md` (cycle 4)
 
 ## 1. Objectif

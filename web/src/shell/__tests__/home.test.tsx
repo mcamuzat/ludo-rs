@@ -17,6 +17,7 @@ const CATALOG = [
   meta("pairs-deadfall", "Deadfall"),
   meta("pairs-ghost-town", "Ghost Town"),
   meta("cards-president", "Président"),
+  meta("pennywise", "Pennywise"),
 ];
 
 function home(): string {
@@ -49,6 +50,7 @@ describe("Home", () => {
       "L'Auberge des Pirates",
       "Zombie Life",
       "Président",
+      "Pennywise",
     ]);
   });
 
@@ -64,5 +66,11 @@ describe("Home", () => {
     expect(html).toContain("Cartes traditionnelles");
     expect(html.indexOf("Deck Pairs")).toBeLessThan(html.indexOf("Cartes traditionnelles"));
     expect(html.indexOf("Cartes traditionnelles")).toBeLessThan(html.indexOf("Président"));
+  });
+
+  it("shelves the coin games after the classic cards", () => {
+    const html = home();
+    expect(html.indexOf("Cartes traditionnelles")).toBeLessThan(html.indexOf("Jeux de pièces"));
+    expect(html.indexOf("Jeux de pièces")).toBeLessThan(html.indexOf("Pennywise"));
   });
 });
