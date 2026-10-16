@@ -227,3 +227,30 @@ fn a_new_game_deals_thirteen_each() {
     assert_eq!(s.dealer, Seat(0));
     assert_eq!(s.turn, Some(Seat(1)));
 }
+
+#[test]
+fn one_reaches_the_target_while_another_deducts() {
+    let mut s = table(
+        ["Ah 2s 3c 3d", "2h As 2c 4d", "3h 3s 4c 5d", "4h 4s Ac Ad"],
+        0,
+    );
+    s.scores = [89, 0, 0, 98];
+    run(
+        &mut s,
+        &[
+            "Ah", "2h", "3h", "4h", "2s", "As", "3s", "4s", "2c", "4c", "Ac", "3c", "Ad", "3d",
+            "4d", "5d",
+        ],
+    );
+    // Tricks [1, 1, 0, 2]: seats 0 and 1 tie and earn 10; seat 3's two
+    // tricks would reach 100 without a bonus, so they are taken off.
+    assert_eq!(s.scores, [100, 11, 0, 96]);
+    let last = s.last_deal.expect("the deal is scored");
+    assert!(last[3].deducted);
+    assert!(!last[0].deducted);
+    assert_eq!(s.turn, None);
+    assert_eq!(
+        Collusion::outcome(&s),
+        Some(Outcome::Ranked(vec![0, 2, 3, 1]))
+    );
+}
