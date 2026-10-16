@@ -38,6 +38,24 @@ function elide(name: string): string {
   return /^[aeiouyhàâéèêëîïôöûüAEIOUYHÀÂÉÈÊËÎÏÔÖÛÜ]/.test(name) ? `d'${name}` : `de ${name}`;
 }
 
+/**
+ * What a click on piece `piece` of `seat`, standing on `spot`, does: take it
+ * (its cell is a destination of the selected piece), select it (one of my
+ * pieces that can move), or nothing.
+ */
+export function pieceClick(
+  seat: number,
+  spot: Spot,
+  piece: number,
+  me: number | null,
+  targets: Dest[],
+  legal: BantuAction[],
+): Dest | "select" | null {
+  if (spot.kind === "On" && targets.some((t) => sameDest(t, { Cell: spot.cell }))) return { Cell: spot.cell };
+  if (seat === me && destinations(piece, legal).length > 0) return "select";
+  return null;
+}
+
 export function describeLast(last: LastMove, names: string[]): string {
   const who = names[last.seat];
   if (last.to.kind === "Finished") return `${who} amène son pion ${last.piece} à l'arrivée.`;
@@ -75,16 +93,23 @@ export function BantuBoard({ view, legalActions, me, seatNames, submit }: BoardP
   };
   const lastTo = v.last ? spotKey(v.last.to) : null;
 
-  const pieceAt = (seat: number, index: number, x: number, y: number, r: number) => {
+  const pieceAt = (seat: number, index: number, spot: Spot, x: number, y: number, r: number) => {
     const piece = index + 1;
-    const movable = seat === me && destinations(piece, legal).length > 0;
+    const click = pieceClick(seat, spot, piece, me, targets, legal);
+    const movable = click === "select";
     const name = `Pion ${piece} ${elide(seatNames[seat])}`;
     return (
       <g
         key={`p${seat}-${piece}`}
-        className={movable ? "piece movable" : "piece"}
+        className={movable ? "piece movable" : click ? "piece target" : "piece"}
         aria-label={name}
-        onClick={movable ? () => setChosen({ key, piece: selected === piece ? null : piece }) : undefined}
+        onClick={
+          click === null
+            ? undefined
+            : click === "select"
+              ? () => setChosen({ key, piece: selected === piece ? null : piece })
+              : () => play(click)
+        }
       >
         <title>{name}</title>
         <circle
@@ -105,14 +130,14 @@ export function BantuBoard({ view, legalActions, me, seatNames, submit }: BoardP
     pieces.flatMap((spot, i) => {
       if (spot.kind !== "On") return [];
       const c = BOARD.cells[spot.cell];
-      return [pieceAt(seat, i, c.x, c.y, 17)];
+      return [pieceAt(seat, i, spot, c.x, c.y, 17)];
     }),
   );
   const atHome = v.pieces.flatMap((pieces, seat) =>
     pieces.flatMap((spot, i) => {
       if (spot.kind !== "Home") return [];
       const [dx, dy] = HOME_OFFSETS[seat];
-      return [pieceAt(seat, i, SQUARES[i].x + dx, SQUARES[i].y + dy, 13)];
+      return [pieceAt(seat, i, spot, SQUARES[i].x + dx, SQUARES[i].y + dy, 13)];
     }),
   );
 

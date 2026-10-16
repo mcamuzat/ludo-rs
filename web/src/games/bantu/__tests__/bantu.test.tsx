@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import board from "../board.json";
-import { BantuBoard, describeLast, destinations, endText } from "../Board";
+import { BantuBoard, describeLast, destinations, endText, pieceClick } from "../Board";
 import type { BantuAction, BantuView } from "../types";
 
 const NAMES = ["Ana", "Hugo", "Cléo"];
@@ -37,6 +37,19 @@ describe("destinations", () => {
   it("lists where one piece may go", () => {
     expect(destinations(2, LEGAL)).toEqual([{ Cell: 60 }, "Finish"]);
     expect(destinations(3, LEGAL)).toEqual([]);
+  });
+});
+
+describe("pieceClick", () => {
+  it("takes the piece standing on a destination of the selected piece", () => {
+    // My piece 1 is selected and may land on 62, where Hugo's piece stands.
+    expect(pieceClick(1, { kind: "On", cell: 62 }, 1, 0, [{ Cell: 62 }], LEGAL)).toEqual({ Cell: 62 });
+  });
+
+  it("selects my own movable piece, and ignores the others", () => {
+    expect(pieceClick(0, { kind: "On", cell: 69 }, 1, 0, [], LEGAL)).toBe("select");
+    expect(pieceClick(1, { kind: "On", cell: 62 }, 1, 0, [], LEGAL)).toBeNull();
+    expect(pieceClick(0, { kind: "Finished" }, 3, 0, [], LEGAL)).toBeNull();
   });
 });
 

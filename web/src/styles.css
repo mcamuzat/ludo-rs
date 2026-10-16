@@ -181,7 +181,8 @@ label { color: var(--muted); font-size: 0.85rem; font-weight: 500; }
 .piece-disc { stroke: rgb(0 0 0 / 45%); stroke-width: 2; }
 .piece-disc.selected { stroke: var(--brass); stroke-width: 5; }
 .piece-number { font-weight: 800; fill: #fff; pointer-events: none; paint-order: stroke; stroke: rgb(0 0 0 / 50%); stroke-width: 2; }
-.piece.movable { cursor: pointer; }
+.piece.movable, .piece.target { cursor: pointer; }
+.piece.target .piece-disc { stroke: var(--brass); stroke-width: 6; }
 .piece.movable .piece-disc { stroke: #fff; stroke-width: 3; }
 
 @media (max-width: 720px) {
