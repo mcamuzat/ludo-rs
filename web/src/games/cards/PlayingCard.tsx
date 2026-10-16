@@ -39,17 +39,20 @@ export function PlayingCard({
   card,
   small,
   selected,
+  dimmed,
   onClick,
 }: {
   card: Card;
   small?: boolean;
   selected?: boolean;
+  /** Shown but not playable now. */
+  dimmed?: boolean;
   onClick?: () => void;
 }) {
   const red = card.kind === "Natural" && (card.suit === "Hearts" || card.suit === "Diamonds");
   const cls = `playing-card${red ? " red" : ""}${card.kind === "Joker" ? " joker" : ""}${small ? " small" : ""}${
     selected ? " selected" : ""
-  }`;
+  }${dimmed ? " dimmed" : ""}`;
   const face =
     card.kind === "Joker" ? (
       <span>Joker</span>

@@ -10,3 +10,14 @@
 .president-hand { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; padding-top: 10px; }
 .president-trick { display: flex; gap: 4px; justify-content: center; align-items: center; min-height: 60px; }
 .president-banner { margin: 0; font-weight: 700; color: var(--brass); }
+.playing-card.dimmed { opacity: 0.45; }
+.collusion-hand { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; padding-top: 10px; }
+.collusion-trick { display: flex; gap: 10px; justify-content: center; align-items: flex-end; min-height: 76px; }
+.collusion-trick figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.collusion-bubble { display: inline-block; margin: 4px 0 0; padding: 3px 9px; border-radius: 12px; background: var(--face); color: #1f2421; font-size: 0.85rem; box-shadow: 0 1px 2px rgb(0 0 0 / 25%); }
+.collusion-talk summary { cursor: pointer; }
+.collusion-talk { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.collusion-phrases { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 3px; }
+.collusion-n { min-width: 30px; padding: 3px 6px; font-size: 0.85rem; }
+.collusion-deal { margin: 0 auto; border-collapse: collapse; font-size: 0.9rem; }
+.collusion-deal th, .collusion-deal td { padding: 2px 8px; text-align: center; }

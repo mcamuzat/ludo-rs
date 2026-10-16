@@ -1,3 +1,5 @@
+import { CollusionBoard } from "./cards/collusion/Board";
+import { COLLUSION_RULES } from "./cards/collusion/rules";
 import { PresidentBoard } from "./cards/president/Board";
 import { PRESIDENT_RULES } from "./cards/president/rules";
 import type { ComponentType } from "react";
@@ -91,6 +93,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "pairs-troll-guts", family: "pairs", Board: TrollGutsBoard, rules: TROLL_GUTS_RULES },
   { id: "pairs-blackstone", family: "pairs", Board: BlackstoneBoard, rules: BLACKSTONE_RULES },
   { id: "cards-president", family: "cards", Board: PresidentBoard, rules: PRESIDENT_RULES },
+  { id: "cards-collusion", family: "cards", Board: CollusionBoard, rules: COLLUSION_RULES },
   { id: "pennywise", family: "coins", Board: PennywiseBoard, rules: PENNYWISE_RULES },
 ];
 
