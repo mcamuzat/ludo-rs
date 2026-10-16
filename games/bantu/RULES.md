@@ -91,8 +91,12 @@ comme ses équivalentes des autres quarts.
 - **Limite de durée** : c'est un ajout de ludo-rs, validé par l'utilisateur
   le 2026-10-16, et non une règle de [R]. On peut glisser dans les deux sens
   d'une rangée, donc un pion peut faire des allers-retours sans fin. La
-  partie s'arrête après **30 tours de table** sans qu'aucun pion ne soit pris
-  ni n'entre dans l'arrivée (un tour passé compte comme un tour joué).
+  partie s'arrête après **30 tours de table sans progrès** (un tour passé
+  compte comme un tour joué). Il y a progrès quand un pion est pris, quand il
+  entre dans l'arrivée, ou quand il atteint une case plus proche de
+  l'arrivée que toutes celles où il est allé depuis sa dernière sortie
+  (sortir un pion compte donc aussi). Des allers-retours ne battent jamais
+  ce record.
 - ❓ La partie s'arrête aussi si plus personne ne peut bouger. Ce cas semble
   impossible sur ce plateau, puisqu'un pion sur une case fléchée peut
   toujours entrer dans l'arrivée.

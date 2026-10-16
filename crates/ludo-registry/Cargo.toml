@@ -8,6 +8,7 @@ license.workspace = true
 [dependencies]
 ludo-core.workspace = true
 yavalath.workspace = true
+bantu.workspace = true
 riichi.workspace = true
 pairs.workspace = true
 cards.workspace = true

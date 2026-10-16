@@ -3,12 +3,18 @@
 //! Rules and their sources: RULES.md.
 
 pub mod board;
+mod heuristics;
 mod moves;
 pub mod testing;
+mod view;
 
 pub use moves::{destinations, is_protected, move_length, progress};
+pub use view::View;
 
-use ludo_core::{Game, GameMeta, GameOption, Illegal, OptionKind, Outcome, Pending, Seat, Viewer};
+use ludo_core::{
+    Determinize, Game, GameMeta, GameOption, Illegal, OptionKind, Outcome, Pending, Seat, Viewer,
+};
+use rand::Rng;
 use serde::{Deserialize, Serialize};
 
 use board::Cell;
@@ -16,7 +22,8 @@ use board::Cell;
 pub struct Bantu;
 
 /// ludo-rs addition, not in [R]: the game stops after this many rounds of
-/// the table without a piece taken nor a piece finished.
+/// the table without progress (a piece taken, finished, or nearer the
+/// finish than it has been since it last left its start square).
 pub const QUIET_ROUNDS: u32 = 30;
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -88,8 +95,13 @@ pub struct State {
     pub pieces: Vec<Vec<Spot>>,
     /// `None` once the game is over.
     pub turn: Option<Seat>,
-    /// Turns (moves and passes) since a piece was last taken or finished.
+    /// Turns (moves and passes) since the last progress.
     pub quiet: u32,
+    /// `best[seat][number - 1]`: the fewest steps to the finish the piece
+    /// has stood at since it last left its start square (`u8::MAX` at home).
+    pub best: Vec<Vec<u8>>,
+    /// Moves played since the start.
+    pub moves: u32,
     pub last: Option<LastMove>,
     pub end: Option<End>,
 }
@@ -126,7 +138,7 @@ impl State {
 }
 
 /// Ranks: most pieces finished first, then fewest steps left; ties share.
-fn ranks(s: &State) -> Vec<u8> {
+pub(crate) fn ranks(s: &State) -> Vec<u8> {
     let keys: Vec<(u8, u32)> = (0..s.players).map(|i| progress(s, Seat(i))).collect();
     keys.iter()
         .map(|&(done, left)| {
@@ -140,7 +152,7 @@ fn ranks(s: &State) -> Vec<u8> {
 impl Game for Bantu {
     type State = State;
     type Action = Action;
-    type View = State;
+    type View = View;
     type Config = Config;
 
     fn meta() -> GameMeta {
@@ -166,9 +178,11 @@ impl Game for Bantu {
             config: config.clone(),
             players,
             pieces: vec![vec![Spot::Home; usize::from(config.pieces())]; usize::from(players)],
+            best: vec![vec![u8::MAX; usize::from(config.pieces())]; usize::from(players)],
             // [R] The first player is chosen: seat 0.
             turn: Some(Seat(0)),
             quiet: 0,
+            moves: 0,
             last: None,
             end: None,
         }
@@ -204,13 +218,25 @@ impl Game for Bantu {
         let Action::Move { piece, to } = *action;
         let from = s.pieces[seat.index()][usize::from(piece) - 1];
         let mut captured = None;
+        let best = &mut s.best[seat.index()][usize::from(piece) - 1];
+        let mut progress = false;
         let spot = match to {
-            Dest::Finish => Spot::Finished,
+            Dest::Finish => {
+                progress = true;
+                Spot::Finished
+            }
             Dest::Cell(cell) => {
+                let d = board::distance_to_finish(cell);
+                if d < *best {
+                    *best = d;
+                    progress = true;
+                }
                 // [R] The piece taken goes back to its start square.
                 if let Some((owner, number)) = s.occupant(cell) {
                     s.pieces[owner.index()][usize::from(number) - 1] = Spot::Home;
+                    s.best[owner.index()][usize::from(number) - 1] = u8::MAX;
                     captured = Some((owner, number));
+                    progress = true;
                 }
                 Spot::On { cell }
             }
@@ -223,11 +249,8 @@ impl Game for Bantu {
             to: spot,
             captured,
         });
-        s.quiet = if captured.is_some() || spot == Spot::Finished {
-            0
-        } else {
-            s.quiet + 1
-        };
+        s.moves += 1;
+        s.quiet = if progress { 0 } else { s.quiet + 1 };
         if s.pieces[seat.index()].iter().all(|&p| p == Spot::Finished) {
             s.end_game(End::Won(seat));
         } else {
@@ -236,8 +259,8 @@ impl Game for Bantu {
         Ok(())
     }
 
-    fn view(s: &State, _viewer: Viewer) -> State {
-        s.clone()
+    fn view(s: &State, viewer: Viewer) -> View {
+        View::of(s, viewer)
     }
 
     fn outcome(s: &State) -> Option<Outcome> {
@@ -246,6 +269,13 @@ impl Game for Bantu {
 
     fn timeout_action(s: &State, seat: Seat) -> Option<Action> {
         Self::legal_actions(s, seat).into_iter().next()
+    }
+}
+
+impl Determinize for Bantu {
+    /// Perfect information: nothing to redraw.
+    fn determinize<R: Rng + ?Sized>(s: &State, _observer: Seat, _rng: &mut R) -> State {
+        s.clone()
     }
 }
 

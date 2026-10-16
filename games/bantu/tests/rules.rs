@@ -180,15 +180,17 @@ fn a_seat_without_move_is_skipped() {
     );
     go(&mut s, 0, 3, Dest::Cell(7));
     assert_eq!(s.turn, Some(Seat(2)));
-    assert_eq!(s.quiet, 2);
+    // Entering is progress; seat 1's lost turn is the only quiet one.
+    assert_eq!(s.quiet, 1);
     assert!(Bantu::legal_actions(&s, Seat(1)).is_empty());
 }
 
 #[test]
 fn quiet_limit_ends_the_game() {
-    // Two lone pieces shuttle back and forth: 79↔78 and 76↔77.
-    let mut s = position(2, &[(0, 1, on(79)), (1, 1, on(76))], 0);
-    let shuttle = [(0, 78), (1, 77), (0, 79), (1, 76)];
+    // Two lone pieces shuttle back and forth, never nearer the finish than
+    // where they started: 78→79→78… and 77→76→77…
+    let mut s = position(2, &[(0, 1, on(78)), (1, 1, on(77))], 0);
+    let shuttle = [(0, 79), (1, 76), (0, 78), (1, 77)];
     let limit = (QUIET_ROUNDS * 2) as usize;
     for k in 0..limit {
         assert!(s.end.is_none(), "ended early, after {k} moves");
@@ -198,6 +200,28 @@ fn quiet_limit_ends_the_game() {
     assert_eq!(s.end, Some(End::QuietLimit));
     assert!(Bantu::pending(&s).is_empty());
     assert!(Bantu::outcome(&s).is_some());
+}
+
+#[test]
+fn a_new_best_resets_the_quiet_count() {
+    // Back and forth between cells already reached is no progress; 81,
+    // nearer the finish than 77 ever was, is.
+    let mut s = position(2, &[(0, 1, on(78)), (1, 1, on(77))], 0);
+    s.quiet = 30;
+    for (seat, cell) in [(0, 79), (1, 76), (0, 78), (1, 77), (0, 79)] {
+        go(&mut s, seat, 1, Dest::Cell(cell));
+    }
+    assert_eq!(s.quiet, 35);
+    go(&mut s, 1, 1, Dest::Cell(81));
+    assert_eq!(s.quiet, 0, "81 is nearer the finish than 77 ever was");
+}
+
+#[test]
+fn entering_is_progress() {
+    let mut s = position(2, &[(0, 2, Spot::Home), (1, 1, on(77))], 0);
+    s.quiet = 30;
+    go(&mut s, 0, 2, Dest::Cell(34));
+    assert_eq!(s.quiet, 0);
 }
 
 #[test]

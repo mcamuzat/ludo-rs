@@ -108,6 +108,17 @@ pub fn distance_to_finish(cell: Cell) -> u8 {
     graph().distance[usize::from(cell)]
 }
 
+/// The board for the site to draw: cells, start lines (piece 1 to 4, from
+/// the centre outwards), rows and oriented links.
+pub fn board_json() -> serde_json::Value {
+    serde_json::json!({
+        "cells": &CELLS[..],
+        "startLines": START_LINES,
+        "rows": &ROWS[..],
+        "links": &LINKS[..],
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use std::collections::HashSet;

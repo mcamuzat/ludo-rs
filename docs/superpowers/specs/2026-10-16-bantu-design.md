@@ -113,8 +113,12 @@ ou vers l'arrivée. Les flèches bleues marquent les passages à sens unique.
   l'utilisateur le 2026-10-16, et non une règle de [R]. Comme on peut
   glisser dans les deux sens d'une rangée, un pion peut faire des
   allers-retours sans jamais avancer. La partie s'arrête donc après **30
-  tours de table** (30 × nombre de joueurs coups ou tours passés) sans
-  qu'aucun pion n'entre dans l'arrivée ni ne soit pris. Elle s'arrête aussi
+  tours de table** (30 × nombre de joueurs coups ou tours passés) **sans
+  progrès**. Il y a progrès quand un pion est pris, entre dans l'arrivée, ou
+  atteint une case plus proche de l'arrivée que toutes celles où il est allé
+  depuis sa dernière sortie. *Ajusté à l'implémentation :* la première
+  version (« sans prise ni arrivée ») arrêtait des parties normales dès le
+  début, quand aucun pion ne peut encore arriver. Elle s'arrête aussi
   si plus aucun joueur ne peut bouger. Dans les deux cas, on classe comme
   ci-dessus, sans vainqueur désigné à l'avance.
 

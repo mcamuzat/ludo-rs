@@ -5,6 +5,7 @@ Le moteur est en Rust, compilé en WebAssembly ; le site est en React.
 
 Jeux :
 - **Yavalath** (2–3 joueurs, Cameron Browne) ;
+- **Bantu** (2–4 joueurs, Parker Brothers 1955, course sans dé où les pions d'une même rangée additionnent leurs numéros ; partie courte en option) ;
 - **Mahjong Riichi** (4 joueurs, règles Mahjong Soul, moteur [riichienv-core](https://github.com/smly/RiichiEnv)), retiré de l'accueil pour l'instant ;
 - **Jour de chance** (Continuous Pairs, 2–8 joueurs, James Ernest et Paul Peterson, deck Pairs) ;
 - **L'Auberge des Pirates** (2–8 joueurs, Regent multijoueur, deck Pairs) ;

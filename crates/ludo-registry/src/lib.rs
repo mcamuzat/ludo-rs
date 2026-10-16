@@ -25,6 +25,7 @@ static PAIRS_BLACKSTONE: GameEntry<pairs::Blackstone> = GameEntry::new();
 static CARDS_PRESIDENT: GameEntry<cards::President> = GameEntry::new();
 static CARDS_COLLUSION: GameEntry<cards::Collusion> = GameEntry::new();
 static PENNYWISE: GameEntry<pennywise::Pennywise> = GameEntry::new();
+static BANTU: GameEntry<bantu::Bantu> = GameEntry::new();
 
 pub static GAMES: &[&dyn AnyGame] = &[
     &YAVALATH,
@@ -50,6 +51,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &CARDS_PRESIDENT,
     &CARDS_COLLUSION,
     &PENNYWISE,
+    &BANTU,
 ];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {
