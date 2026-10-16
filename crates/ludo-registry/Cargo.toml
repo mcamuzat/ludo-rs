@@ -11,6 +11,7 @@ yavalath.workspace = true
 riichi.workspace = true
 pairs.workspace = true
 cards.workspace = true
+pennywise.workspace = true
 
 [dev-dependencies]
 serde_json.workspace = true

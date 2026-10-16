@@ -242,6 +242,7 @@ dependencies = [
  "cards",
  "ludo-core",
  "pairs",
+ "pennywise",
  "riichi",
  "serde_json",
  "yavalath",

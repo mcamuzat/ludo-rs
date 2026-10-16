@@ -2,13 +2,16 @@
 //! play a coin into the pot, take back the most change below it; the game
 //! ends as soon as a player has no coin left.
 
+mod heuristics;
 mod purse;
 mod view;
 
 pub use purse::{Character, Purse, Stack, COINS};
 pub use view::View;
 
-use ludo_core::{Game, GameMeta, GameOption, Illegal, OptionKind, Outcome, Pending, Seat, Viewer};
+use ludo_core::{
+    Determinize, Game, GameMeta, GameOption, Illegal, OptionKind, Outcome, Pending, Seat, Viewer,
+};
 use rand::{Rng, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 use serde::{Deserialize, Serialize};
@@ -182,5 +185,12 @@ impl Game for Pennywise {
 
     fn timeout_action(s: &State, seat: Seat) -> Option<Action> {
         Self::legal_actions(s, seat).into_iter().next()
+    }
+}
+
+/// Perfect information: nothing to redraw.
+impl Determinize for Pennywise {
+    fn determinize<R: Rng + ?Sized>(s: &State, _observer: Seat, _rng: &mut R) -> State {
+        s.clone()
     }
 }
