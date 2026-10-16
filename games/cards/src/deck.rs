@@ -152,6 +152,43 @@ pub fn redeal<R: Rng + ?Sized>(hands: &mut [&mut Vec<Card>], rng: &mut R) {
     }
 }
 
+/// Like `redeal`, but each card may only go to a hand `i` with
+/// `accepts(i, card)` (a player known to be out of a suit gets none of it).
+/// The hands given must already satisfy `accepts`: after a few dead ends
+/// they are kept as they are.
+pub fn redeal_where<R: Rng + ?Sized>(
+    hands: &mut [&mut Vec<Card>],
+    accepts: &dyn Fn(usize, Card) -> bool,
+    rng: &mut R,
+) {
+    const TRIES: usize = 20;
+    let sizes: Vec<usize> = hands.iter().map(|h| h.len()).collect();
+    let mut pool: Vec<Card> = hands.iter().flat_map(|h| h.iter().copied()).collect();
+    for _ in 0..TRIES {
+        pool.shuffle(rng);
+        // The most constrained cards first, so that they still find a place.
+        pool.sort_by_key(|&card| (0..sizes.len()).filter(|&i| accepts(i, card)).count());
+        let mut dealt: Vec<Vec<Card>> = sizes.iter().map(|&n| Vec::with_capacity(n)).collect();
+        let complete = pool.iter().all(|&card| {
+            let open: Vec<usize> = (0..sizes.len())
+                .filter(|&i| dealt[i].len() < sizes[i] && accepts(i, card))
+                .collect();
+            if open.is_empty() {
+                return false;
+            }
+            let pick = rng.gen_range(0..open.len() as u32) as usize;
+            dealt[open[pick]].push(card);
+            true
+        });
+        if complete {
+            for (hand, cards) in hands.iter_mut().zip(dealt) {
+                **hand = cards;
+            }
+            return;
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::collections::HashSet;
@@ -243,5 +280,72 @@ mod tests {
             serde_json::to_value(Card::Joker).unwrap(),
             serde_json::json!({ "kind": "Joker" })
         );
+    }
+
+    fn three_suits() -> (Vec<Card>, Vec<Card>, Vec<Card>) {
+        let pack = pack_52();
+        (
+            pack[..5].to_vec(),
+            pack[13..18].to_vec(),
+            pack[26..31].to_vec(),
+        )
+    }
+
+    fn is_heart(card: Card) -> bool {
+        matches!(
+            card,
+            Card::Natural {
+                suit: Suit::Hearts,
+                ..
+            }
+        )
+    }
+
+    #[test]
+    fn redeal_where_keeps_sizes_and_cards() {
+        let (mut a, mut b, mut c) = three_suits();
+        a.truncate(3);
+        let before: HashSet<Card> = a.iter().chain(&b).chain(&c).copied().collect();
+        redeal_where(
+            &mut [&mut a, &mut b, &mut c],
+            &|i, card| i != 0 || !is_heart(card),
+            &mut SmallRng::seed_from_u64(1),
+        );
+        assert_eq!((a.len(), b.len(), c.len()), (3, 5, 5));
+        let after: HashSet<Card> = a.iter().chain(&b).chain(&c).copied().collect();
+        assert_eq!(after, before);
+    }
+
+    #[test]
+    fn redeal_where_respects_the_constraint() {
+        for seed in 0..200 {
+            let (mut a, mut b, mut c) = three_suits();
+            redeal_where(
+                &mut [&mut a, &mut b, &mut c],
+                &|i, card| i != 0 || !is_heart(card),
+                &mut SmallRng::seed_from_u64(seed),
+            );
+            assert!(!a.iter().any(|&card| is_heart(card)), "seed {seed}");
+        }
+    }
+
+    #[test]
+    fn redeal_where_still_shuffles() {
+        let (a0, b0, c0) = three_suits();
+        let moved = (0..20).any(|seed| {
+            let (mut a, mut b, mut c) = three_suits();
+            redeal_where(
+                &mut [&mut a, &mut b, &mut c],
+                &|i, card| i != 0 || !is_heart(card),
+                &mut SmallRng::seed_from_u64(seed),
+            );
+            let sorted = |mut h: Vec<Card>| {
+                h.sort();
+                h
+            };
+            (sorted(a), sorted(b), sorted(c))
+                != (sorted(a0.clone()), sorted(b0.clone()), sorted(c0.clone()))
+        });
+        assert!(moved);
     }
 }
