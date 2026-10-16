@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { PennywiseBoard, TakeChoices, describeTake, takesFor } from "../Board";
+import { PennywiseBoard, TakeChoices, decisionKey, describeTake, takesFor } from "../Board";
 import type { PennywiseAction, PennywiseView } from "../types";
 
 const NAMES = ["Ana", "Hugo"];
@@ -87,5 +87,14 @@ describe("TakeChoices", () => {
     expect(html).toContain("Reprendre 3¢ + 1¢");
     expect(html).toContain("Reprendre 2¢ + 2¢");
     expect(html).toContain("Annuler");
+  });
+});
+
+describe("decisionKey", () => {
+  it("changes as soon as anyone moves, so a picked coin never outlives its turn", () => {
+    const moved = { ...VIEW, last: { seat: 1, coin: 10, take: [5, 3, 1] } };
+    expect(decisionKey(VIEW, LEGAL)).toBe(decisionKey({ ...VIEW }, [...LEGAL]));
+    expect(decisionKey(moved, LEGAL)).not.toBe(decisionKey(VIEW, LEGAL));
+    expect(decisionKey(VIEW, [])).not.toBe(decisionKey(VIEW, LEGAL));
   });
 });

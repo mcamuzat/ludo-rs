@@ -92,8 +92,8 @@ crate et suit « Ajouter un jeu » du `CLAUDE.md`.
 
 ## 5. IA
 
-L'ISMCTS générique, avec des `Heuristics` simples (argent restant, nombre de
-pièces). Mesure : `ludo-cli arena pennywise 200 hard easy`, où Difficile doit
+L'ISMCTS générique, avec des parties simulées au hasard (aucune évaluation :
+la mesure dépasse largement le seuil, 0.965 à 2 joueurs et 0.856 à 4). Mesure : `ludo-cli arena pennywise 200 hard easy`, où Difficile doit
 marquer ≥ 0.55 contre Facile. La valeur mesurée, à 2 et à 4 joueurs, va dans
 « Commandes » du `CLAUDE.md`.
 

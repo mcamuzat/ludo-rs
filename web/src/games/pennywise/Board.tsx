@@ -46,6 +46,11 @@ function Coins({
   );
 }
 
+/** What a picked coin belongs to: the position (last move) and my choices. */
+export function decisionKey(view: PennywiseView, legal: PennywiseAction[]): string {
+  return JSON.stringify([view.last, view.current, legal]);
+}
+
 /** The assortments a coin may take back, when the engine offers several. */
 export function TakeChoices({
   choices,
@@ -71,7 +76,12 @@ export function TakeChoices({
 export function PennywiseBoard({ view, legalActions, me, seatNames, submit }: BoardProps) {
   const v = view as PennywiseView;
   const legal = legalActions as PennywiseAction[];
-  const [picked, setPicked] = useState<number | null>(null);
+  // A picked coin is kept only for the decision it was made for (a timeout
+  // or any move clears it).
+  const key = decisionKey(v, legal);
+  const [chosen, setChosen] = useState<{ key: string; coin: number | null }>({ key, coin: null });
+  const picked = chosen.key === key ? chosen.coin : null;
+  const setPicked = (coin: number | null) => setChosen({ key, coin });
   const playable = [...new Set(legal.map((a) => a.Play.coin))];
   const choices = picked === null ? [] : takesFor(legal, picked);
 
