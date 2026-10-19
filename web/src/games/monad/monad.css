@@ -25,6 +25,10 @@ button.monad-card:hover { transform: translateY(-3px); }
 .monad-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
 .monad-log { margin: 0; padding-left: 0; list-style: none; font-size: 0.85rem; text-align: center; }
 .monad-ranking { margin: 6px 0 0; padding-left: 0; list-style: none; text-align: center; }
+.monad-guide { display: grid; grid-template-columns: auto repeat(3, 28px); gap: 4px 6px; align-items: center; justify-items: center; padding: 6px 8px; border-radius: 8px; background: rgb(255 255 255 / 92%); color: #222; font-size: 0.75rem; }
+.monad-guide-label { justify-self: end; font-weight: 700; }
+.monad-dot { display: inline-block; width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgb(0 0 0 / 25%); }
+.monad-guide svg { display: block; }
 @media (max-width: 520px) {
   .monad-table { gap: 8px; padding: 8px; }
 }

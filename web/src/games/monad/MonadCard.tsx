@@ -95,3 +95,45 @@ export function MonadDisc({ size = 40 }: { size?: number }) {
     </svg>
   );
 }
+
+/** [M] The bonus combinations, each a warm colour over its cool partner. */
+const BONUS_PAIRS: [Color, Color][] = [
+  ["Red", "Navy"],
+  ["Orange", "Sky"],
+  ["Yellow", "Green"],
+];
+
+/** A yin-yang in two colours, as on the Bonus card. */
+function YinYang({ warm, cool }: { warm: Color; cool: Color }) {
+  return (
+    <svg viewBox="-13 -13 26 26" width="26" height="26" role="img" aria-label={`Bonus ${COLOR_NAME[warm]} et ${COLOR_NAME[cool]}`}>
+      <circle r="12" fill={COLOR_HEX[warm]} />
+      <path d="M 0 -12 A 12 12 0 0 1 0 12 A 6 6 0 0 1 0 0 A 6 6 0 0 0 0 -12 Z" fill={COLOR_HEX[cool]} />
+    </svg>
+  );
+}
+
+/** Rule reference: warm and cool colours, and which pairs give a bonus. */
+export function ColorGuide() {
+  const dot = (c: Color) => (
+    <span className="monad-dot" style={{ background: COLOR_HEX[c] }} title={COLOR_NAME[c]} />
+  );
+  return (
+    <div className="monad-guide" aria-label="Couleurs et bonus">
+      <span className="monad-guide-label">Chaudes</span>
+      {BONUS_PAIRS.map(([w]) => (
+        <span key={w}>{dot(w)}</span>
+      ))}
+      <span className="monad-guide-label">Froides</span>
+      {BONUS_PAIRS.map(([, c]) => (
+        <span key={c}>{dot(c)}</span>
+      ))}
+      <span className="monad-guide-label">Bonus</span>
+      {BONUS_PAIRS.map(([w, c]) => (
+        <span key={w}>
+          <YinYang warm={w} cool={c} />
+        </span>
+      ))}
+    </div>
+  );
+}

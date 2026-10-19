@@ -81,6 +81,15 @@ describe("MonadBoard", () => {
     expect(html).toContain("Retourner la défausse");
   });
 
+  it("shows the warm and cool colours and the bonus pairs", () => {
+    const html = board(VIEW, LEGAL, 0);
+    expect(html).toContain("Chaudes");
+    expect(html).toContain("Froides");
+    expect(html).toContain('aria-label="Bonus rouge et bleu marine"');
+    expect(html).toContain('aria-label="Bonus orange et bleu ciel"');
+    expect(html).toContain('aria-label="Bonus jaune et vert"');
+  });
+
   it("turns the Bonus card over once the bonus is taken", () => {
     const html = board({ ...VIEW, turn: { ...VIEW.turn, bonusUsed: true, transacted: true } }, ["EndTurn"], 0);
     expect(html).toContain("monad-bonus used");

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { BoardProps } from "../registry";
-import { COLOR_HEX, MonadCard, MonadDisc, RANK_NAME, cardName, colorName } from "./MonadCard";
+import { COLOR_HEX, ColorGuide, MonadCard, MonadDisc, RANK_NAME, cardName, colorName } from "./MonadCard";
 import type { Card, Color, EventView, MonadAction, MonadView, Rank, Target } from "./types";
 import "./monad.css";
 
@@ -186,6 +186,7 @@ export function MonadBoard({ view, legalActions, me, seatNames, submit }: BoardP
           <MonadDisc size={44} />
           <span>{`Monades : ${v.monadStock}`}</span>
         </div>
+        <ColorGuide />
       </div>
 
       {log.length > 0 && (
