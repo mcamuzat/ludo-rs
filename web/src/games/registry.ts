@@ -46,6 +46,8 @@ import {
 import { ZombieLifeBoard } from "./pairs/zombie-life/Board";
 import { PennywiseBoard } from "./pennywise/Board";
 import { PENNYWISE_RULES } from "./pennywise/rules";
+import { MonadBoard } from "./monad/Board";
+import { MONAD_RULES } from "./monad/rules";
 import { RiichiBoard } from "./riichi/Board";
 import { YavalathBoard } from "./yavalath/Board";
 
@@ -60,7 +62,7 @@ export interface BoardProps {
 }
 
 /** How the home screen groups and illustrates a game. */
-export type GameFamily = "board" | "tiles" | "pairs" | "cards" | "coins";
+export type GameFamily = "board" | "tiles" | "pairs" | "cards" | "coins" | "trade";
 
 export interface GameUi {
   id: string;
@@ -98,6 +100,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "cards-president", family: "cards", Board: PresidentBoard, rules: PRESIDENT_RULES },
   { id: "cards-collusion", family: "cards", Board: CollusionBoard, rules: COLLUSION_RULES },
   { id: "pennywise", family: "coins", Board: PennywiseBoard, rules: PENNYWISE_RULES },
+  { id: "monad", family: "trade", Board: MonadBoard, rules: MONAD_RULES },
 ];
 
 export function gameUi(id: string): GameUi | undefined {

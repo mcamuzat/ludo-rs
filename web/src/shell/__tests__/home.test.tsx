@@ -18,6 +18,7 @@ const CATALOG = [
   meta("pairs-ghost-town", "Ghost Town"),
   meta("cards-president", "Président"),
   meta("pennywise", "Pennywise"),
+  meta("monad", "Monad"),
 ];
 
 function home(): string {
@@ -51,6 +52,7 @@ describe("Home", () => {
       "Zombie Life",
       "Président",
       "Pennywise",
+      "Monad",
     ]);
   });
 
@@ -72,5 +74,11 @@ describe("Home", () => {
     const html = home();
     expect(html.indexOf("Cartes traditionnelles")).toBeLessThan(html.indexOf("Jeux de pièces"));
     expect(html.indexOf("Jeux de pièces")).toBeLessThan(html.indexOf("Pennywise"));
+  });
+
+  it("shelves the trading games after the coin games", () => {
+    const html = home();
+    expect(html.indexOf("Jeux de pièces")).toBeLessThan(html.indexOf("Jeux d&#x27;échange"));
+    expect(html.indexOf("Jeux d&#x27;échange")).toBeLessThan(html.indexOf("Monad"));
   });
 });

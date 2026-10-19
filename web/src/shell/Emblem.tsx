@@ -50,6 +50,18 @@ export function Emblem({ family, name }: { family: GameFamily; name: string }) {
       </svg>
     );
   }
+  if (family === "trade") {
+    return (
+      <svg viewBox="0 0 44 44" aria-hidden="true">
+        <rect width="44" height="44" rx="10" style={{ fill: "var(--accent-soft)" }} />
+        <circle cx="22" cy="22" r="13" fill="#0083bf" />
+        {[0, 1, 2, 3, 4].map((k) => {
+          const a = -Math.PI / 2 + (2 * Math.PI * k) / 5;
+          return <line key={k} x1="22" y1="22" x2={22 + 14 * Math.cos(a)} y2={22 + 14 * Math.sin(a)} stroke="#fff" strokeWidth="2.2" />;
+        })}
+      </svg>
+    );
+  }
   if (family === "cards") {
     return (
       <svg viewBox="0 0 44 44" aria-hidden="true">

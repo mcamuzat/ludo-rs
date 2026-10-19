@@ -22,6 +22,7 @@ const SHELVES: { title: string; families: GameFamily[] }[] = [
   { title: "Deck Pairs", families: ["pairs"] },
   { title: "Cartes traditionnelles", families: ["cards"] },
   { title: "Jeux de pièces", families: ["coins"] },
+  { title: "Jeux d'échange", families: ["trade"] },
 ];
 
 export function Home({ catalog, error, name, onName, onPick, onJoin, saved, onResume, onAbandon }: Props) {

@@ -1,0 +1,30 @@
+.monad-board { display: flex; flex-direction: column; gap: 10px; }
+.monad-seats { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.monad-seat { background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: var(--r); padding: 6px 10px; box-shadow: var(--shadow); }
+.monad-seat.active { border-color: var(--brass); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brass) 40%, transparent); }
+.monad-seat h3 { display: flex; gap: 8px; align-items: center; margin: 0 0 4px; font-size: 0.95rem; }
+.monad-seat .counts { font-size: 0.85rem; margin: 0; }
+.monad-identity { display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgb(0 0 0 / 30%); }
+.monad-bonus { font-size: 0.7rem; font-weight: 700; padding: 1px 5px; border-radius: 4px; background: #1b1774; color: #fff; }
+.monad-bonus.used { background: #888; text-decoration: line-through; }
+.monad-monads { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; }
+.monad-table { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; align-items: flex-start; padding: 12px; border-radius: 14px; }
+.monad-pile { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.8rem; min-width: 52px; }
+.monad-back { width: 44px; height: 62px; border-radius: 5px; background: repeating-linear-gradient(45deg, #1b1774 0 6px, #0083bf 6px 12px); border: 2px solid #fff; }
+.monad-empty { width: 44px; height: 62px; border-radius: 5px; border: 2px dashed rgb(255 255 255 / 50%); }
+.monad-column { display: flex; flex-direction: column; align-items: center; min-width: 52px; }
+.monad-column h4 { margin: 0 0 4px; font-size: 0.8rem; }
+.monad-slot { position: relative; display: block; height: 62px; }
+.monad-slot + .monad-slot { margin-top: -46px; }
+.monad-card { display: inline-block; width: 44px; height: 62px; padding: 0; border: 0; background: none; border-radius: 5px; }
+.monad-card-face { width: 44px; height: 62px; display: block; }
+button.monad-card { cursor: pointer; transition: transform 0.12s; }
+button.monad-card:hover { transform: translateY(-3px); }
+.monad-card.selected { outline: 3px solid var(--brass); outline-offset: 1px; transform: translateY(-6px); }
+.monad-hand { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+.monad-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.monad-log { margin: 0; padding-left: 0; list-style: none; font-size: 0.85rem; text-align: center; }
+.monad-ranking { margin: 6px 0 0; padding-left: 0; list-style: none; text-align: center; }
+@media (max-width: 520px) {
+  .monad-table { gap: 8px; padding: 8px; }
+}
