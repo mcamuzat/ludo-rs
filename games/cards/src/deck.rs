@@ -163,19 +163,20 @@ pub fn redeal<R: Rng + ?Sized>(hands: &mut [&mut Vec<Card>], rng: &mut R) {
 /// `accepts(i, card)` (a player known to be out of a suit gets none of it).
 /// The hands given must already satisfy `accepts`: after a few dead ends
 /// they are kept as they are.
-pub fn redeal_where<R: Rng + ?Sized>(
-    hands: &mut [&mut Vec<Card>],
-    accepts: &dyn Fn(usize, Card) -> bool,
+/// Generic over the card type: other games with their own pack use it too.
+pub fn redeal_where<T: Copy, R: Rng + ?Sized>(
+    hands: &mut [&mut Vec<T>],
+    accepts: &dyn Fn(usize, T) -> bool,
     rng: &mut R,
 ) {
     const TRIES: usize = 20;
     let sizes: Vec<usize> = hands.iter().map(|h| h.len()).collect();
-    let mut pool: Vec<Card> = hands.iter().flat_map(|h| h.iter().copied()).collect();
+    let mut pool: Vec<T> = hands.iter().flat_map(|h| h.iter().copied()).collect();
     for _ in 0..TRIES {
         pool.shuffle(rng);
         // The most constrained cards first, so that they still find a place.
         pool.sort_by_key(|&card| (0..sizes.len()).filter(|&i| accepts(i, card)).count());
-        let mut dealt: Vec<Vec<Card>> = sizes.iter().map(|&n| Vec::with_capacity(n)).collect();
+        let mut dealt: Vec<Vec<T>> = sizes.iter().map(|&n| Vec::with_capacity(n)).collect();
         let complete = pool.iter().all(|&card| {
             let open: Vec<usize> = (0..sizes.len())
                 .filter(|&i| dealt[i].len() < sizes[i] && accepts(i, card))
