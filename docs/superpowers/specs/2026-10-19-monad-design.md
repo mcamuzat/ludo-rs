@@ -1,7 +1,7 @@
 # ludo-rs — Monad (spec 6)
 
 Date : 2026-10-19
-Statut : validée
+Statut : plan livré
 Précédent : `2026-10-16-pennywise-design.md`
 
 ## 1. Objectif

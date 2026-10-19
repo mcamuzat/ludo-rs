@@ -29,6 +29,7 @@ ludo-rs : plateforme de jeux traditionnels. Moteur Rust (`crates/ludo-core`, `ga
 - `cargo run --release -p ludo-cli -- arena cards-collusion 200 hard easy 4` : Difficile doit marquer ≥ 0.55 contre Facile (0.70 mesuré ; ~140 s pour 200 parties).
 - `cargo run --release -p ludo-cli -- arena bantu 200 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.95 mesuré à 2 joueurs ; 0.89 à 4 joueurs sur 60 parties, `arena bantu 60 hard easy 4`, une partie à 4 durant ~440 coups). Plateau : `scripts/bantu-board.py <règle.pdf> <dossier>` régénère `games/bantu/src/board_data.rs` depuis le PDF (hors dépôt), puis `UPDATE_BOARD_JSON=1 cargo test -p bantu` met à jour `web/src/games/bantu/board.json`.
 - `cargo run --release -p ludo-cli -- arena pennywise 200 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.965 mesuré ; 0.856 à 4 joueurs ; ~70 s pour 200 parties).
+- `cargo run --release -p ludo-cli -- arena monad 200 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.767 mesuré ; 0.865 à 4 joueurs sur 100 parties ; ~3 s par partie à 2 joueurs).
 - `cargo run --release -p ludo-cli -- play yavalath 2 medium` : partie en terminal.
 - Web : `./scripts/build-wasm.sh` (ou `dev`), puis `cd web && pnpm dev` / `pnpm test` / `pnpm build`.
 
