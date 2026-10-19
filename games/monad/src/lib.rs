@@ -2,6 +2,7 @@
 //! and leap from Units up to Monads; the first to gather enough wins.
 
 mod cards;
+mod rules;
 mod view;
 
 pub use cards::{Card, Color, Rank, Target};
@@ -142,6 +143,50 @@ impl State {
         }
     }
 
+    /// Cards handed to the table: Units on the discard, the others under
+    /// their column, in sorted order.
+    fn give_back(&mut self, seat: Seat, cards: &[Card]) {
+        let hand = &mut self.hands[seat.index()];
+        for card in cards {
+            let at = hand
+                .iter()
+                .position(|c| c == card)
+                .expect("legal: the card is held");
+            hand.remove(at);
+            match card.rank.column() {
+                Some(i) => self.columns[i].push_back(card.color),
+                None => self.discard.push(card.color),
+            }
+        }
+    }
+
+    /// Takes the top of `target` for `seat`; a Monad may win the game.
+    fn gain(&mut self, seat: Seat, target: Target, event: &mut Event) {
+        match target {
+            Target::Card(rank) => {
+                let i = rank.column().expect("Units are never taken from a column");
+                let color = self.columns[i]
+                    .pop_front()
+                    .expect("legal: the column is not empty");
+                let card = Card { rank, color };
+                let hand = &mut self.hands[seat.index()];
+                hand.push(card);
+                hand.sort();
+                event.gained.push(card);
+            }
+            Target::Monad => {
+                self.monad_stock -= 1;
+                self.monads[seat.index()] += 1;
+                self.turns_since_monad = 0;
+                event.monad = true;
+                // [M] The first to gather the Monads needed wins at once.
+                if self.monads[seat.index()] >= monads_to_win(self.players) {
+                    self.winner = Some(seat);
+                }
+            }
+        }
+    }
+
     /// Ends the current turn: the turn passes to the left.
     fn end_turn(&mut self) {
         self.last_turn = std::mem::take(&mut self.this_turn);
@@ -241,14 +286,28 @@ impl Game for Monad {
         if s.turn.bonus_offer.is_some() {
             return vec![Action::TakeBonus, Action::DeclineBonus];
         }
-        let mut actions = Vec::new();
+        let mut actions: Vec<Action> = rules::trades(s, seat)
+            .into_iter()
+            .map(|cards| Action::Trade { cards })
+            .collect();
+        actions.extend(
+            rules::buys(s, seat)
+                .into_iter()
+                .map(|(target, cards)| Action::Buy { target, cards }),
+        );
+        actions.extend(
+            rules::leaps(s, seat)
+                .into_iter()
+                .map(|colors| Action::Leap { colors }),
+        );
         if s.turn.transacted {
             actions.push(Action::EndTurn);
         } else if !s.deck.is_empty() {
             actions.push(Action::Draw);
         } else if !s.discard.is_empty() {
             actions.push(Action::Flip);
-        } else {
+        }
+        if !s.turn.transacted && rules::may_pass(s, seat) {
             actions.push(Action::Pass);
         }
         actions
@@ -280,7 +339,57 @@ impl Game for Monad {
             // the first drawn.
             Action::Flip => s.deck = s.discard.drain(..).rev().collect(),
             Action::Pass => {}
-            _ => unreachable!("not offered yet"),
+            Action::Trade { cards } => {
+                let (target, joker) =
+                    rules::trade_target(s, seat, *cards).expect("legal: the pair trades");
+                s.give_back(seat, cards);
+                s.gain(seat, target, &mut event);
+                s.turn.bonus_offer = rules::bonus_of(s, *cards, joker);
+            }
+            Action::Buy { target, cards } => {
+                s.give_back(seat, cards);
+                s.gain(seat, *target, &mut event);
+            }
+            Action::Leap { colors } => {
+                let units: Vec<Card> = colors
+                    .iter()
+                    .map(|&color| Card {
+                        rank: Rank::Unit,
+                        color,
+                    })
+                    .collect();
+                s.give_back(seat, &units);
+                let rank = rules::leap_rank(colors.len()).expect("legal: 4 to 6 Units");
+                s.gain(seat, Target::Card(rank), &mut event);
+            }
+            // [M] The top card of each lower set, and a Unit from the deck.
+            Action::TakeBonus => {
+                let rank = s.turn.bonus_offer.take().expect("legal: a bonus waits");
+                for &lower in &Rank::ALL[1..rank.index()] {
+                    if s.available(Target::Card(lower)) {
+                        s.gain(seat, Target::Card(lower), &mut event);
+                    }
+                }
+                if let Some(color) = s.deck.pop() {
+                    s.hands[seat.index()].push(Card {
+                        rank: Rank::Unit,
+                        color,
+                    });
+                    s.hands[seat.index()].sort();
+                    event.drawn = Some(color);
+                }
+                s.turn.bonus_used = true;
+            }
+            Action::DeclineBonus => s.turn.bonus_offer = None,
+        }
+        if matches!(action, Action::Trade { .. } | Action::Buy { .. }) {
+            s.turn.prepared = true;
+        }
+        if matches!(
+            action,
+            Action::Trade { .. } | Action::Buy { .. } | Action::Leap { .. }
+        ) {
+            s.turn.transacted = true;
         }
         let whole_turn = matches!(action, Action::Draw | Action::Flip | Action::Pass);
         if *action == Action::Pass {
@@ -291,7 +400,7 @@ impl Game for Monad {
         if *action != Action::EndTurn {
             s.this_turn.push(event);
         }
-        if whole_turn || *action == Action::EndTurn {
+        if (whole_turn || *action == Action::EndTurn) && !s.over() {
             s.end_turn();
         }
         // Site limit: a full round of passes changes nothing any more.
@@ -307,5 +416,21 @@ impl Game for Monad {
 
     fn outcome(s: &State) -> Option<Outcome> {
         s.over().then(|| Outcome::Ranked(s.ranks()))
+    }
+
+    /// Decline a bonus, end a turn already played, draw, flip or pass;
+    /// failing all that, the first legal move.
+    fn timeout_action(s: &State, seat: Seat) -> Option<Action> {
+        let legal = Self::legal_actions(s, seat);
+        [
+            Action::DeclineBonus,
+            Action::EndTurn,
+            Action::Draw,
+            Action::Flip,
+            Action::Pass,
+        ]
+        .into_iter()
+        .find(|a| legal.contains(a))
+        .or_else(|| legal.into_iter().next())
     }
 }
