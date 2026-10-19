@@ -21,6 +21,7 @@ const SHELVES: { title: string; families: GameFamily[] }[] = [
   { title: "Plateau et tuiles", families: ["board", "tiles"] },
   { title: "Deck Pairs", families: ["pairs"] },
   { title: "Cartes traditionnelles", families: ["cards"] },
+  { title: "Jeux de cartes d'auteur", families: ["modern"] },
   { title: "Jeux de pièces", families: ["coins"] },
   { title: "Jeux d'échange", families: ["trade"] },
 ];

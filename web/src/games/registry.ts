@@ -49,6 +49,8 @@ import { PENNYWISE_RULES } from "./pennywise/rules";
 import { MonadBoard } from "./monad/Board";
 import { MONAD_RULES } from "./monad/rules";
 import { RiichiBoard } from "./riichi/Board";
+import { VolltrefferBoard } from "./volltreffer/Board";
+import { VOLLTREFFER_RULES } from "./volltreffer/rules";
 import { YavalathBoard } from "./yavalath/Board";
 
 /** What every game board receives. It displays and submits; it computes nothing. */
@@ -62,7 +64,7 @@ export interface BoardProps {
 }
 
 /** How the home screen groups and illustrates a game. */
-export type GameFamily = "board" | "tiles" | "pairs" | "cards" | "coins" | "trade";
+export type GameFamily = "board" | "tiles" | "pairs" | "cards" | "modern" | "coins" | "trade";
 
 export interface GameUi {
   id: string;
@@ -101,6 +103,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "cards-collusion", family: "cards", Board: CollusionBoard, rules: COLLUSION_RULES },
   { id: "pennywise", family: "coins", Board: PennywiseBoard, rules: PENNYWISE_RULES },
   { id: "monad", family: "trade", Board: MonadBoard, rules: MONAD_RULES },
+  { id: "volltreffer", family: "modern", Board: VolltrefferBoard, rules: VOLLTREFFER_RULES },
 ];
 
 export function gameUi(id: string): GameUi | undefined {

@@ -62,6 +62,19 @@ export function Emblem({ family, name }: { family: GameFamily; name: string }) {
       </svg>
     );
   }
+  if (family === "modern") {
+    return (
+      <svg viewBox="0 0 44 44" aria-hidden="true">
+        <rect width="44" height="44" rx="10" style={{ fill: "var(--accent-soft)" }} />
+        {["#c8322b", "#2e8b57", "#2f6db5", "#e0b021", "#7b4fa8"].map((fill, k) => (
+          <rect key={k} x={7 + k * 5} y={9 + (k % 2) * 2} width="14" height="22" rx="2.5" fill={fill} stroke="#fff" strokeWidth="1.2" />
+        ))}
+        <text x="22" y="39" fontWeight="800" fontSize="8" style={{ fill: "var(--accent)", fontFamily: "var(--f-display)" }} textAnchor="middle">
+          {initial}
+        </text>
+      </svg>
+    );
+  }
   if (family === "cards") {
     return (
       <svg viewBox="0 0 44 44" aria-hidden="true">
