@@ -641,3 +641,53 @@ fn timeout_declines_then_ends_the_turn() {
     play(&mut s, Action::DeclineBonus);
     assert_eq!(Monad::timeout_action(&s, Seat(0)), Some(Action::EndTurn));
 }
+
+#[test]
+fn drawn_units_are_private() {
+    let mut s = table(units(&[Red]), units(&[Sky]));
+    s.deck = vec![Green];
+    play(&mut s, Action::Draw);
+    let mine = serde_json::to_value(Monad::view(&s, Viewer::Seat(Seat(0)))).unwrap();
+    let theirs = serde_json::to_value(Monad::view(&s, Viewer::Seat(Seat(1)))).unwrap();
+    assert_eq!(mine["lastTurn"][0]["drawn"], json!("Green"));
+    assert_eq!(theirs["lastTurn"][0]["drawn"], json!(null));
+    assert_eq!(theirs["lastTurn"][0]["drew"], json!(true));
+}
+
+#[test]
+fn determinize_keeps_what_the_observer_sees() {
+    use ludo_core::Determinize;
+    use rand::SeedableRng;
+
+    let mut s = state(3);
+    // Play a few turns so that hands hold several ranks and the deck exists.
+    let mut rng = rand_chacha::ChaCha8Rng::seed_from_u64(5);
+    for _ in 0..60 {
+        if Monad::pending(&s).is_empty() {
+            break;
+        }
+        let seat = s.current;
+        let actions = Monad::legal_actions(&s, seat);
+        let pick =
+            actions[rand::Rng::gen_range(&mut rng, 0..actions.len() as u32) as usize].clone();
+        Monad::apply(&mut s, seat, &pick).unwrap();
+    }
+    let all = |s: &State| {
+        let mut cards: Vec<Card> = s.hands.iter().flatten().copied().collect();
+        cards.extend(s.deck.iter().map(|&c| card(Rank::Unit, c)));
+        cards.sort();
+        cards
+    };
+    for observer in (0..3).map(Seat) {
+        let seen = serde_json::to_value(Monad::view(&s, Viewer::Seat(observer))).unwrap();
+        for _ in 0..20 {
+            let d = Monad::determinize(&s, observer, &mut rng);
+            assert_eq!(
+                serde_json::to_value(Monad::view(&d, Viewer::Seat(observer))).unwrap(),
+                seen
+            );
+            assert_eq!(all(&d), all(&s));
+            assert_eq!(d.hands[observer.index()], s.hands[observer.index()]);
+        }
+    }
+}

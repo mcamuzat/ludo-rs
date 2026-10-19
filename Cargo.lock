@@ -252,6 +252,7 @@ dependencies = [
  "bantu",
  "cards",
  "ludo-core",
+ "monad",
  "pairs",
  "pennywise",
  "riichi",

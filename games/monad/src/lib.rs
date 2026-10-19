@@ -2,6 +2,8 @@
 //! and leap from Units up to Monads; the first to gather enough wins.
 
 mod cards;
+mod determinize;
+mod heuristics;
 mod rules;
 mod view;
 
@@ -112,6 +114,8 @@ pub struct State {
     pub winner: Option<Seat>,
     /// The game stopped on a site limit, without a winner.
     pub stalled: bool,
+    /// Moves applied so far (the AI's simulation horizon).
+    pub moves: u32,
 }
 
 impl State {
@@ -268,6 +272,7 @@ impl Game for Monad {
             turns_since_monad: 0,
             winner: None,
             stalled: false,
+            moves: 0,
         }
     }
 
@@ -323,6 +328,7 @@ impl Game for Monad {
         if !Self::legal_actions(s, seat).contains(action) {
             return Err(Illegal::new("Ce coup n'est pas permis maintenant."));
         }
+        s.moves += 1;
         let mut event = Event::new(seat, action.clone());
         match action {
             Action::EndTurn => {}

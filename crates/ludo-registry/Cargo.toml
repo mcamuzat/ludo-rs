@@ -13,6 +13,7 @@ riichi.workspace = true
 pairs.workspace = true
 cards.workspace = true
 pennywise.workspace = true
+monad.workspace = true
 
 [dev-dependencies]
 serde_json.workspace = true
