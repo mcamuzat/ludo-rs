@@ -3,7 +3,8 @@ use std::time::Instant;
 use cryptide::knowledge::{possible, query, Inference, CAP};
 use cryptide::testing::{fixed_puzzle, table};
 use cryptide::{Cell, Config, Cryptide, Mode, Phase, State};
-use ludo_core::{Game, Seat, Viewer};
+use ludo_core::ai::Level;
+use ludo_core::{Game, Heuristics, Seat, Viewer};
 use rand::seq::SliceRandom;
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
@@ -82,16 +83,41 @@ fn combos_find_the_true_habitat() {
     }
 }
 
+/// The setup played by the AI (its least revealing cubes: the worst case
+/// for the enumeration), in advanced mode at five.
+fn after_ai_setup(seed: u64) -> State {
+    let mut s = Cryptide::new(
+        &Config {
+            mode: Mode::Advanced,
+        },
+        5,
+        seed,
+    );
+    let mut rng = ChaCha8Rng::seed_from_u64(seed);
+    while s.phase == Phase::Setup {
+        let seat = s.turn;
+        let a = Cryptide::policy_action(&s, seat, Level::Medium, &mut rng).expect("a cube");
+        Cryptide::apply(&mut s, seat, &a).expect("legal");
+    }
+    s
+}
+
 #[test]
 fn enumeration_is_fast_at_five_advanced() {
-    let s = played(Mode::Advanced, 5, 3, 0);
-    let start = Instant::now();
-    let k = query(&s, Seat(0), Inference::Bot, CAP)
-        .expect("a hint")
-        .combos();
-    let spent = start.elapsed();
-    assert!(!k.cells.is_empty() || !k.complete);
-    assert!(spent.as_millis() < 200, "{spent:?}");
+    // Measured worst case: about 4 ms natively in release; much slower in
+    // a debug build.
+    let limit_ms = if cfg!(debug_assertions) { 400 } else { 30 };
+    for seed in 0..10 {
+        let s = after_ai_setup(seed);
+        for inference in [Inference::Bot, Inference::Puzzle] {
+            let start = Instant::now();
+            let k = query(&s, Seat(0), inference, CAP).expect("a hint").combos();
+            let spent = start.elapsed();
+            assert!(k.complete, "seed {seed}: the cap stopped the walk");
+            assert!(k.cells.iter().any(|&(c, _)| c == s.puzzle.habitat));
+            assert!(spent.as_millis() < limit_ms, "seed {seed}: {spent:?}");
+        }
+    }
 }
 
 #[test]

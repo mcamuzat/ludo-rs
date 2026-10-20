@@ -10,9 +10,9 @@ use crate::rules::{State, Tokens};
 use crate::Clue;
 
 /// Nodes visited before an enumeration gives up. Once the setup cubes are
-/// down a full walk takes about 1 ms natively even at five in advanced mode
-/// (each cube rules out about half of a seat's hints); the cap only binds
-/// before them, when nothing is known yet.
+/// down a full walk takes 1 to 4 ms natively at five in advanced mode, the
+/// AI's own cubes included (`enumeration_is_fast_at_five_advanced`); the
+/// cap only binds before them, when nothing is known yet.
 pub const CAP: u64 = 400_000;
 
 /// The spaces where `seat` laid discs, and cubes.
