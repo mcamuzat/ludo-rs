@@ -1,7 +1,7 @@
 # ludo-rs — Cryptide (spec 9)
 
 Date : 2026-10-20
-Statut : proposé
+Statut : validé
 Précédent : `2026-10-20-black-vienna-design.md`
 
 ## 1. Objectif
@@ -63,7 +63,9 @@ n'est pas tranché.
   surimpression que l'utilisateur valide).
 - **Structures** [R p. 4–5] : pierres dressées et cabanes abandonnées, en
   blanc, vert, bleu et noir. Mode normal : 6 structures (3 couleurs, sans le
-  noir) ; mode avancé : les 8. Placées au hasard, une par case au plus [J] ❓1.
+  noir) ; mode avancé : les 8. Placées au hasard, une par case au plus [J] :
+  le jeu les place d'après ses cartes Énigme précalculées [U], que le
+  générateur remplace (section 4).
 - **Distance** : nombre de pas d'une case à une autre sur la grille. « Dans, ou
   à N cases » inclut la case de l'élément [R p. 8].
 - **Jetons** : une couleur par joueur, cubes et disques en nombre illimité
@@ -122,8 +124,9 @@ gauche. Principes [R p. 7] :
 
 **Interroger** : le joueur choisit une case et un autre joueur ; celui-ci y
 pose un disque si la case peut être l'habitat selon son indice, sinon un cube.
-Une case où l'interrogé a déjà un jeton est interdite (il ne pourrait pas y
-répondre) ❓2. N'importe quelle autre case est permise, même une que
+Une case où l'interrogé a déjà un jeton est interdite [U] : un cube interdit
+déjà toute action, un disque donne une réponse déjà connue. En revanche, on
+peut **fouiller** une case où d'autres ont déjà un disque [U, R p. 7]. N'importe quelle autre case est permise, même une que
 l'interrogateur sait impossible [R p. 7].
 
 **Fouiller** : le joueur choisit une case qui peut être l'habitat selon son
@@ -137,7 +140,8 @@ s'arrête. Si personne ne pose de cube, le joueur **gagne**.
 (question ou fouille), il pose lui-même un cube sur une case qui ne peut pas
 être l'habitat selon son indice [R p. 7]. C'est son choix, une décision à
 part (le seul coup où le moteur attend un joueur entre deux tours). S'il n'a
-aucune case permise, il n'en pose pas ❓3.
+aucune case permise, il n'en pose pas (cas rarissime [U], que le livret ne
+prévoit pas).
 
 ### Fin
 
@@ -256,10 +260,5 @@ donne.
 
 ## 9. Points ouverts
 
-- ❓1 Placement des structures : au hasard sur toute la carte [J], alors que
-  les cartes Énigme du jeu les placent à la main. À voir en jouant si
-  certaines cartes sont trop pauvres.
-- ❓2 Interroger un joueur sur une case où il a déjà un jeton : le livret ne
-  le dit pas ; interdit ici, la réponse étant déjà connue.
-- ❓3 Cube de pénalité sans case permise : le livret ne le prévoit pas ; le
-  joueur n'en pose pas.
+- Structures au hasard plutôt que d'après les cartes Énigme : à voir en
+  jouant si certaines cartes générées sont trop pauvres.
