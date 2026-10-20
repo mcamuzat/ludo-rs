@@ -2,8 +2,10 @@
 //! each player holds one clue about the creature's habitat; together the
 //! clues name a single space of the map. Ask the others, then search.
 
+pub mod clues;
 pub mod map;
 
+pub use clues::{generate, habitat, hints, Clue, Hint, HintTable, Mode, Puzzle};
 pub use map::{
     distance, random_layout, within, Animal, Board, Cell, Color, Kind, Layout, Mask, Square,
     Structure, Terrain, CELLS,
