@@ -53,6 +53,8 @@ pub struct Search {
     pub budget: Option<Budget>,
     pub blunder: f64,
     pub seed: u64,
+    /// For `Heuristics::policy_action`.
+    pub level: Level,
 }
 
 impl Search {
@@ -61,6 +63,7 @@ impl Search {
             budget: G::budget(level, timed),
             blunder: level.blunder(),
             seed,
+            level,
         }
     }
 }
@@ -108,6 +111,9 @@ pub fn choose<G: Game + Determinize + Heuristics>(
     let mut rng = SmallRng::seed_from_u64(search.seed);
     if legal.len() == 1 {
         return Ok(legal[0].clone());
+    }
+    if let Some(action) = G::policy_action(state, seat, search.level, &mut rng) {
+        return Ok(action);
     }
     if let Some(action) = G::scripted_action(state, seat) {
         return Ok(action);
@@ -285,6 +291,7 @@ mod tests {
             budget: Some(Budget::Iterations(iterations)),
             blunder: 0.0,
             seed,
+            level: Level::Hard,
         }
     }
 
@@ -359,6 +366,7 @@ mod tests {
             budget: Some(Budget::Millis(50)),
             blunder: 0.0,
             seed: 0,
+            level: Level::Hard,
         };
         assert!(choose::<Nim>(&s, Seat(0), &search, &clock).is_ok());
     }
@@ -370,6 +378,7 @@ mod tests {
             budget: Some(Budget::Iterations(10)),
             blunder: 1.0,
             seed: 4,
+            level: Level::Hard,
         };
         let action = choose::<Nim>(&s, Seat(0), &search, &no_clock).unwrap();
         assert!(Nim::legal_actions(&s, Seat(0)).contains(&action));
@@ -383,9 +392,31 @@ mod tests {
             budget: Some(Budget::Iterations(10)),
             blunder: 1.0,
             seed: 4,
+            level: Level::Hard,
         };
         assert_eq!(
             choose::<SteeredNim>(&s, Seat(0), &search, &no_clock).unwrap(),
+            3
+        );
+    }
+
+    #[test]
+    fn policy_action_is_played_at_its_level() {
+        use crate::testgames::SteeredNim;
+        let s = SteeredNim::new(&NimConfig { pile: 10 }, 2, 0);
+        let at = |level| Search {
+            budget: Some(Budget::Iterations(10)),
+            blunder: 1.0,
+            seed: 4,
+            level,
+        };
+        // Before the script and the blunder, at the level it answers for.
+        assert_eq!(
+            choose::<SteeredNim>(&s, Seat(0), &at(Level::Easy), &no_clock).unwrap(),
+            2
+        );
+        assert_eq!(
+            choose::<SteeredNim>(&s, Seat(0), &at(Level::Hard), &no_clock).unwrap(),
             3
         );
     }
@@ -399,6 +430,7 @@ mod tests {
                 budget: Some(Budget::Iterations(10)),
                 blunder: 1.0,
                 seed,
+                level: Level::Hard,
             };
             assert_eq!(
                 choose::<SteeredNim>(&s, Seat(0), &search, &no_clock).unwrap(),
@@ -422,6 +454,7 @@ mod tests {
             budget: Some(Budget::Iterations(50)),
             blunder: 0.0,
             seed: 1,
+            level: Level::Hard,
         };
         assert!(choose::<Counter>(&s, Seat(0), &search, &no_clock).is_ok());
     }
@@ -433,6 +466,7 @@ mod tests {
             budget: None,
             blunder: 0.0,
             seed: 7,
+            level: Level::Hard,
         };
         let expected = Nim::rollout_action(&s, Seat(0), &mut SmallRng::seed_from_u64(7));
         assert_eq!(
@@ -458,6 +492,7 @@ mod tests {
                 budget: Some(Budget::Iterations(50)),
                 blunder: 0.0,
                 seed,
+                level: Level::Hard,
             };
             let s = CounterState { n: 0 };
             assert_eq!(

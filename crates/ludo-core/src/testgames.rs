@@ -565,6 +565,15 @@ impl Heuristics for SteeredNim {
         (s.pile == 10).then_some(3)
     }
 
+    fn policy_action<R: Rng + ?Sized>(
+        s: &NimState,
+        _seat: Seat,
+        level: crate::ai::Level,
+        _rng: &mut R,
+    ) -> Option<u8> {
+        (s.pile == 10 && level == crate::ai::Level::Easy).then_some(2)
+    }
+
     fn random_actions(_s: &NimState, _seat: Seat) -> Vec<u8> {
         vec![1]
     }

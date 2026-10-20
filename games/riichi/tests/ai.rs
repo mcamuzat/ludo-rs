@@ -92,6 +92,7 @@ fn the_search_does_not_read_hidden_hands() {
             budget: Some(Budget::Iterations(20)),
             blunder: 0.0,
             seed,
+            level: Level::Hard,
         };
         assert_eq!(
             choose::<Riichi>(&x, Seat(1), &search, &|| 0.0).unwrap(),

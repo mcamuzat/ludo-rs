@@ -221,6 +221,19 @@ pub trait Heuristics: Game {
         Self::legal_actions(s, seat)
     }
 
+    /// A legal action the AI plays for `seat` at `level`, before any
+    /// script, blunder or search: for games whose levels differ by policy
+    /// rather than by search budget. Depends only on what `seat` can see.
+    /// Default: none.
+    fn policy_action<R: Rng + ?Sized>(
+        _s: &Self::State,
+        _seat: Seat,
+        _level: Level,
+        _rng: &mut R,
+    ) -> Option<Self::Action> {
+        None
+    }
+
     /// A legal action the AI plays for `seat` without searching (a table
     /// phrase, say), depending only on what `seat` can see. Default: none.
     fn scripted_action(_s: &Self::State, _seat: Seat) -> Option<Self::Action> {
