@@ -8,7 +8,7 @@ use rand::Rng;
 
 use crate::knowledge::{possible, query, Combos, Inference, CAP};
 use crate::map::{Cell, Mask};
-use crate::rules::{Action, Cryptide, Phase, State};
+use crate::rules::{Action, Cryptide, Event, Phase, State};
 
 /// [B] The share of the asked player's possible hints that would answer
 /// with a cube, aimed at when choosing a question.
@@ -163,8 +163,19 @@ fn lists(seen: &Seen, k: &Combos) -> Vec<Vec<usize>> {
         .collect()
 }
 
+/// [U] During the first table round the AI searches only when sure:
+/// otherwise, at three, it would often win before anyone else has played.
+fn first_round(s: &State) -> bool {
+    let turns = s
+        .log
+        .iter()
+        .filter(|e| matches!(e, Event::Asked { .. } | Event::Searched { .. }))
+        .count();
+    turns < usize::from(s.players)
+}
+
 /// [B] `check_to_search`: one candidate, or few with a likely disc from
-/// the left neighbour; the most named of those.
+/// the left neighbour (not in the first round); the most named of those.
 fn search_choice(seen: &Seen, k: &Combos, lists: &[Vec<usize>]) -> Option<Cell> {
     let candidates: Vec<(Cell, u32)> = k
         .cells
@@ -178,7 +189,7 @@ fn search_choice(seen: &Seen, k: &Combos, lists: &[Vec<usize>]) -> Option<Cell> 
     if candidates.len() == 1 {
         return Some(candidates[0].0);
     }
-    if candidates.len() > SEARCH_CANDIDATES {
+    if candidates.len() > SEARCH_CANDIDATES || first_round(seen.s) {
         return None;
     }
     let left = &lists[seen.left().index()];

@@ -115,3 +115,36 @@ fn penalty_reveals_the_least() {
         .expect("legal cubes");
     assert_eq!(cost(c), best);
 }
+
+#[test]
+fn no_guessed_search_in_the_first_round() {
+    for level in [Level::Medium, Level::Hard] {
+        for seed in 0..60u64 {
+            let mut s = Cryptide::new(&Config::default(), 3, seed);
+            let mut rng = ChaCha8Rng::seed_from_u64(seed);
+            let mut turns = 0;
+            while s.phase != Phase::Over && turns < 3 {
+                let seat = s.turn;
+                let in_turn = s.phase == Phase::Turn;
+                let a = Cryptide::policy_action(&s, seat, level, &mut rng).expect("an action");
+                if in_turn {
+                    if let Action::Search(_) = a {
+                        let inference = if level == Level::Hard {
+                            Inference::Puzzle
+                        } else {
+                            Inference::Bot
+                        };
+                        let k = query(&s, seat, inference, CAP).expect("a hint").combos();
+                        assert_eq!(
+                            k.cells.len(),
+                            1,
+                            "{level:?} seed {seed}: a guess in the first round"
+                        );
+                    }
+                    turns += 1;
+                }
+                Cryptide::apply(&mut s, seat, &a).expect("legal");
+            }
+        }
+    }
+}

@@ -97,3 +97,9 @@ Une fouille sans cube : le fouilleur gagne, les autres perdent [R p. 7]. On
 montre alors tous les indices et l'habitat. Personne ne pose de cube sur
 l'habitat : fouiller l'habitat reste toujours possible, et chaque tour pose
 au moins un jeton : la partie finit toujours.
+
+## IA (ajout du site)
+Moyen suit Cryptid-Bot [B] ; Difficile ajoute les garanties du générateur ;
+Facile raisonne joueur par joueur. Pendant le premier tour de table, l'IA ne
+fouille que si une seule case reste possible : sinon, à 3 joueurs, elle
+gagnait souvent avant que les autres aient joué [U].
