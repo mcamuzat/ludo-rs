@@ -43,8 +43,11 @@ export interface TableOptions {
   now?: () => number;
 }
 
-/** AI moves are shown after at least this long, so humans can follow. */
-export const AI_MIN_DELAY_MS = 400;
+/**
+ * AI moves are shown after at least this long (from when the AI starts
+ * thinking), so humans can follow a run of AI moves.
+ */
+export const AI_MIN_DELAY_MS = 1000;
 /** A seat with a single legal action plays it after this long. */
 export const AUTO_PLAY_MS = 300;
 

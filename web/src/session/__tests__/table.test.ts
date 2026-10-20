@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AiRequest, Seat, Snapshot } from "../../engine/types";
 import { StaleActionError } from "../rev";
-import { Table, type AiLike, type EngineLike, type TableSeat } from "../table";
+import { AI_MIN_DELAY_MS, Table, type AiLike, type EngineLike, type TableSeat } from "../table";
 
 /** Two seats taking turns; each has `legal` to choose from; "t" is the default. */
 class FakeEngine implements EngineLike {
@@ -145,6 +145,21 @@ describe("Table", () => {
     await vi.advanceTimersByTimeAsync(5000);
     expect(engine.applied).toEqual([]);
     expect(table.clockViews()).toEqual([]);
+    table.dispose();
+  });
+
+  it("shows an AI move only after the minimum delay, however fast it thinks", async () => {
+    const engine = new FakeEngine();
+    const table = new Table("g", [{ kind: "ai", level: "Easy", name: "IA" }, remote("B")], hooks(), {
+      engine,
+      ai: new FakeAi(async () => "b"),
+      now: Date.now,
+    });
+    await table.start(1);
+    await vi.advanceTimersByTimeAsync(AI_MIN_DELAY_MS - 1);
+    expect(engine.applied).toEqual([]);
+    await vi.advanceTimersByTimeAsync(2);
+    expect(engine.applied).toEqual([[0, "b"]]);
     table.dispose();
   });
 
