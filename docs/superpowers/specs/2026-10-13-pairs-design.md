@@ -835,7 +835,11 @@ carte révélée là où elle rapporte le plus (chez soi si elle ne fait pas
 paire, sinon chez l'adversaire le mieux placé à qui elle fait paire). Risque
 connu (Captain's Orders, §16) : l'ISMCTS à observateur unique récompense mal
 le bluff ; on mesure l'arène et on note le résultat, sans chercher plus loin
-dans ce plan.
+dans ce plan. Déterminisation : la carte posée, redistribuée
+pour les autres, correspond à son annonce une fois sur deux quand une copie
+cachée le permet. La recherche ne délibère, par carte, que la vérité et un
+bluff (le rang aux copies non vues les plus nombreuses). Mesuré : Difficile
+contre Facile 0,84 à 2 joueurs, 0,80 à 4 (200 parties, ~2 min 30 chacune).
 
 ## 28. The Judge (plan 20)
 

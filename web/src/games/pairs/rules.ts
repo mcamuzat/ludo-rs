@@ -141,3 +141,11 @@ export const BLACKSTONE_RULES = [
   "Te coucher coûte ta mise plus la moitié des pierres blanches (arrondie au-dessus). Le perdant paie sa mise plus un jeton par pierre blanche.",
   "Les survivants reprennent leur mise et partagent le pot. 5 mains, classement aux jetons.",
 ];
+
+export const HORN_OF_PLENTY_RULES = [
+  "Chacun reçoit une carte visible et quatre cachées ; la plus basse visible commence.",
+  "À ton tour : pose une carte cachée et annonce son rang, vrai ou faux.",
+  "En partant de ta gauche, chacun est d'accord, pas d'accord, ou passe. Qui répond juste choisit qui prend la carte (lui ou toi) ; sinon c'est toi qui choisis. Si tout le monde passe, tu la places chez qui tu veux.",
+  "Une paire dans une main visible est défaussée aussitôt.",
+  "Fin de manche : la meilleure main visible (somme des rangs) marque autant de points que de joueurs, la suivante un de moins ; les égalités prennent la valeur haute. Partie en 11 points.",
+];

@@ -13,6 +13,7 @@ import { ContinuousBoard } from "./pairs/continuous/Board";
 import { DeadfallBoard } from "./pairs/deadfall/Board";
 import { GhostTownBoard } from "./pairs/ghost-town/Board";
 import { GoblinPokerBoard } from "./pairs/goblin-poker/Board";
+import { HornOfPlentyBoard } from "./pairs/horn-of-plenty/Board";
 import { KittyBoard } from "./pairs/kitty/Board";
 import { MonsterBoard } from "./pairs/monster/Board";
 import { OctopusBoard } from "./pairs/octopus/Board";
@@ -31,6 +32,7 @@ import {
   DEADFALL_RULES,
   GHOST_TOWN_RULES,
   GOBLIN_POKER_RULES,
+  HORN_OF_PLENTY_RULES,
   KITTY_RULES,
   MONSTER_RULES,
   OCTOPUS_RULES,
@@ -99,6 +101,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "pairs-monster", family: "pairs", Board: MonsterBoard, rules: MONSTER_RULES },
   { id: "pairs-troll-guts", family: "pairs", Board: TrollGutsBoard, rules: TROLL_GUTS_RULES },
   { id: "pairs-blackstone", family: "pairs", Board: BlackstoneBoard, rules: BLACKSTONE_RULES },
+  { id: "pairs-horn-of-plenty", family: "pairs", Board: HornOfPlentyBoard, rules: HORN_OF_PLENTY_RULES },
   { id: "cards-president", family: "cards", Board: PresidentBoard, rules: PRESIDENT_RULES },
   { id: "cards-collusion", family: "cards", Board: CollusionBoard, rules: COLLUSION_RULES },
   { id: "pennywise", family: "coins", Board: PennywiseBoard, rules: PENNYWISE_RULES },

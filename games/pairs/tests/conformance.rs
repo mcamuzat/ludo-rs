@@ -187,3 +187,11 @@ fn blackstone_conforms_at_every_table_size() {
     check::<Blackstone>(&Config { hands: Some(1) }, 3, 100, 147);
     check::<Blackstone>(&Config { hands: Some(255) }, 8, 3, 148);
 }
+
+#[test]
+fn horn_of_plenty_conforms_at_every_table_size() {
+    use pairs::horn_of_plenty::{Config, HornOfPlenty};
+    for players in 2..=6u8 {
+        check::<HornOfPlenty>(&Config::default(), players, 30, 1800 + u64::from(players));
+    }
+}

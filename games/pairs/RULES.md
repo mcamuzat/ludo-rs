@@ -775,3 +775,42 @@ vieux jeu du livret, joué à l'origine avec un vrai sac de pierres).
    sont tenues sans perdre, il y en a 10.)
 3. ❓ « Le joueur précédent » est le dernier qui a pris des cartes : se
    coucher ne change pas le minimum.
+
+## Horn of Plenty (`pairs-horn-of-plenty`, 2 à 6 joueurs)
+
+Source : **[R]** *Pairs Companion Book*, chapitre « Horn of Plenty ».
+
+### Mise en place [R]
+- On mélange et on donne à chacun cinq cartes : une visible, qui ouvre sa
+  main visible, et quatre cachées, que lui seul regarde.
+- La plus basse carte visible commence. Égalité : des cartes en plus aux ex
+  æquo, comme à Pairs, puis défaussées. On joue ensuite vers la gauche.
+
+### Tour [R]
+- Poser une carte cachée face cachée et annoncer son rang, vrai ou faux.
+- En partant de la gauche du poseur, chacun à son tour est d'accord, pas
+  d'accord, ou passe. Le premier qui ne passe pas fait révéler la carte :
+  s'il a vu juste, il choisit qui la prend dans sa main visible, lui ou le
+  poseur ; sinon le poseur choisit, lui ou le répondant.
+- Si tout le monde passe, la carte est révélée et le poseur la place où il
+  veut.
+- Deux cartes de même rang dans une main visible sont défaussées aussitôt.
+
+### Score [R]
+- La manche finit quand toutes les cartes cachées sont jouées. Chaque carte
+  visible vaut son rang ; la meilleure main marque autant de points de
+  partie que de joueurs, la suivante un de moins, et ainsi de suite. Des
+  mains à égalité prennent toutes la valeur la plus haute.
+- La partie se joue en 11 points ; deux joueurs à égalité avec un score
+  gagnant jouent une autre manche.
+
+### Choix sur les points non tranchés
+1. ❓ Chaque manche est une nouvelle donne : la plus basse carte visible
+   désigne à nouveau le premier joueur.
+2. ❓ Garde-fou : la partie s'arrête après 30 manches, égalités en tête
+   conservées.
+3. ❓ « Où il veut » : dans la main visible de n'importe quel joueur, la
+   sienne comprise.
+4. ❓ Après une égalité, la place suivante est sautée (décision de
+   l'utilisateur : 5-5-3-2-1 à cinq joueurs). L'égalité en tête rejoue une
+   manche avec tous les joueurs, et le plus haut total à 11 ou plus gagne.

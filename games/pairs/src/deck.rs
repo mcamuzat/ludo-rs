@@ -172,6 +172,47 @@ pub fn open_round(
     tied.first().or(seats.first()).copied().unwrap_or(Seat(0))
 }
 
+/// [R] The lowest of the face-up `cards` goes first. Tied seats draw one
+/// more card each, compared among themselves, until the tie breaks; these
+/// tie-break cards are discarded face up (unlike `open_round`, which keeps
+/// them). Returns the leader and the tie-break cards, in draw order. Out of
+/// cards, the first of the tied seats leads.
+pub fn lowest_discarding_ties(
+    supply: &mut Supply,
+    cards: &[(Seat, Rank)],
+) -> (Seat, Vec<(Seat, Rank)>) {
+    let lowest = |cards: &[(Seat, Rank)]| -> Vec<Seat> {
+        let low = cards.iter().map(|&(_, card)| card).min();
+        cards
+            .iter()
+            .filter(|&&(_, card)| Some(card) == low)
+            .map(|&(seat, _)| seat)
+            .collect()
+    };
+    let mut drawn = Vec::new();
+    let mut tied = lowest(cards);
+    while tied.len() > 1 {
+        let mut round = Vec::new();
+        for &seat in &tied {
+            match supply.draw() {
+                Some(card) => round.push((seat, card)),
+                None => break,
+            }
+        }
+        supply.discard(round.iter().map(|&(_, card)| card));
+        drawn.extend_from_slice(&round);
+        if round.len() < tied.len() {
+            break;
+        }
+        tied = lowest(&round);
+    }
+    let leader = tied
+        .first()
+        .or(cards.first().map(|(seat, _)| seat))
+        .copied();
+    (leader.unwrap_or(Seat(0)), drawn)
+}
+
 /// The draw pile and the discard pile. An empty draw pile is rebuilt from the
 /// discards; `burn` cards then go face down to the discards.
 ///
@@ -350,6 +391,22 @@ mod tests {
 
     fn ranks(values: &[u8]) -> Vec<Rank> {
         values.iter().map(|&v| Rank::new(v).unwrap()).collect()
+    }
+
+    #[test]
+    fn tie_break_cards_are_discarded_until_the_tie_breaks() {
+        // Top of the deck last: the tied seats 0 and 2 draw 4 and 4, then
+        // 6 and 3.
+        let mut supply = Supply::from_parts(ranks(&[3, 6, 4, 4]), Vec::new(), Vec::new(), 0, 0);
+        let up = [(Seat(0), Rank(2)), (Seat(1), Rank(5)), (Seat(2), Rank(2))];
+        let (leader, drawn) = lowest_discarding_ties(&mut supply, &up);
+        assert_eq!(leader, Seat(2));
+        let values: Vec<u8> = drawn.iter().map(|&(_, c)| c.value()).collect();
+        assert_eq!(values, vec![4, 4, 6, 3]);
+        assert_eq!(supply.seen().len(), 4);
+        // No tie: nothing drawn.
+        let (leader, drawn) = lowest_discarding_ties(&mut supply, &up[..2]);
+        assert_eq!((leader, drawn.len()), (Seat(0), 0));
     }
 
     #[test]
