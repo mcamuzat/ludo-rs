@@ -21,6 +21,8 @@ pub struct View {
     pub hand_sizes: Vec<usize>,
     pub reserve: u8,
     pub piles: Vec<PileView>,
+    /// The 27 suspects, in the sheet's order [F].
+    pub suspects: Vec<Suspect>,
     /// The 36 investigation cards' letters, by card id.
     pub investigations: Vec<&'static str>,
     pub answers: Vec<Answer>,
@@ -77,6 +79,7 @@ impl View {
                     left: p.len(),
                 })
                 .collect(),
+            suspects: Suspect::all().collect(),
             investigations: INVESTIGATIONS.to_vec(),
             answers: s.answers.clone(),
             wrong: s.wrong.clone(),
