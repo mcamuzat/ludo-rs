@@ -128,6 +128,19 @@ pub struct State {
     pub events: Vec<Event>,
 }
 
+/// Every trio one may name: three distinct suspects, sorted.
+pub fn all_trios() -> impl Iterator<Item = [Suspect; 3]> {
+    let all: Vec<Suspect> = Suspect::all().collect();
+    let n = all.len();
+    (0..n).flat_map(move |i| {
+        let all = all.clone();
+        (i + 1..n).flat_map(move |j| {
+            let all = all.clone();
+            (j + 1..n).map(move |k| [all[i], all[j], all[k]])
+        })
+    })
+}
+
 /// Investigation cards drawn from the piles so far.
 pub fn cards_played(s: &State) -> usize {
     s.answers.iter().filter(|a| !a.special).count()
@@ -245,8 +258,63 @@ impl State {
         }
     }
 
+    /// [U] One accuses only on one's turn, before asking; never again
+    /// after a wrong accusation.
     fn turn_actions(&self, seat: Seat) -> Vec<Action> {
-        self.asks(seat)
+        let mut out = self.asks(seat);
+        if !self.wrong[seat.index()] {
+            out.extend(all_trios().map(|trio| Action::Accuse { trio }));
+        }
+        out
+    }
+
+    /// [R] Right: the game stops and the others guess; wrong: the accuser
+    /// plays on without accusing. Once all but one are wrong, the last one
+    /// asks a final question and must accuse (❓4: at once).
+    fn accuse(&mut self, seat: Seat, trio: [Suspect; 3]) {
+        let right = trio == self.trio;
+        self.events.push(Event::Accused { seat, right });
+        if self.last == Some(seat) {
+            if right {
+                self.accuser = Some(seat);
+                self.scores[seat.index()] = u16::from(self.reserve);
+                self.finish(End::Solved);
+            } else {
+                self.wrong[seat.index()] = true;
+                self.finish(End::Failed);
+            }
+            return;
+        }
+        if right {
+            self.accuser = Some(seat);
+            self.guesses[seat.index()] = Some(trio);
+            self.scores[seat.index()] = 3 * u16::from(self.reserve);
+            self.phase = Phase::Guess;
+            self.close_guesses();
+            return;
+        }
+        self.wrong[seat.index()] = true;
+        let left: Vec<Seat> = self.seats().filter(|x| !self.wrong[x.index()]).collect();
+        if let [last] = left[..] {
+            self.last = Some(last);
+            self.final_asked = false;
+            self.turn = last;
+        }
+        self.settle();
+    }
+
+    /// [R] Once everyone has guessed, each right guess scores a point per
+    /// token left.
+    fn close_guesses(&mut self) {
+        if !BlackVienna::pending(self).is_empty() {
+            return;
+        }
+        for seat in self.seats().collect::<Vec<_>>() {
+            if Some(seat) != self.accuser && self.guesses[seat.index()] == Some(self.trio) {
+                self.scores[seat.index()] = u16::from(self.reserve);
+            }
+        }
+        self.finish(End::Solved);
     }
 
     fn finish(&mut self, end: End) {
@@ -320,6 +388,9 @@ impl Game for BlackVienna {
     fn legal_actions(s: &State, seat: Seat) -> Vec<Action> {
         match s.phase {
             Phase::Turn if s.turn == seat => s.turn_actions(seat),
+            Phase::Guess if BlackVienna::pending(s).contains(seat) => {
+                all_trios().map(|trio| Action::Guess { trio }).collect()
+            }
             _ => Vec::new(),
         }
     }
@@ -341,7 +412,11 @@ impl Game for BlackVienna {
                 target,
                 extra,
             } => s.ask(seat, pile, target, extra),
-            Action::Accuse { .. } | Action::Guess { .. } => {}
+            Action::Accuse { trio } => s.accuse(seat, trio),
+            Action::Guess { trio } => {
+                s.guesses[seat.index()] = Some(trio);
+                s.close_guesses();
+            }
         }
         Ok(())
     }

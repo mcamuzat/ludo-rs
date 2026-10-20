@@ -284,3 +284,137 @@ fn empty_piles_leave_only_specials_or_the_end() {
     assert_eq!(s.scores, vec![0, 0, 0]);
     let _ = trio("ABC");
 }
+
+// ---- Accusations (task 4) ----
+
+use black_vienna::{End, Event};
+
+fn accuse(text: &str) -> Action {
+    Action::Accuse { trio: trio(text) }
+}
+
+fn guess(text: &str) -> Action {
+    Action::Guess { trio: trio(text) }
+}
+
+fn accusations(s: &State, seat: u8) -> usize {
+    BlackVienna::legal_actions(s, Seat(seat))
+        .iter()
+        .filter(|a| matches!(a, Action::Accuse { .. }))
+        .count()
+}
+
+#[test]
+fn accusing_is_offered_only_on_ones_turn() {
+    let mut s = three();
+    assert_eq!(accusations(&s, 0), 2925);
+    assert_eq!(accusations(&s, 1), 0);
+    act(&mut s, 0, ask(0, 1));
+    assert_eq!(accusations(&s, 0), 0);
+    assert_eq!(accusations(&s, 1), 2925);
+}
+
+#[test]
+fn a_trio_is_sorted_and_distinct() {
+    let s = three();
+    let [a, b, c] = trio("ABC");
+    refused(&s, 0, Action::Accuse { trio: [c, a, b] });
+    refused(&s, 0, Action::Accuse { trio: [a, a, b] });
+}
+
+#[test]
+fn a_wrong_accuser_keeps_playing_without_accusing() {
+    let mut s = three();
+    act(&mut s, 0, accuse("ABC"));
+    assert_eq!(
+        s.events,
+        vec![Event::Accused {
+            seat: Seat(0),
+            right: false
+        }]
+    );
+    assert!(s.wrong[0]);
+    // Still seat 0's turn: it must ask, and may not accuse again.
+    assert_eq!(
+        (s.phase, s.turn, accusations(&s, 0)),
+        (Phase::Turn, Seat(0), 0)
+    );
+    act(&mut s, 0, ask(0, 1));
+    act(&mut s, 1, ask(0, 0));
+    assert_eq!(s.turn, Seat(0));
+    assert_eq!(accusations(&s, 0), 0);
+}
+
+#[test]
+fn a_right_accusation_asks_the_others_for_a_trio() {
+    let mut s = table(
+        &["ACDEFGHI", "BJKNOPQR", "STUVWXYZ", ""],
+        "LMÖ",
+        ["ACL AGM BLM", "AOS APQ", "BCY BHV"],
+    );
+    s.players = 4;
+    s.hands[3] = black_vienna::testing::letters("");
+    s.asked = vec![false; 4];
+    s.wrong = vec![false, false, true, false];
+    s.guesses = vec![None; 4];
+    s.scores = vec![0; 4];
+    s.reserve = 30;
+    act(&mut s, 0, accuse("LMÖ"));
+    assert_eq!(s.phase, Phase::Guess);
+    assert_eq!(BlackVienna::pending(&s).0, vec![Seat(1), Seat(3)]);
+    act(&mut s, 1, guess("LMÖ"));
+    assert_eq!(s.phase, Phase::Guess);
+    act(&mut s, 3, guess("ABC"));
+    assert_eq!(s.phase, Phase::Over);
+    // [R] 3 per token for the accuser, 1 per token for a right guess.
+    assert_eq!(s.scores, vec![90, 30, 0, 0]);
+    assert_eq!(
+        BlackVienna::outcome(&s),
+        Some(Outcome::Ranked(vec![0, 1, 2, 2]))
+    );
+    assert!(matches!(
+        s.events.last(),
+        Some(Event::Revealed {
+            end: End::Solved,
+            accuser: Some(Seat(0)),
+            ..
+        })
+    ));
+}
+
+#[test]
+fn the_last_player_may_ask_once_then_must_accuse() {
+    let mut s = three();
+    s.wrong = vec![false, true, false];
+    s.turn = Seat(2);
+    act(&mut s, 2, accuse("ABC"));
+    // ❓4: interrupted at once; seat 0 is the last player.
+    assert_eq!((s.last, s.turn), (Some(Seat(0)), Seat(0)));
+    s.reserve = 4;
+    act(&mut s, 0, ask(0, 1));
+    // ❓5: the final question escapes the reserve rule.
+    assert_eq!((s.phase, s.turn, s.reserve), (Phase::Turn, Seat(0), 3));
+    let legal = BlackVienna::legal_actions(&s, Seat(0));
+    assert!(legal.iter().all(|a| matches!(a, Action::Accuse { .. })));
+    act(&mut s, 0, accuse("LMÖ"));
+    // [R] One point per token left.
+    assert_eq!((s.phase, s.scores.clone()), (Phase::Over, vec![3, 0, 0]));
+}
+
+#[test]
+fn the_last_player_may_accuse_at_once_and_fail() {
+    let mut s = three();
+    s.wrong = vec![false, true, false];
+    s.turn = Seat(2);
+    act(&mut s, 2, accuse("ABC"));
+    act(&mut s, 0, accuse("ABD"));
+    assert_eq!(s.phase, Phase::Over);
+    assert_eq!(s.scores, vec![0, 0, 0]);
+    assert!(matches!(
+        s.events.last(),
+        Some(Event::Revealed {
+            end: End::Failed,
+            ..
+        })
+    ));
+}

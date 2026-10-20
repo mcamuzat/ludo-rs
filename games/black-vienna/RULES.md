@@ -37,6 +37,24 @@ marqué ❓.
   sur laquelle aucun jeton n'a été mis ; l'interrogé répond à chacune.
   ❓2 Cette carte passe devant le nouvel interrogé, avec sa nouvelle réponse.
 
+## Accusation [R]
+- [U] On accuse seulement à son tour, avant de poser sa question.
+- On nomme trois personnages en secret et on regarde le trio.
+- **Juste** : la partie s'arrête ; l'accusateur marque 3 points par jeton
+  encore dans la réserve. Chaque autre joueur qui n'a pas accusé à tort
+  nomme un trio, en secret et tous en même temps ; juste, il marque 1 point
+  par jeton.
+- **Fausse** : on continue de jouer (interroger, répondre) sans plus pouvoir
+  accuser ; on marque 0. ❓3 Les autres apprennent seulement l'erreur, pas le
+  trio nommé ; l'accusateur, lui, a vu le trio.
+- Quand tous les joueurs sauf un ont accusé à tort, la partie est
+  interrompue (❓4 : aussitôt, l'accusateur fautif ne pose pas sa question).
+  Le dernier joueur peut poser une question finale, puis doit accuser :
+  juste, 1 point par jeton ; sinon 0.
+
+## Résultat
+Classement aux points, égalités conservées ; une partie par match.
+
 ## Fin sans vainqueur [R]
 - S'il reste 3 jetons ou moins, la partie s'arrête : personne ne marque.
   ❓5 On le vérifie juste après chaque réponse ; la question finale du
