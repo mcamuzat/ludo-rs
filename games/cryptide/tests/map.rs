@@ -202,3 +202,25 @@ fn the_layout_of_a_seed_is_pinned() {
         }
     );
 }
+
+/// The advanced puzzle card the user photographed: sections 3, 5 / 4, 1 /
+/// 2, 6, the 3 and the 4 upright. Its first and last rows, read on the
+/// photo.
+#[test]
+fn photo_card_layout() {
+    let board = Board::new(
+        &Layout {
+            order: [2, 4, 3, 0, 1, 5],
+            flipped: [false, true, false, true, true, true],
+        },
+        &[],
+    );
+    let row = |r: u8| -> String {
+        (0..12)
+            .map(|c| terrain_letter(board.squares[usize::from(cell(r, c).0)].terrain))
+            .collect()
+    };
+    assert_eq!(row(0), "SSFFFWWWWWDD");
+    assert_eq!(row(3), "DDMMMMFDDDSS");
+    assert_eq!(row(8), "FFFFFSFSSSDD");
+}

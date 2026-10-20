@@ -1,0 +1,25 @@
+.cr-board { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.cr-status { margin: 0; text-align: center; }
+.cr-my-hint { margin: 0; padding: 6px 12px; border-radius: 10px; background: var(--brass-soft); border: 1px solid color-mix(in srgb, var(--brass) 40%, transparent); }
+.cr-table { padding: 10px; border-radius: 14px; width: 100%; max-width: 720px; box-sizing: border-box; }
+.cr-map { width: 100%; height: auto; display: block; }
+.cr-hex { stroke: rgb(0 0 0 / 35%); stroke-width: 1; }
+.cr-bear { stroke: #111; stroke-width: 2; stroke-dasharray: 4 3; }
+.cr-cougar { stroke: #d0201a; stroke-width: 2.2; }
+.cr-space.playable { cursor: pointer; }
+.cr-space.playable .cr-hex { stroke: #fff; stroke-width: 1.6; }
+.cr-space.playable:hover .cr-hex { filter: brightness(1.15); }
+.cr-space.selected .cr-hex, .cr-space.focus .cr-hex { stroke: var(--brass); stroke-width: 3; }
+.cr-space.habitat .cr-hex { stroke: #fff; stroke-width: 4; }
+.cr-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; border: 1px solid #111; }
+.cr-picked { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.cr-picked p { margin: 0; font-weight: 700; }
+.cr-controls { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.cr-reveal { width: 100%; max-width: 720px; }
+.cr-reveal ul { list-style: none; padding: 0; margin: 0; }
+.cr-help { width: 100%; max-width: 720px; background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: 10px; padding: 6px 12px; box-sizing: border-box; }
+.cr-help summary { cursor: pointer; font-weight: 700; }
+.cr-help h4 { margin: 10px 0 2px; }
+.cr-help ul { margin: 0; padding-left: 1.2em; font-size: 0.9rem; }
+.cr-help-note { margin: 6px 0 0; font-size: 0.85rem; }
+.cr-log { width: 100%; max-width: 720px; margin: 0; padding-left: 1.6em; font-size: 0.85rem; box-sizing: border-box; }

@@ -55,6 +55,8 @@ import { MONAD_RULES } from "./monad/rules";
 import { RiichiBoard } from "./riichi/Board";
 import { BlackViennaBoard } from "./black-vienna/Board";
 import { BLACK_VIENNA_RULES } from "./black-vienna/rules";
+import { CryptideBoard } from "./cryptide/Board";
+import { CRYPTIDE_RULES } from "./cryptide/rules";
 import { VolltrefferBoard } from "./volltreffer/Board";
 import { VOLLTREFFER_RULES } from "./volltreffer/rules";
 import { YavalathBoard } from "./yavalath/Board";
@@ -113,6 +115,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "monad", family: "trade", Board: MonadBoard, rules: MONAD_RULES },
   { id: "volltreffer", family: "modern", Board: VolltrefferBoard, rules: VOLLTREFFER_RULES },
   { id: "black-vienna", family: "modern", Board: BlackViennaBoard, rules: BLACK_VIENNA_RULES },
+  { id: "cryptide", family: "modern", Board: CryptideBoard, rules: CRYPTIDE_RULES },
 ];
 
 export function gameUi(id: string): GameUi | undefined {

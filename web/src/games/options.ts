@@ -14,6 +14,9 @@ const LABELS: Record<string, string> = {
   "cards-president.jokers.Wild": "Wild (remplacent une valeur)",
   "pennywise.character": "Personnage",
   "volltreffer.narrow_sanctuary": "Sanctuaire réduit (63–69)",
+  "cryptide.mode": "Mode",
+  "cryptide.mode.Normal": "Normal",
+  "cryptide.mode.Advanced": "Avancé (indices négatifs, structures noires)",
 };
 
 export function optionLabel(gameId: string, key: string): string {
