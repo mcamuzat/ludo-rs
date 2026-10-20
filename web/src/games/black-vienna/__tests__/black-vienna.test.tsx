@@ -1,7 +1,7 @@
 import { isValidElement, type ReactElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { AskControls, BlackViennaBoard, TrioPicker, cycleMark, describeEvent, findAsk, pickTrio } from "../Board";
+import { AskControls, BlackViennaBoard, TrioPicker, cycleMark, describeEvent, findAsk, isNewGame, pickTrio } from "../Board";
 import { Sheet } from "../Sheet";
 import type { BlackViennaAction, BlackViennaView } from "../types";
 
@@ -186,6 +186,15 @@ describe("Black Vienna board", () => {
     expect(over).toContain("L-M-Ö");
     expect(over).toContain("111");
     expect(over).not.toContain("Interroger");
+  });
+
+  it("knows a rematch from the next move (review I-3)", () => {
+    const at = (phase: BlackViennaView["phase"], answers: number) => ({ phase, answers });
+    expect(isNewGame(at("Over", 12), at("Turn", 0))).toBe(true);
+    expect(isNewGame(at("Turn", 9), at("Turn", 0))).toBe(true);
+    expect(isNewGame(at("Turn", 3), at("Turn", 4))).toBe(false);
+    expect(isNewGame(at("Turn", 3), at("Guess", 3))).toBe(false);
+    expect(isNewGame(at("Guess", 3), at("Over", 3))).toBe(false);
   });
 
   it("tells what happened in words", () => {

@@ -30,6 +30,17 @@ export function cycleMark(mark: ManualMark | undefined): ManualMark | undefined 
   }
 }
 
+/** Where a game stands, to notice a new one starting. */
+export interface Progress {
+  phase: BlackViennaView["phase"];
+  answers: number;
+}
+
+/** A new game has started (a rematch on the same table): the notes go. */
+export function isNewGame(prev: Progress, next: Progress): boolean {
+  return (prev.phase === "Over" && next.phase !== "Over") || next.answers < prev.answers;
+}
+
 /** The legal question with exactly these choices. */
 export function findAsk(
   legal: BlackViennaAction[],
@@ -191,6 +202,13 @@ export function BlackViennaBoard({ view, legalActions, me, seatNames, submit }: 
   const [extra, setExtra] = useState<CardId | null>(null);
   const [chosen, setChosen] = useState<Suspect[]>([]);
   const [accusing, setAccusing] = useState(false);
+  // A rematch keeps this board mounted: the old notes would mislead.
+  const [seen, setSeen] = useState<Progress>({ phase: v.phase, answers: v.answers.length });
+  if (seen.phase !== v.phase || seen.answers !== v.answers.length) {
+    const next = { phase: v.phase, answers: v.answers.length };
+    if (isNewGame(seen, next)) setMarks({});
+    setSeen(next);
+  }
   const send = (action: BlackViennaAction) => {
     setPile(null);
     setExtra(null);
