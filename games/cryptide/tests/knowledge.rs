@@ -1,6 +1,6 @@
 use std::time::Instant;
 
-use cryptide::knowledge::{combos, possible, CAP};
+use cryptide::knowledge::{possible, query, Inference, CAP};
 use cryptide::testing::{fixed_puzzle, table};
 use cryptide::{Cell, Config, Cryptide, Mode, Phase, State};
 use ludo_core::{Game, Seat, Viewer};
@@ -66,23 +66,18 @@ fn combos_find_the_true_habitat() {
         for seed in 0..30 {
             let s = played(Mode::Normal, players, seed, 6);
             let me = Seat(0);
-            let k = combos(
-                s.table(),
-                &s.tokens,
-                me,
-                true_hint(&s, me),
-                players,
-                u64::MAX,
-            );
-            assert!(k.complete);
-            assert!(
-                k.cells.iter().any(|&(c, _)| c == s.puzzle.habitat),
-                "{players} {seed}"
-            );
-            for p in 1..players {
-                assert!(k.per_seat[usize::from(p)].contains(&true_hint(&s, Seat(p))));
+            for inference in [Inference::Bot, Inference::Puzzle] {
+                let k = query(&s, me, inference, u64::MAX).expect("a hint").combos();
+                assert!(k.complete);
+                assert!(
+                    k.cells.iter().any(|&(c, _)| c == s.puzzle.habitat),
+                    "{players} {seed}"
+                );
+                for p in 1..players {
+                    assert!(k.per_seat[usize::from(p)].contains(&true_hint(&s, Seat(p))));
+                }
+                assert!(k.per_seat[0].is_empty());
             }
-            assert!(k.per_seat[0].is_empty());
         }
     }
 }
@@ -91,14 +86,9 @@ fn combos_find_the_true_habitat() {
 fn enumeration_is_fast_at_five_advanced() {
     let s = played(Mode::Advanced, 5, 3, 0);
     let start = Instant::now();
-    let k = combos(
-        s.table(),
-        &s.tokens,
-        Seat(0),
-        true_hint(&s, Seat(0)),
-        5,
-        CAP,
-    );
+    let k = query(&s, Seat(0), Inference::Bot, CAP)
+        .expect("a hint")
+        .combos();
     let spent = start.elapsed();
     assert!(!k.cells.is_empty() || !k.complete);
     assert!(spent.as_millis() < 200, "{spent:?}");

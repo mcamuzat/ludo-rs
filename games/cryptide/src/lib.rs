@@ -4,6 +4,7 @@
 
 pub mod clues;
 mod determinize;
+mod heuristics;
 pub mod knowledge;
 pub mod map;
 mod rules;
@@ -11,6 +12,7 @@ pub mod testing;
 mod view;
 
 pub use clues::{generate, habitat, hints, Clue, Hint, HintTable, Mode, Puzzle};
+pub use heuristics::ideal_cube_share;
 pub use map::{
     distance, random_layout, within, Animal, Board, Cell, Color, Kind, Layout, Mask, Square,
     Structure, Terrain, CELLS,

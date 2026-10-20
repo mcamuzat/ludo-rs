@@ -274,6 +274,7 @@ dependencies = [
  "bantu",
  "black-vienna",
  "cards",
+ "cryptide",
  "ludo-core",
  "monad",
  "pairs",

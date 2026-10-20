@@ -6,7 +6,7 @@ use rand::Rng;
 
 use crate::clues::{habitat, HintTable, MAX_TERRAIN_CLUES};
 use crate::map::{Cell, Mask, CELLS};
-use crate::rules::Tokens;
+use crate::rules::{State, Tokens};
 use crate::Clue;
 
 /// Nodes visited before an enumeration gives up. Once the setup cubes are
@@ -43,6 +43,16 @@ pub fn possible(table: &HintTable, tokens: &[Tokens], seat: Seat) -> Vec<usize> 
         .collect()
 }
 
+/// What a combination of hints must satisfy to count.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Inference {
+    /// [B] `runner.py`: distinct hints naming exactly one space.
+    Bot,
+    /// Everything the generator guarantees (`clues::habitat`): each hint
+    /// needed, at most two "two terrains" hints too.
+    Puzzle,
+}
+
 /// What the combinations of the others' possible hints say.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Combos {
@@ -54,179 +64,165 @@ pub struct Combos {
     pub complete: bool,
 }
 
-/// Walks every puzzle the others' possible hints could form with `me`'s
-/// hint, calling `visit(hints by seat, habitat)`; `false` if `cap` nodes
-/// were not enough.
-fn walk(
-    table: &HintTable,
-    tokens: &[Tokens],
-    me: Seat,
-    my_hint: usize,
-    players: u8,
-    cap: u64,
-    visit: &mut dyn FnMut(&[usize], Cell),
-) -> bool {
-    // The habitat bears no cube: nobody's hint excludes it.
-    let no_cube: Mask = (0..CELLS)
-        .map(Cell)
-        .filter(|c| tokens[c.index()].cube.is_none())
-        .collect();
-    let start = table.masks[my_hint] & no_cube;
-    // The most constrained seats first prune best.
-    let mut order: Vec<(Seat, Vec<usize>)> = (0..players)
-        .map(Seat)
-        .filter(|&s| s != me)
-        .map(|s| {
-            let list = possible(table, tokens, s)
-                .into_iter()
-                .filter(|&i| i != my_hint && !(start & table.masks[i]).is_empty())
-                .collect();
-            (s, list)
-        })
-        .collect();
-    order.sort_by_key(|(_, l): &(Seat, Vec<usize>)| l.len());
-    let mut by_seat = vec![usize::MAX; usize::from(players)];
-    by_seat[me.index()] = my_hint;
-    let terrains = |i: usize| matches!(table.hints[i].clue, Clue::Terrains(..));
-    let mut budget = cap;
+/// An enumeration of the others' hints, from `me`'s point of view.
+#[derive(Clone, Copy, Debug)]
+pub struct Query<'a> {
+    pub table: &'a HintTable,
+    pub tokens: &'a [Tokens],
+    pub me: Seat,
+    pub my_hint: usize,
+    pub players: u8,
+    pub inference: Inference,
+    /// Nodes walked at most.
+    pub cap: u64,
+}
 
-    #[allow(clippy::too_many_arguments)]
-    fn go(
-        depth: usize,
-        inter: Mask,
-        terrain_count: usize,
-        order: &[(Seat, Vec<usize>)],
-        by_seat: &mut Vec<usize>,
-        table: &HintTable,
-        terrains: &dyn Fn(usize) -> bool,
-        budget: &mut u64,
-        visit: &mut dyn FnMut(&[usize], Cell),
-    ) -> bool {
-        if *budget == 0 {
+struct Walk<'a, 'v> {
+    q: &'a Query<'a>,
+    order: Vec<(Seat, Vec<usize>)>,
+    by_seat: Vec<usize>,
+    budget: u64,
+    visit: &'v mut dyn FnMut(&[usize], Cell),
+}
+
+impl Walk<'_, '_> {
+    fn terrains(&self, i: usize) -> usize {
+        usize::from(matches!(self.q.table.hints[i].clue, Clue::Terrains(..)))
+    }
+
+    fn go(&mut self, depth: usize, inter: Mask, terrain_count: usize) -> bool {
+        if self.budget == 0 {
             return false;
         }
-        *budget -= 1;
-        let Some((seat, list)) = order.get(depth) else {
-            if let Some(home) = habitat(table, by_seat) {
-                visit(by_seat, home);
+        self.budget -= 1;
+        if depth == self.order.len() {
+            let home = match self.q.inference {
+                Inference::Bot => inter.single(),
+                Inference::Puzzle => habitat(self.q.table, &self.by_seat),
+            };
+            if let Some(home) = home {
+                (self.visit)(&self.by_seat, home);
             }
             return true;
-        };
-        for &i in list {
-            if by_seat.contains(&i) {
+        }
+        let seat = self.order[depth].0;
+        for k in 0..self.order[depth].1.len() {
+            let i = self.order[depth].1[k];
+            if self.by_seat.contains(&i) {
                 continue;
             }
-            let t = terrain_count + usize::from(terrains(i));
-            if t > MAX_TERRAIN_CLUES {
+            let t = terrain_count + self.terrains(i);
+            if self.q.inference == Inference::Puzzle && t > MAX_TERRAIN_CLUES {
                 continue;
             }
-            let next = inter & table.masks[i];
+            let next = inter & self.q.table.masks[i];
             if next.is_empty() {
                 continue;
             }
-            by_seat[seat.index()] = i;
-            let ok = go(
-                depth + 1,
-                next,
-                t,
-                order,
-                by_seat,
-                table,
-                terrains,
-                budget,
-                visit,
-            );
-            by_seat[seat.index()] = usize::MAX;
+            self.by_seat[seat.index()] = i;
+            let ok = self.go(depth + 1, next, t);
+            self.by_seat[seat.index()] = usize::MAX;
             if !ok {
                 return false;
             }
         }
         true
     }
-
-    go(
-        0,
-        start,
-        usize::from(terrains(my_hint)),
-        &order,
-        &mut by_seat,
-        table,
-        &terrains,
-        &mut budget,
-        visit,
-    )
 }
 
-/// [B] The combinations of the others' possible hints that, with `me`'s,
-/// name exactly one space as a puzzle would.
-pub fn combos(
-    table: &HintTable,
-    tokens: &[Tokens],
-    me: Seat,
-    my_hint: usize,
-    players: u8,
-    cap: u64,
-) -> Combos {
-    let mut per_seat = vec![Vec::new(); usize::from(players)];
-    let mut counts = vec![0u32; usize::from(CELLS)];
-    let complete = walk(
-        table,
-        tokens,
-        me,
-        my_hint,
-        players,
-        cap,
-        &mut |hints, home| {
+impl Query<'_> {
+    /// Calls `visit(hints by seat, habitat)` for every combination of the
+    /// others' possible hints that, with `me`'s, satisfies the inference;
+    /// `false` if the cap stopped the walk.
+    pub fn walk(&self, visit: &mut dyn FnMut(&[usize], Cell)) -> bool {
+        let (table, tokens) = (self.table, self.tokens);
+        // The habitat bears no cube: nobody's hint excludes it.
+        let no_cube: Mask = (0..CELLS)
+            .map(Cell)
+            .filter(|c| tokens[c.index()].cube.is_none())
+            .collect();
+        let start = table.masks[self.my_hint] & no_cube;
+        // The most constrained seats first prune best.
+        let mut order: Vec<(Seat, Vec<usize>)> = (0..self.players)
+            .map(Seat)
+            .filter(|&s| s != self.me)
+            .map(|s| {
+                let list = possible(table, tokens, s)
+                    .into_iter()
+                    .filter(|&i| i != self.my_hint && !(start & table.masks[i]).is_empty())
+                    .collect();
+                (s, list)
+            })
+            .collect();
+        order.sort_by_key(|(_, l)| l.len());
+        let mut by_seat = vec![usize::MAX; usize::from(self.players)];
+        by_seat[self.me.index()] = self.my_hint;
+        let mut w = Walk {
+            q: self,
+            order,
+            by_seat,
+            budget: self.cap,
+            visit,
+        };
+        let t = w.terrains(self.my_hint);
+        w.go(0, start, t)
+    }
+
+    /// [B] What the combinations say: hints per seat, candidate habitats.
+    pub fn combos(&self) -> Combos {
+        let me = self.me.index();
+        let mut per_seat = vec![Vec::new(); usize::from(self.players)];
+        let mut counts = vec![0u32; usize::from(CELLS)];
+        let complete = self.walk(&mut |hints, home| {
             counts[home.index()] += 1;
             for (p, &i) in hints.iter().enumerate() {
-                if p != me.index() && !per_seat[p].contains(&i) {
+                if p != me && !per_seat[p].contains(&i) {
                     per_seat[p].push(i);
                 }
             }
-        },
-    );
-    for list in &mut per_seat {
-        list.sort_unstable();
+        });
+        for list in &mut per_seat {
+            list.sort_unstable();
+        }
+        let cells = counts
+            .iter()
+            .enumerate()
+            .filter(|&(_, &n)| n > 0)
+            .map(|(i, &n)| (Cell(i as u8), n))
+            .collect();
+        Combos {
+            per_seat,
+            cells,
+            complete,
+        }
     }
-    let cells = counts
-        .iter()
-        .enumerate()
-        .filter(|&(_, &n)| n > 0)
-        .map(|(i, &n)| (Cell(i as u8), n))
-        .collect();
-    Combos {
-        per_seat,
-        cells,
-        complete,
-    }
-}
 
-/// One combination drawn uniformly among those found within `cap` nodes
-/// (reservoir sampling): hints by seat and the habitat.
-pub fn sample<R: Rng + ?Sized>(
-    table: &HintTable,
-    tokens: &[Tokens],
-    me: Seat,
-    my_hint: usize,
-    players: u8,
-    cap: u64,
-    rng: &mut R,
-) -> Option<(Vec<usize>, Cell)> {
-    let mut seen = 0u32;
-    let mut pick = None;
-    walk(
-        table,
-        tokens,
-        me,
-        my_hint,
-        players,
-        cap,
-        &mut |hints, home| {
+    /// One combination drawn uniformly among those found (reservoir
+    /// sampling): hints by seat and the habitat.
+    pub fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Option<(Vec<usize>, Cell)> {
+        let mut seen = 0u32;
+        let mut pick = None;
+        self.walk(&mut |hints, home| {
             seen += 1;
             if rng.gen_range(0..seen) == 0 {
                 pick = Some((hints.to_vec(), home));
             }
-        },
-    );
-    pick
+        });
+        pick
+    }
+}
+
+/// The query `seat` can make of a game: the tokens and its own hint.
+pub fn query(s: &State, seat: Seat, inference: Inference, cap: u64) -> Option<Query<'_>> {
+    let table = s.table();
+    let my_hint = table.index_of(s.puzzle.hints.get(seat.index())?)?;
+    Some(Query {
+        table,
+        tokens: &s.tokens,
+        me: seat,
+        my_hint,
+        players: s.players,
+        inference,
+        cap,
+    })
 }
