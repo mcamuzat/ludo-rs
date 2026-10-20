@@ -33,10 +33,12 @@ pub struct Note {
     pub mark: Mark,
 }
 
-/// Whether `seat` has seen the trio: after its own wrong accusation, or
-/// once the game is over.
+/// Whether `seat` has seen the trio: after its own accusation (right or
+/// wrong), or once the game is over.
 pub fn knows_trio(s: &State, seat: Seat) -> bool {
-    s.phase == Phase::Over || s.wrong.get(seat.index()).copied().unwrap_or(false)
+    s.phase == Phase::Over
+        || s.wrong.get(seat.index()).copied().unwrap_or(false)
+        || s.accuser == Some(seat)
 }
 
 /// [U] The sheet's automatic notes, direct facts only: one's own cards (+

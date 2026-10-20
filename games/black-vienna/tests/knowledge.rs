@@ -310,3 +310,42 @@ fn hard_keeps_the_true_trio_in_long_games() {
     }
     assert!(slowest.as_millis() < 1000, "{slowest:?}");
 }
+
+/// Review I-2: nothing hidden survives a determinization — the right
+/// accuser's trio follows the drawn world, and only the top of each pile
+/// stays in place.
+#[test]
+fn determinize_hides_the_accusers_trio_and_the_piles() {
+    let mut s = BlackVienna::new(&Config::default(), 4, 21);
+    let accuser = s.turn;
+    let trio = s.trio;
+    BlackVienna::apply(&mut s, accuser, &Action::Accuse { trio }).unwrap();
+    assert_eq!(s.phase, Phase::Guess);
+    let observer = Seat((accuser.0 + 1) % 4);
+    let mut rng = SmallRng::seed_from_u64(2);
+    let mut moved = false;
+    for _ in 0..20 {
+        let d = BlackVienna::determinize(&s, observer, &mut rng);
+        assert_eq!(
+            d.guesses[accuser.index()],
+            Some(d.trio),
+            "consistent with the drawn trio"
+        );
+        for (p, q) in d.piles.iter().zip(&s.piles) {
+            assert_eq!(p.last(), q.last());
+            let (mut a, mut b) = (p.clone(), q.clone());
+            moved |= a != b;
+            a.sort();
+            b.sort();
+            assert_eq!(a, b);
+        }
+    }
+    assert!(moved, "the cards under the tops are reshuffled");
+    // The right accuser has seen the trio: it stays for them.
+    let d = BlackVienna::determinize(&s, accuser, &mut rng);
+    assert_eq!(d.trio, s.trio);
+    assert_eq!(
+        BlackVienna::view(&d, Viewer::Seat(accuser)).trio,
+        Some(s.trio)
+    );
+}
