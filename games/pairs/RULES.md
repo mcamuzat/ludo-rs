@@ -814,3 +814,45 @@ Source : **[R]** *Pairs Companion Book*, chapitre « Horn of Plenty ».
 4. ❓ Après une égalité, la place suivante est sautée (décision de
    l'utilisateur : 5-5-3-2-1 à cinq joueurs). L'égalité en tête rejoue une
    manche avec tous les joueurs, et le plus haut total à 11 ou plus gagne.
+
+## The Judge (`pairs-the-judge`, 2 à 6 joueurs)
+
+Source : **[R]** *Pairs Companion Book*, chapitre « The Judge » (règle de
+base ; la variante « The Judge Variant » n'est pas implémentée, décision de
+l'utilisateur).
+
+### Mise en place [R]
+- On mélange et on donne 7 cartes à chacun, puis une pile cachée de 8
+  cartes au milieu : le Juge.
+- Le donneur commence la première manche ; ensuite, celui qui a le plus
+  marqué à la manche précédente.
+
+### Cuisine [R]
+- À son tour, on ajoute une carte de sa main face visible à sa recette, ou
+  on passe. Qui passe a fini de cuisiner pour la manche.
+- Une recette ne peut pas contenir de paire.
+- L'étape finit quand tout le monde a passé.
+
+### Concours [R]
+- On retourne le Juge carte par carte : toute recette qui contient ce rang
+  est éliminée. On s'arrête quand le Juge est vide ou qu'il ne reste qu'un
+  joueur.
+- Les recettes survivantes marquent la somme de leurs rangs. Si une même
+  carte élimine toutes les recettes restantes, personne ne marque, et le
+  même joueur commence la manche suivante.
+- On joue jusqu'à ce que quelqu'un atteigne la cible : 50 points à 2 ou 3
+  joueurs, 40 à 4, 30 à 5 ou 6.
+
+### Choix sur les points non tranchés
+1. ❓ Le donneur de la première manche est tiré au sort. Égalité pour le
+   meilleur score d'une manche : le premier des ex æquo dans l'ordre du tour
+   à partir de l'ancien premier joueur commence.
+2. ❓ Égalité en tête au-dessus de la cible : on joue une autre manche ;
+   sinon le plus haut total gagne.
+3. ❓ Un joueur dont aucune carte ne peut entrer dans sa recette passe de
+   lui-même.
+4. ❓ Une recette vide n'entre pas au concours : elle ne marque rien et ne
+   compte pas pour « il ne reste qu'un joueur ». Une seule recette en lice :
+   elle marque sans que le Juge soit retourné.
+5. ❓ Garde-fou : la partie s'arrête après 40 manches, au classement du
+   moment.

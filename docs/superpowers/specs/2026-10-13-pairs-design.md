@@ -889,4 +889,7 @@ Politique de simulation : ajouter une carte tant que le risque estimé
 qu'une des cartes de la recette soit chez le Juge (à partir des copies non
 vues) reste sous un seuil qui monte quand on est en retard au score, et
 préférer les rangs dont les copies non vues sont rares ; sinon passer.
-Arène Difficile contre Facile à 2 et à 4 joueurs, notée ici.
+Réalisé plus simplement : ajouter la carte qui augmente le plus l'espérance
+de la recette (ses points × la chance, hypergéométrique, que le Juge n'en
+tienne aucun rang), sinon passer ; un coup sur dix au hasard. Mesuré :
+Difficile contre Facile 0,75 à 2 joueurs comme à 4 (200 parties).

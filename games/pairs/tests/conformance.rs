@@ -195,3 +195,11 @@ fn horn_of_plenty_conforms_at_every_table_size() {
         check::<HornOfPlenty>(&Config::default(), players, 30, 1800 + u64::from(players));
     }
 }
+
+#[test]
+fn the_judge_conforms_at_every_table_size() {
+    use pairs::the_judge::{Config, TheJudge};
+    for players in 2..=6u8 {
+        check::<TheJudge>(&Config::default(), players, 30, 1900 + u64::from(players));
+    }
+}
