@@ -130,7 +130,7 @@ fn easy<R: Rng + ?Sized>(seen: &Seen, rng: &mut R) -> Option<Action> {
                 left = left & union;
             }
             let fits: Vec<Cell> = left.iter().filter(|&c| seen.may_search(c)).collect();
-            if fits.len() == 1 {
+            if fits.len() == 1 && !first_round(s) {
                 return Some(Action::Search(fits[0]));
             }
             let asks: Vec<Action> = seen
@@ -163,8 +163,8 @@ fn lists(seen: &Seen, k: &Combos) -> Vec<Vec<usize>> {
         .collect()
 }
 
-/// [U] During the first table round the AI searches only when sure:
-/// otherwise, at three, it would often win before anyone else has played.
+/// [U] The AI does not search during the first table round: at three it
+/// would otherwise often win before anyone else has played.
 fn first_round(s: &State) -> bool {
     let turns = s
         .log
@@ -175,7 +175,7 @@ fn first_round(s: &State) -> bool {
 }
 
 /// [B] `check_to_search`: one candidate, or few with a likely disc from
-/// the left neighbour (not in the first round); the most named of those.
+/// the left neighbour; the most named of those.
 fn search_choice(seen: &Seen, k: &Combos, lists: &[Vec<usize>]) -> Option<Cell> {
     let candidates: Vec<(Cell, u32)> = k
         .cells
@@ -183,13 +183,13 @@ fn search_choice(seen: &Seen, k: &Combos, lists: &[Vec<usize>]) -> Option<Cell> 
         .copied()
         .filter(|&(c, _)| seen.may_search(c))
         .collect();
-    if !k.complete || candidates.is_empty() {
+    if !k.complete || candidates.is_empty() || first_round(seen.s) {
         return None;
     }
     if candidates.len() == 1 {
         return Some(candidates[0].0);
     }
-    if candidates.len() > SEARCH_CANDIDATES || first_round(seen.s) {
+    if candidates.len() > SEARCH_CANDIDATES {
         return None;
     }
     let left = &lists[seen.left().index()];

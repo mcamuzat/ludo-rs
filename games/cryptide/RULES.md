@@ -100,6 +100,6 @@ au moins un jeton : la partie finit toujours.
 
 ## IA (ajout du site)
 Moyen suit Cryptid-Bot [B] ; Difficile ajoute les garanties du générateur ;
-Facile raisonne joueur par joueur. Pendant le premier tour de table, l'IA ne
-fouille que si une seule case reste possible : sinon, à 3 joueurs, elle
-gagnait souvent avant que les autres aient joué [U].
+Facile raisonne joueur par joueur. L'IA ne fouille pas pendant le premier
+tour de table : sinon, à 3 joueurs, elle gagnait souvent avant que les
+autres aient joué [U]. Un joueur humain le peut.

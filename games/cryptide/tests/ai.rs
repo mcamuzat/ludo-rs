@@ -117,8 +117,8 @@ fn penalty_reveals_the_least() {
 }
 
 #[test]
-fn no_guessed_search_in_the_first_round() {
-    for level in [Level::Medium, Level::Hard] {
+fn no_search_in_the_first_round() {
+    for level in LEVELS {
         for seed in 0..60u64 {
             let mut s = Cryptide::new(&Config::default(), 3, seed);
             let mut rng = ChaCha8Rng::seed_from_u64(seed);
@@ -128,19 +128,10 @@ fn no_guessed_search_in_the_first_round() {
                 let in_turn = s.phase == Phase::Turn;
                 let a = Cryptide::policy_action(&s, seat, level, &mut rng).expect("an action");
                 if in_turn {
-                    if let Action::Search(_) = a {
-                        let inference = if level == Level::Hard {
-                            Inference::Puzzle
-                        } else {
-                            Inference::Bot
-                        };
-                        let k = query(&s, seat, inference, CAP).expect("a hint").combos();
-                        assert_eq!(
-                            k.cells.len(),
-                            1,
-                            "{level:?} seed {seed}: a guess in the first round"
-                        );
-                    }
+                    assert!(
+                        !matches!(a, Action::Search(_)),
+                        "{level:?} seed {seed}: a search in the first round"
+                    );
                     turns += 1;
                 }
                 Cryptide::apply(&mut s, seat, &a).expect("legal");

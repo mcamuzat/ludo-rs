@@ -1,7 +1,7 @@
 # ludo-rs — Cryptide (spec 9)
 
 Date : 2026-10-20
-Statut : validé
+Statut : livré
 Précédent : `2026-10-20-black-vienna-design.md`
 
 ## 1. Objectif
@@ -226,6 +226,12 @@ wasm.
 
 Arène : Difficile ≥ 0.55 contre Facile, à 3 et à 5 joueurs, en mode normal et
 avancé ; la mesure va dans les commandes du `CLAUDE.md`.
+
+### Premier tour de table [U]
+
+L'IA ne fouille pas pendant le premier tour de table : à 3 joueurs, la
+méthode de [B] gagnait sinon dès son premier tour dans 68 % des parties en
+mode normal, par devinette ou par déduction sûre.
 
 ### Déterminisation
 
