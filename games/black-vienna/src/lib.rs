@@ -2,10 +2,14 @@
 //! others about three suspects at a time, deduce who holds whom, and name
 //! the three criminals set aside before anyone else.
 
+mod determinize;
+pub mod knowledge;
 pub mod material;
 pub mod testing;
+mod view;
 
 pub use material::{deal, hand_sizes, suspects, CardId, Deal, Suspect, INVESTIGATIONS};
+pub use view::{PileView, View};
 
 use ludo_core::{Game, GameMeta, Illegal, Outcome, Pending, Seat, Viewer};
 use serde::{Deserialize, Serialize};
@@ -332,7 +336,7 @@ impl State {
 impl Game for BlackVienna {
     type State = State;
     type Action = Action;
-    type View = State;
+    type View = View;
     type Config = Config;
 
     fn meta() -> GameMeta {
@@ -421,8 +425,18 @@ impl Game for BlackVienna {
         Ok(())
     }
 
-    fn view(s: &State, _viewer: Viewer) -> State {
-        s.clone()
+    fn view(s: &State, viewer: Viewer) -> View {
+        View::of(s, viewer)
+    }
+
+    /// While the others guess, nobody learns who has already guessed.
+    fn visible_pending(s: &State, viewer: Viewer) -> Pending {
+        let pending = Self::pending(s);
+        match (s.phase, viewer) {
+            (Phase::Guess, Viewer::Seat(seat)) if pending.contains(seat) => Pending::one(seat),
+            (Phase::Guess, _) => Pending::none(),
+            _ => pending,
+        }
     }
 
     fn outcome(s: &State) -> Option<Outcome> {
