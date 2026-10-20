@@ -1,7 +1,7 @@
 # ludo-rs — Black Vienna (spec 8)
 
 Date : 2026-10-20
-Statut : en relecture
+Statut : livré
 Précédent : `2026-10-19-volltreffer-design.md`
 
 ## 1. Objectif
