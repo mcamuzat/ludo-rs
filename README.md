@@ -29,7 +29,8 @@ Jeux :
 - **Président** (4–7 joueurs, cartes traditionnelles, règles d'après Wikipédia et Pagat ; révolution, fin sur un 2 et jokers en options) ;
 - **Collusion** (4 joueurs, jeu de plis de David Parlett où l'on vise autant de plis qu'un autre joueur ; phrases toutes faites à table, cible de 50 à 100 points) ;
 - **Pennywise** (2–6 joueurs, James Ernest / Cheapass Games, jeu de pièces ; personnage Cody, Darlene, Sugar ou Taylor en option) ;
-- **Monad** (2–4 joueurs, Sid Sackson / 3M 1970, échanges, achats et accaparements des Unités jusqu'aux Monades).
+- **Monad** (2–4 joueurs, Sid Sackson / 3M 1970, échanges, achats et accaparements des Unités jusqu'aux Monades) ;
+- **Black Vienna** (3–6 joueurs, jeu de déduction de Gilbert Obermair, feuille d'enquête à l'écran).
 
 ## Lancer en local
 ```bash

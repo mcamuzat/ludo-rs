@@ -261,6 +261,7 @@ name = "ludo-registry"
 version = "0.1.0"
 dependencies = [
  "bantu",
+ "black-vienna",
  "cards",
  "ludo-core",
  "monad",

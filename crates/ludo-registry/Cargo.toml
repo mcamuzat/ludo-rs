@@ -15,6 +15,7 @@ cards.workspace = true
 pennywise.workspace = true
 monad.workspace = true
 volltreffer.workspace = true
+black-vienna.workspace = true
 
 [dev-dependencies]
 serde_json.workspace = true

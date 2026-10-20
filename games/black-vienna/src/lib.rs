@@ -3,11 +3,13 @@
 //! the three criminals set aside before anyone else.
 
 mod determinize;
+mod heuristics;
 pub mod knowledge;
 pub mod material;
 pub mod testing;
 mod view;
 
+pub use heuristics::accuse_threshold;
 pub use material::{deal, hand_sizes, suspects, CardId, Deal, Suspect, INVESTIGATIONS};
 pub use view::{PileView, View};
 

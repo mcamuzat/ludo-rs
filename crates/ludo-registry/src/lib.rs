@@ -30,6 +30,7 @@ static PENNYWISE: GameEntry<pennywise::Pennywise> = GameEntry::new();
 static BANTU: GameEntry<bantu::Bantu> = GameEntry::new();
 static MONAD: GameEntry<monad::Monad> = GameEntry::new();
 static VOLLTREFFER: GameEntry<volltreffer::Volltreffer> = GameEntry::new();
+static BLACK_VIENNA: GameEntry<black_vienna::BlackVienna> = GameEntry::new();
 
 pub static GAMES: &[&dyn AnyGame] = &[
     &YAVALATH,
@@ -60,6 +61,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &BANTU,
     &MONAD,
     &VOLLTREFFER,
+    &BLACK_VIENNA,
 ];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {

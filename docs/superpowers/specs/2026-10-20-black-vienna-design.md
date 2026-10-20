@@ -176,6 +176,13 @@ publiques), par recherche avec retour arrière.
 Arène : Difficile contre Facile, mesurée à 3 et à 5 joueurs et notée dans le
 `CLAUDE.md` du dépôt ; Moyen contre Facile aussi, pour vérifier l'échelle.
 
+Réalisé : Difficile ne cherche pas trio par trio (11 s au pire à 6 joueurs)
+mais personnage par personnage : un personnage reste criminel possible si une
+donne entière le permet. C'est exact quand il ne reste que trois personnages,
+le seul cas où Difficile accuse. Mesuré (200 parties) : Difficile contre
+Facile 0,70 à 3 joueurs, 0,64 à 5 ; Moyen contre Facile 0,68 à 3 ;
+Difficile contre Moyen 0,54 à 3, 0,52 à 5.
+
 ## 7. Structure
 
 Comme « Ajouter un jeu » du `CLAUDE.md` du dépôt : crate `games/black-vienna`
