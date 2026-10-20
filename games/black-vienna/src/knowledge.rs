@@ -165,119 +165,174 @@ impl Problem {
     }
 
     /// One placement of every card (holder per card) satisfying the room
-    /// and every constraint, or `None`. With `rng`, holders are tried in
-    /// random order, so repeated calls sample different worlds.
-    pub(crate) fn solve<R: Rng + ?Sized>(&self, mut rng: Option<&mut R>) -> Option<Vec<usize>> {
-        // Most constrained cards first.
-        let mut order: Vec<usize> = (0..self.cards.len()).collect();
-        if let Some(r) = rng.as_deref_mut() {
-            order.shuffle(r);
-        }
-        order.sort_by_key(|&i| std::cmp::Reverse(self.touching[i].len()));
-        let mut assign = vec![usize::MAX; self.cards.len()];
-        let mut room = self.room.clone();
-        // Per constraint: placed inside so far, and still unplaced.
-        let mut inside: Vec<usize> = vec![0; self.constraints.len()];
-        let mut open: Vec<usize> = self
-            .constraints
-            .iter()
-            .map(|(_, idx, _)| idx.len())
-            .collect();
+    /// and every constraint. With `rng`, ties are broken at random, so
+    /// repeated calls sample different worlds. The search gives up after
+    /// `budget` nodes.
+    pub(crate) fn solve<R: Rng + ?Sized>(&self, mut rng: Option<&mut R>, budget: u32) -> Solved {
+        let mut st = Search {
+            assign: vec![usize::MAX; self.cards.len()],
+            room: self.room.clone(),
+            inside: vec![0; self.constraints.len()],
+            open: self
+                .constraints
+                .iter()
+                .map(|(_, idx, _)| idx.len())
+                .collect(),
+            budget,
+        };
         if self
             .constraints
             .iter()
             .enumerate()
-            .any(|(k, (_, _, need))| open[k] < *need)
+            .any(|(k, (_, _, need))| st.open[k] < *need)
         {
-            return None;
+            return Solved::No;
         }
-        let mut budget: u32 = 2_000_000;
-        if self.step(
-            0,
-            &order,
-            &mut assign,
-            &mut room,
-            &mut inside,
-            &mut open,
-            &mut rng,
-            &mut budget,
-        ) {
-            Some(assign)
-        } else {
-            None
+        match self.step(&mut st, &mut rng) {
+            Some(true) => Solved::Yes(st.assign),
+            Some(false) => Solved::No,
+            None => Solved::GaveUp,
         }
     }
 
-    #[allow(clippy::too_many_arguments)]
-    fn step<R: Rng + ?Sized>(
-        &self,
-        depth: usize,
-        order: &[usize],
-        assign: &mut Vec<usize>,
-        room: &mut Vec<usize>,
-        inside: &mut Vec<usize>,
-        open: &mut Vec<usize>,
-        rng: &mut Option<&mut R>,
-        budget: &mut u32,
-    ) -> bool {
-        let Some(&card) = order.get(depth) else {
-            return true;
-        };
-        if *budget == 0 {
-            return false;
+    /// Whether `card` may go to `h` now, given the constraints it touches.
+    fn fits(&self, st: &Search, card: usize, h: usize) -> bool {
+        st.room[h] > 0
+            && self.allowed[card][h]
+            && self.touching[card].iter().all(|&k| {
+                let (holder, _, need) = &self.constraints[k];
+                let inside = st.inside[k] + usize::from(*holder == h);
+                inside <= *need && inside + st.open[k] > *need
+            })
+    }
+
+    fn place(&self, st: &mut Search, card: usize, h: usize, delta: isize) {
+        for &k in &self.touching[card] {
+            let held = usize::from(self.constraints[k].0 == h);
+            if delta > 0 {
+                st.open[k] -= 1;
+                st.inside[k] += held;
+            } else {
+                st.open[k] += 1;
+                st.inside[k] -= held;
+            }
         }
-        *budget -= 1;
-        let mut holders: Vec<usize> = (0..room.len())
-            .filter(|&h| room[h] > 0 && self.allowed[card][h])
-            .collect();
+        if delta > 0 {
+            st.room[h] -= 1;
+            st.assign[card] = h;
+        } else {
+            st.room[h] += 1;
+            st.assign[card] = usize::MAX;
+        }
+    }
+
+    /// `Some(true)`: solved; `Some(false)`: no solution below; `None`: out
+    /// of budget. The next card is the one with the fewest holders left.
+    fn step<R: Rng + ?Sized>(&self, st: &mut Search, rng: &mut Option<&mut R>) -> Option<bool> {
+        if st.budget == 0 {
+            return None;
+        }
+        st.budget -= 1;
+        let mut best: Option<(usize, Vec<usize>)> = None;
+        // How many unplaced cards could still go to each holder: every hand
+        // must be filled exactly.
+        let mut reachable = vec![0usize; st.room.len()];
+        for card in (0..self.cards.len()).filter(|&c| st.assign[c] == usize::MAX) {
+            let holders: Vec<usize> = (0..st.room.len())
+                .filter(|&h| self.fits(st, card, h))
+                .collect();
+            if holders.is_empty() {
+                return Some(false);
+            }
+            for &h in &holders {
+                reachable[h] += 1;
+            }
+            if best.as_ref().is_none_or(|(_, b)| holders.len() < b.len()) {
+                best = Some((card, holders));
+            }
+        }
+        if reachable.iter().zip(&st.room).any(|(&r, &room)| r < room) {
+            return Some(false);
+        }
+        let Some((card, mut holders)) = best else {
+            return Some(true);
+        };
         if let Some(r) = rng.as_deref_mut() {
             holders.shuffle(r);
         }
+        let mut gave_up = false;
         for h in holders {
-            // Place `card` at `h` and check the constraints it touches.
-            let mut ok = true;
-            for &k in &self.touching[card] {
-                let (holder, _, need) = &self.constraints[k];
-                open[k] -= 1;
-                if *holder == h {
-                    inside[k] += 1;
-                }
-                if inside[k] > *need || inside[k] + open[k] < *need {
-                    ok = false;
-                }
+            self.place(st, card, h, 1);
+            match self.step(st, rng) {
+                Some(true) => return Some(true),
+                Some(false) => {}
+                None => gave_up = true,
             }
-            if ok {
-                room[h] -= 1;
-                assign[card] = h;
-                if self.step(depth + 1, order, assign, room, inside, open, rng, budget) {
-                    return true;
-                }
-                room[h] += 1;
-                assign[card] = usize::MAX;
-            }
-            for &k in &self.touching[card] {
-                open[k] += 1;
-                if self.constraints[k].0 == h {
-                    inside[k] -= 1;
-                }
+            self.place(st, card, h, -1);
+            if gave_up {
+                return None;
             }
         }
-        false
+        Some(false)
     }
 }
 
+impl Problem {
+    /// A placement that only respects the room of each holder.
+    fn fill<R: Rng + ?Sized>(&self, rng: &mut R) -> Vec<usize> {
+        let mut room = self.room.clone();
+        let mut assign = vec![usize::MAX; self.cards.len()];
+        let mut order: Vec<usize> = (0..self.cards.len()).collect();
+        order.shuffle(rng);
+        for card in order {
+            let open: Vec<usize> = (0..room.len()).filter(|&h| room[h] > 0).collect();
+            if let Some(&h) = open.choose(rng) {
+                room[h] -= 1;
+                assign[card] = h;
+            }
+        }
+        assign
+    }
+}
+
+/// What a search found.
+pub(crate) enum Solved {
+    Yes(Vec<usize>),
+    No,
+    GaveUp,
+}
+
+/// The mutable part of a search.
+struct Search {
+    assign: Vec<usize>,
+    room: Vec<usize>,
+    inside: Vec<usize>,
+    open: Vec<usize>,
+    budget: u32,
+}
+
+/// Nodes a search may visit.
+const BUDGET: u32 = 20_000;
+
 /// A world `observer` cannot tell from the real one: every hand (its own
 /// unchanged) and the trio, consistent with the hand sizes and every
-/// answer. Falls back to the real world if the search gives up.
+/// answer (only the hand sizes if the search keeps giving up).
 pub fn sample_world<R: Rng + ?Sized>(
     s: &State,
     observer: Seat,
     rng: &mut R,
 ) -> (Vec<Vec<Suspect>>, [Suspect; 3]) {
     let problem = Problem::of(s, observer);
-    let Some(assign) = problem.solve(Some(rng)) else {
-        return (s.hands.clone(), s.trio);
-    };
+    let mut found = None;
+    for _ in 0..4 {
+        if let Solved::Yes(assign) = problem.solve(Some(&mut *rng), BUDGET) {
+            found = Some(assign);
+            break;
+        }
+    }
+    // Never the real world: out of luck, a world that only fits the hand
+    // sizes (the answers are then off, but nothing leaks).
+    let assign = found.unwrap_or_else(|| problem.fill(rng));
     let n = usize::from(s.players);
     let mut hands: Vec<Vec<Suspect>> = (0..n)
         .map(|i| {
@@ -425,9 +480,9 @@ fn simple_rules(k: &mut Knowledge, s: &State) {
 }
 
 /// The trios `seat` cannot rule out at `level`, by its sheet; at Hard, a
-/// suspect also stays a possible criminal only if some whole deal fits
-/// every answer with it in the trio. (Exact when three suspects are left:
-/// the trio is then certain.)
+/// suspect also stays a possible criminal unless no whole deal fits every
+/// answer with it in the trio (a search that gives up keeps it). Never
+/// rules out the true trio; exact in practice when three suspects are left.
 pub fn possible_trios(s: &State, seat: Seat, level: Level) -> Vec<[Suspect; 3]> {
     let sheet = knowledge(
         s,
@@ -485,12 +540,17 @@ fn feasible_criminals(s: &State, seat: Seat, sheet: &Knowledge, candidates: &[bo
         }
         let mut p = base.clone();
         p.set(x, seats, true);
-        if let Some(assign) = p.solve::<rand::rngs::SmallRng>(None) {
-            for (&card, &holder) in p.cards().iter().zip(&assign) {
-                if holder == seats {
-                    feasible[card.index()] = true;
+        match p.solve::<rand::rngs::SmallRng>(None, BUDGET) {
+            Solved::Yes(assign) => {
+                for (&card, &holder) in p.cards().iter().zip(&assign) {
+                    if holder == seats {
+                        feasible[card.index()] = true;
+                    }
                 }
             }
+            // Unsure: keep it, so the true trio is never ruled out.
+            Solved::GaveUp => feasible[x.index()] = true,
+            Solved::No => {}
         }
     }
     feasible

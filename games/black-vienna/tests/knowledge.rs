@@ -277,3 +277,36 @@ fn hard_is_fast_at_the_start() {
         started.elapsed()
     );
 }
+
+/// Review I-1: on long games at 5 and 6 players, Hard never loses the true
+/// trio, and decides in well under a second.
+#[test]
+fn hard_keeps_the_true_trio_in_long_games() {
+    use black_vienna::accuse_threshold;
+    use ludo_core::Heuristics;
+    let mut slowest = std::time::Duration::ZERO;
+    for players in [5u8, 6] {
+        for seed in 0..40u64 {
+            let mut s =
+                BlackVienna::new(&Config::default(), players, seed * 7 + u64::from(players));
+            let mut rng = SmallRng::seed_from_u64(seed);
+            for _ in 0..40 {
+                if s.phase != Phase::Turn {
+                    break;
+                }
+                let seat = s.turn;
+                let started = Instant::now();
+                let hard = possible_trios(&s, seat, Level::Hard);
+                slowest = slowest.max(started.elapsed());
+                assert!(hard.contains(&s.trio), "{players} joueurs, graine {seed}");
+                let _ = accuse_threshold(Level::Hard);
+                let action = BlackVienna::policy_action(&s, seat, Level::Medium, &mut rng).unwrap();
+                if !matches!(action, Action::Ask { .. }) {
+                    break;
+                }
+                BlackVienna::apply(&mut s, seat, &action).unwrap();
+            }
+        }
+    }
+    assert!(slowest.as_millis() < 1000, "{slowest:?}");
+}
