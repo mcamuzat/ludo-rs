@@ -781,3 +781,108 @@ Politique de simulation : prendre le minimum sauf si la probabilité
 se coucher. La recherche ne délibère que jusqu'à 3 cartes au-dessus du
 minimum. Mesuré : Difficile contre Facile 0,74 à 2 joueurs, 0,67 à 5 (200
 parties).
+
+## 27. Horn of Plenty (plan 19)
+
+Jeu de bluff du livret (`pairs-horn-of-plenty`, 2–6 joueurs), ajouté sans
+changement de plateforme. Source : *Pairs Companion Book*, chapitre « Horn
+of Plenty » (p. 27–28). Règles et points non tranchés :
+`games/pairs/RULES.md`. Aucune statistique affichée.
+
+### Règles retenues
+
+- **Donne** (à chaque manche, paquet complet remélangé) : une carte visible
+  par joueur, qui ouvre sa main visible ; la plus basse commence. Égalité :
+  des cartes de départage aux ex æquo, comme dans Pairs, puis **défaussées**
+  (contrairement à `open_round`, qui les garde : étendre `deck.rs` d'un
+  départage qui défausse plutôt que recopier). Puis quatre cartes cachées
+  chacun, que seul leur propriétaire voit.
+- **Tour** : le joueur pose une carte cachée face cachée et annonce un rang
+  de 1 à 10, vrai ou faux. En partant de sa gauche, chacun à son tour dit
+  « d'accord », « pas d'accord » ou passe ; le premier qui ne passe pas fait
+  révéler la carte. S'il a vu juste, il choisit qui la reçoit dans sa main
+  visible (lui ou le poseur) ; sinon le poseur choisit (lui ou le
+  répondant). Si tout le monde passe, la carte est révélée et le poseur la
+  place dans la main visible de **n'importe quel** joueur.
+- **Paires** : deux cartes de même rang dans une main visible sont
+  défaussées aussitôt, face visible.
+- **Fin de manche** quand toutes les cartes cachées sont jouées (quatre
+  tours chacun). Classement aux points de cartes (somme des rangs) : le
+  premier marque autant de points de partie que de joueurs, puis un de
+  moins par place ; les ex æquo prennent la meilleure valeur et la place
+  suivante est sautée (décision de l'utilisateur : 5-5-3-2-1 à 5 joueurs).
+- **Fin de partie** : dès qu'un joueur a 11 points de partie ou plus en fin
+  de manche, le plus haut total gagne ; égalité en tête au-dessus de 11, on
+  rejoue une manche entière (avec tous les joueurs).
+
+### Choix du site
+
+- ❓ Le premier joueur de chaque manche se détermine à nouveau par la plus
+  basse carte visible (la règle ne prévoit pas de rotation).
+- ❓ Garde-fou : après 30 manches, la partie s'arrête et les égalités en tête
+  restent des égalités.
+- Information cachée : les cartes cachées des autres, la carte posée tant
+  qu'elle n'est pas révélée, le paquet. Les mains visibles, la défausse,
+  les annonces et les réponses sont publiques.
+
+### IA
+
+Politique de simulation, sans regarder la carte posée : annoncer le vrai
+rang quand la carte arrange (ne fait pas paire chez soi ou fait paire chez
+le meneur), sinon un rang plausible ; contredire une annonce d'autant plus
+souvent que les copies non vues du rang annoncé sont rares ; placer une
+carte révélée là où elle rapporte le plus (chez soi si elle ne fait pas
+paire, sinon chez l'adversaire le mieux placé à qui elle fait paire). Risque
+connu (Captain's Orders, §16) : l'ISMCTS à observateur unique récompense mal
+le bluff ; on mesure l'arène et on note le résultat, sans chercher plus loin
+dans ce plan.
+
+## 28. The Judge (plan 20)
+
+Jeu de prise de risque du livret (`pairs-the-judge`, 2–6 joueurs), règle de
+base seulement (décision de l'utilisateur : pas de variante « The Judge
+Variant », pas d'option). Source : *Pairs Companion Book*, chapitre « The
+Judge » (p. 29–30). Règles et points non tranchés : `games/pairs/RULES.md`.
+Aucune statistique affichée.
+
+### Règles retenues
+
+- **Donne** (à chaque manche, paquet complet remélangé) : 7 cartes par
+  joueur et une pile cachée de 8 cartes, le Juge.
+- **Cuisine** : à son tour, le joueur ajoute une carte de sa main face
+  visible à sa recette ou passe ; qui passe a fini pour la manche. Une
+  recette ne contient jamais de paire : une carte qui en ferait une n'est
+  pas jouable. L'étape finit quand tout le monde a passé.
+- **Concours** : on retourne le Juge carte par carte ; toute recette encore
+  en lice qui contient ce rang est éliminée. On s'arrête quand le Juge est
+  vide ou qu'il ne reste qu'une recette en lice. Les survivantes marquent la
+  somme de leurs rangs. Si une carte élimine toutes les recettes restantes,
+  personne ne marque.
+- **Premier joueur** : tiré au hasard à la première manche ; ensuite celui
+  qui a le plus marqué à la manche précédente ; si personne n'a marqué, le
+  même joueur.
+- **Fin de partie** : cible 50 points à 2–3 joueurs, 40 à 4, 30 à 5–6. Dès
+  qu'un joueur l'atteint en fin de manche, le plus haut total gagne.
+
+### Choix du site
+
+- ❓ Égalité de meilleur score de manche : le premier des ex æquo dans
+  l'ordre du tour à partir de l'ancien premier joueur commence.
+- ❓ Égalité en tête au-dessus de la cible : on rejoue une manche entière,
+  comme dans Horn of Plenty.
+- ❓ Un joueur dont aucune carte n'est jouable passe d'office (le moteur
+  l'enregistre, sans clic).
+- ❓ Une recette vide n'entre pas au concours : elle ne marque rien et ne
+  compte pas pour « il ne reste qu'une recette ».
+- ❓ Garde-fou : après 40 manches, la partie s'arrête au classement courant.
+- Information cachée : les mains, le Juge (jusqu'à ses révélations), les
+  cartes non distribuées. Les recettes, qui a passé et les cartes du Juge
+  retournées sont publiques.
+
+### IA
+
+Politique de simulation : ajouter une carte tant que le risque estimé
+qu'une des cartes de la recette soit chez le Juge (à partir des copies non
+vues) reste sous un seuil qui monte quand on est en retard au score, et
+préférer les rangs dont les copies non vues sont rares ; sinon passer.
+Arène Difficile contre Facile à 2 et à 4 joueurs, notée ici.
