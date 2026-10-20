@@ -73,3 +73,214 @@ fn the_deal_of_a_seed_is_pinned() {
     let hand: String = d.hands[0].iter().map(|s| s.letter()).collect();
     assert_eq!((trio.as_str(), hand.as_str()), ("CPÖ", "FGMSYZ"));
 }
+
+// ---- Turns, investigations, the reserve (task 3) ----
+
+use black_vienna::testing::{card, table, trio};
+use black_vienna::{
+    reusable, special_allowed, Action, Answer, BlackVienna, Config, Phase, State, TOKENS,
+};
+use ludo_core::{Game, Outcome};
+
+fn act(s: &mut State, seat: u8, action: Action) {
+    BlackVienna::apply(s, Seat(seat), &action).unwrap_or_else(|e| panic!("{action:?} : {e}"));
+}
+
+fn ask(pile: u8, target: u8) -> Action {
+    Action::Ask {
+        pile: Some(pile),
+        target: Seat(target),
+        extra: None,
+    }
+}
+
+fn refused(s: &State, seat: u8, action: Action) {
+    let mut copy = s.clone();
+    assert!(
+        BlackVienna::apply(&mut copy, Seat(seat), &action).is_err(),
+        "{action:?} accepted"
+    );
+    assert_eq!(&copy, s);
+    assert!(!BlackVienna::legal_actions(s, Seat(seat)).contains(&action));
+}
+
+/// Three players: seat 1 holds B but neither L nor M.
+fn three() -> State {
+    table(
+        &["ACDEFGHI", "BJKNOPQR", "STUVWXYZ"],
+        "LMÖ",
+        ["ACL AGM BLM", "AOS APQ", "BCY BHV"],
+    )
+}
+
+#[test]
+fn a_new_game_starts_with_the_dealer() {
+    for players in 3..=6u8 {
+        let s = BlackVienna::new(&Config::default(), players, 11);
+        assert_eq!(s.phase, Phase::Turn);
+        assert_eq!(s.turn, s.dealer);
+        assert_eq!(s.reserve, TOKENS);
+        assert!(s.piles.iter().all(|p| p.len() == 12));
+    }
+}
+
+#[test]
+fn the_dealer_starts_and_the_answerer_plays_next() {
+    let mut s = three();
+    act(&mut s, 0, ask(0, 2));
+    assert_eq!(s.turn, Seat(2));
+    assert_eq!(s.piles[0].len(), 2);
+}
+
+#[test]
+fn an_answer_counts_the_suspects_in_hand() {
+    let mut s = three();
+    act(&mut s, 0, ask(0, 1));
+    assert_eq!(
+        s.answers,
+        vec![Answer {
+            by: Seat(0),
+            target: Seat(1),
+            card: card("BLM"),
+            count: 1,
+            placed: 1,
+            special: false,
+        }]
+    );
+    assert_eq!(s.reserve, TOKENS - 1);
+}
+
+#[test]
+fn one_cannot_ask_oneself() {
+    let s = three();
+    refused(&s, 0, ask(0, 0));
+    refused(&s, 1, ask(0, 2));
+}
+
+#[test]
+fn special_needs_everyone_asked_and_six_cards() {
+    let mut s = three();
+    let zero = |target: u8, name: &str| Answer {
+        by: Seat(0),
+        target: Seat(target),
+        card: card(name),
+        count: 0,
+        placed: 0,
+        special: false,
+    };
+    s.answers = vec![
+        zero(1, "DHR"),
+        zero(2, "DJZ"),
+        zero(1, "DLS"),
+        zero(2, "DVY"),
+        zero(1, "EGW"),
+    ];
+    s.asked = vec![false, true, true];
+    assert!(!special_allowed(&s));
+    s.answers.push(Answer {
+        count: 1,
+        placed: 1,
+        ..zero(0, "ENQ")
+    });
+    assert!(!special_allowed(&s), "seat 0 never asked");
+    s.asked[0] = true;
+    assert!(special_allowed(&s));
+    assert!(!reusable(&s).contains(&card("ENQ")));
+    let special = Action::Ask {
+        pile: Some(0),
+        target: Seat(2),
+        extra: Some(card("DHR")),
+    };
+    assert!(BlackVienna::legal_actions(&s, Seat(0)).contains(&special));
+    refused(
+        &s,
+        0,
+        Action::Ask {
+            pile: Some(0),
+            target: Seat(2),
+            extra: Some(card("ENQ")),
+        },
+    );
+    act(&mut s, 0, special);
+    // [R] The old card now lies before seat 2, with its new answer (❓2).
+    let last = s.answers.last().unwrap();
+    assert_eq!(
+        (last.card, last.target, last.special, last.count),
+        (card("DHR"), Seat(2), true, 0)
+    );
+    assert_eq!(s.turn, Seat(2));
+}
+
+#[test]
+fn a_short_reserve_gives_what_is_left_and_ends_the_game() {
+    // Seat 2 holds S and X (CSX: 2) and U and W (OUW: 2); 5 tokens left.
+    let mut s = table(
+        &["ACDEFGHI", "BJKNOPQR", "STUVWXYZ"],
+        "LMÖ",
+        ["CSX", "AOS", "BCY"],
+    );
+    s.reserve = 5;
+    s.asked = vec![true, true, true];
+    s.answers = ["DHR", "DJZ", "DLS", "DVY", "EGW", "ENQ"]
+        .iter()
+        .map(|name| Answer {
+            by: Seat(0),
+            target: Seat(1),
+            card: card(name),
+            count: 0,
+            placed: 0,
+            special: false,
+        })
+        .collect();
+    // OUW was answered with no token, so it can be laid again.
+    s.answers.push(Answer {
+        by: Seat(0),
+        target: Seat(0),
+        card: card("OUW"),
+        count: 0,
+        placed: 0,
+        special: false,
+    });
+    act(
+        &mut s,
+        0,
+        Action::Ask {
+            pile: Some(0),
+            target: Seat(2),
+            extra: Some(card("OUW")),
+        },
+    );
+    let placed: u8 = s.answers.iter().map(|a| a.placed).sum();
+    let counts: Vec<u8> = s.answers.iter().rev().take(2).map(|a| a.count).collect();
+    assert_eq!(counts, vec![2, 2], "true counts kept (❓6)");
+    assert_eq!((placed, s.reserve), (4, 1));
+    assert_eq!(s.phase, Phase::Over);
+    assert_eq!(
+        BlackVienna::outcome(&s),
+        Some(Outcome::Ranked(vec![0, 0, 0]))
+    );
+    assert_eq!(s.scores, vec![0, 0, 0]);
+}
+
+#[test]
+fn three_tokens_left_ends_without_winner() {
+    let mut s = three();
+    s.reserve = 4;
+    act(&mut s, 0, ask(0, 1));
+    assert_eq!((s.reserve, s.phase), (3, Phase::Over));
+}
+
+#[test]
+fn empty_piles_leave_only_specials_or_the_end() {
+    // ❓7: piles empty, no reusable card, and seat 1 already accused wrongly.
+    let mut s = table(
+        &["ACDEFGHI", "BJKNOPQR", "STUVWXYZ"],
+        "LMÖ",
+        ["BLM", "", ""],
+    );
+    s.wrong = vec![false, true, false];
+    act(&mut s, 0, ask(0, 1));
+    assert_eq!(s.phase, Phase::Over);
+    assert_eq!(s.scores, vec![0, 0, 0]);
+    let _ = trio("ABC");
+}
