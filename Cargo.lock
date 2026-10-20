@@ -107,6 +107,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "cryptide"
+version = "0.1.0"
+dependencies = [
+ "ludo-core",
+ "rand 0.8.8",
+ "rand_chacha",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "crypto-common"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
