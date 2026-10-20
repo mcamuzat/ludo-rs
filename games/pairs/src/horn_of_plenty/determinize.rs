@@ -37,15 +37,22 @@ impl Determinize for HornOfPlenty {
         if let (Some(table), Some(&card)) = (d.table.as_mut(), on_table.first()) {
             table.card = card;
             if card != table.declared && rng.gen_bool(TRUTH_PRIOR) {
-                // Swap with a hidden copy of the declared rank, if any.
+                // Swap with a hidden copy of the declared rank, in another
+                // hand or else among the undealt cards.
                 let copy = d
                     .hands
                     .iter_mut()
                     .enumerate()
                     .filter(|(i, _)| *i != o)
                     .find_map(|(_, hand)| hand.iter_mut().find(|c| **c == table.declared));
-                if let Some(copy) = copy {
-                    *copy = card;
+                let swapped = match copy {
+                    Some(copy) => {
+                        *copy = card;
+                        true
+                    }
+                    None => d.supply.swap_hidden(table.declared, card),
+                };
+                if swapped {
                     table.card = table.declared;
                 }
             }
@@ -108,5 +115,28 @@ mod tests {
         }
         assert!(seen.contains(&r(9)), "never true");
         assert!(seen.iter().any(|&c| c != r(9)), "always true");
+    }
+
+    #[test]
+    fn a_declaration_can_come_true_from_the_undealt_cards() {
+        // The only hidden 10 is undealt: a uniform redraw would show it on
+        // the table a third of the time, the prior two thirds.
+        let mut s = table(&[&[3], &[5], &[]], &[&[1], &[2], &[4]], &[10, 1]);
+        HornOfPlenty::apply(
+            &mut s,
+            Seat(0),
+            &Action::Play {
+                card: r(3),
+                declared: r(10),
+            },
+        )
+        .unwrap();
+        let true_ones = (0..300)
+            .filter(|&seed| {
+                let d = HornOfPlenty::determinize(&s, Seat(1), &mut SmallRng::seed_from_u64(seed));
+                d.table.as_ref().unwrap().card == r(10)
+            })
+            .count();
+        assert!(true_ones > 160, "{true_ones}");
     }
 }

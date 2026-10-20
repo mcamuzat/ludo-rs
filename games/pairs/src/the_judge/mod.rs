@@ -69,10 +69,10 @@ pub enum Event {
         seat: Seat,
         card: Rank,
     },
-    /// `forced`: no card of the hand could be added (❓3).
+    /// Also when no card of the hand could be added (❓3): shown as any
+    /// pass, which tells nothing about the hand.
     Passed {
         seat: Seat,
-        forced: bool,
     },
     /// The contest: the Judge's cards revealed in order, the recipes that
     /// survived, the points each seat scored, and the totals.
@@ -174,7 +174,7 @@ impl State {
                     return;
                 }
                 self.passed[seat.index()] = true;
-                self.events.push(Event::Passed { seat, forced: true });
+                self.events.push(Event::Passed { seat });
             }
             seat = self.next(seat);
         }
@@ -328,10 +328,7 @@ impl Game for TheJudge {
             }
             Action::Pass => {
                 s.passed[seat.index()] = true;
-                s.events.push(Event::Passed {
-                    seat,
-                    forced: false,
-                });
+                s.events.push(Event::Passed { seat });
             }
         }
         let next = s.next(seat);

@@ -839,7 +839,7 @@ dans ce plan. Déterminisation : la carte posée, redistribuée
 pour les autres, correspond à son annonce une fois sur deux quand une copie
 cachée le permet. La recherche ne délibère, par carte, que la vérité et un
 bluff (le rang aux copies non vues les plus nombreuses). Mesuré : Difficile
-contre Facile 0,84 à 2 joueurs, 0,80 à 4 (200 parties, ~2 min 30 chacune).
+contre Facile 0,84 à 2 joueurs, 0,82 à 4 (200 parties, ~2 min 30 chacune).
 
 ## 28. The Judge (plan 20)
 

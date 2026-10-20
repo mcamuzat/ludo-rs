@@ -147,13 +147,13 @@ export const HORN_OF_PLENTY_RULES = [
   "À ton tour : pose une carte cachée et annonce son rang, vrai ou faux.",
   "En partant de ta gauche, chacun est d'accord, pas d'accord, ou passe. Qui répond juste choisit qui prend la carte (lui ou toi) ; sinon c'est toi qui choisis. Si tout le monde passe, tu la places chez qui tu veux.",
   "Une paire dans une main visible est défaussée aussitôt.",
-  "Fin de manche : la meilleure main visible (somme des rangs) marque autant de points que de joueurs, la suivante un de moins ; les égalités prennent la valeur haute. Partie en 11 points.",
+  "Fin de manche : la meilleure main visible (somme des rangs) marque autant de points que de joueurs, la suivante un de moins ; les égalités prennent la valeur haute. Partie en 11 points ; égalité en tête à 11 ou plus : on rejoue une manche.",
 ];
 
 export const THE_JUDGE_RULES = [
   "Chacun reçoit 7 cartes ; 8 cartes cachées forment le Juge.",
   "À ton tour : ajoute une carte de ta main à ta recette, face visible, ou passe. Qui passe a fini pour la manche. Pas de paire dans une recette.",
-  "Quand tout le monde a passé, on retourne le Juge carte par carte : chaque carte élimine les recettes de son rang, jusqu'à ce qu'il n'en reste qu'une.",
-  "Les recettes survivantes marquent la somme de leurs rangs. Le meilleur de la manche commence la suivante.",
+  "Quand tout le monde a passé, on retourne le Juge carte par carte : chaque carte élimine les recettes de son rang, jusqu'à ce qu'il n'en reste qu'une ou que le Juge soit vide.",
+  "Les recettes survivantes marquent la somme de leurs rangs. Le meilleur de la manche commence la suivante ; si tout le monde est éliminé, personne ne marque et le même joueur recommence.",
   "Partie en 50 points à 2 ou 3 joueurs, 40 à 4, 30 à 5 ou 6.",
 ];

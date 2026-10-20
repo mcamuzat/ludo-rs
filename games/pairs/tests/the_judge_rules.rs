@@ -111,10 +111,7 @@ fn a_seat_with_nothing_to_add_passes_by_itself() {
     act(&mut s, 0, add(4));
     assert_eq!(s.turn, Seat(2));
     assert!(s.passed[1]);
-    assert!(s.events.contains(&Event::Passed {
-        seat: Seat(1),
-        forced: true
-    }));
+    assert!(s.events.contains(&Event::Passed { seat: Seat(1) }));
 }
 
 #[test]

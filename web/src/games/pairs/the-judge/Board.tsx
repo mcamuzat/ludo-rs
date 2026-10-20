@@ -2,8 +2,10 @@ import type { BoardProps } from "../../registry";
 import { Card, CardBack, Table } from "../cards";
 import type { TheJudgeAction, TheJudgeEvent, TheJudgeView } from "./types";
 
+/** "Ana", "Ana et Hugo", "Ana, Hugo et Cléo". */
 function names(seats: number[], all: string[]): string {
-  return seats.map((s) => all[s]).join(" et ");
+  const named = seats.map((s) => all[s]);
+  return named.length > 1 ? `${named.slice(0, -1).join(", ")} et ${named[named.length - 1]}` : named.join("");
 }
 
 export function describeTheJudgeEvent(e: TheJudgeEvent, all: string[]): string {
@@ -13,7 +15,7 @@ export function describeTheJudgeEvent(e: TheJudgeEvent, all: string[]): string {
     case "Added":
       return `${all[e.seat]} ajoute un ${e.card} à sa recette.`;
     case "Passed":
-      return e.forced ? `${all[e.seat]} ne peut plus rien ajouter et passe.` : `${all[e.seat]} passe.`;
+      return `${all[e.seat]} passe.`;
     case "Contest": {
       const reveals = e.reveals
         .map(({ card, eliminated }) =>

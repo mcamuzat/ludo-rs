@@ -87,7 +87,10 @@ describe("The Judge board", () => {
   it("tells what happened in words", () => {
     const say = (e: Parameters<typeof describeTheJudgeEvent>[0]) => describeTheJudgeEvent(e, NAMES);
     expect(say({ type: "Dealt", round: 2, leader: 1 })).toBe("Manche 2 : 7 cartes chacun, 8 pour le Juge. Hugo commence.");
-    expect(say({ type: "Passed", seat: 2, forced: true })).toBe("Cléo ne peut plus rien ajouter et passe.");
+    expect(say({ type: "Passed", seat: 2 })).toBe("Cléo passe.");
+    expect(
+      say({ type: "Contest", reveals: [{ card: 7, eliminated: [0, 1, 2] }], survivors: [], gained: [0, 0, 0], scores: [1, 2, 3] }),
+    ).toBe("Le Juge retourne : 7 (élimine Ana, Hugo et Cléo). Personne ne marque.");
     expect(
       say({
         type: "Contest",

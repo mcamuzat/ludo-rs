@@ -164,7 +164,7 @@ export function HornOfPlentyBoard({ view, legalActions, me, seatNames, submit }:
           submit={send}
         />
       )}
-      {v.phase !== "Declare" && me !== null && v.hand.length > 0 && (
+      {!(v.phase === "Declare" && legal.length > 0) && me !== null && v.hand.length > 0 && (
         <div className="pairs-hand">
           <span>Tes cartes cachées :</span>
           {v.hand.map((card, k) => (

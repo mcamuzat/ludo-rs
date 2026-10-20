@@ -11,8 +11,8 @@ export interface TheJudgeReveal {
 export type TheJudgeEvent =
   | { type: "Dealt"; round: number; leader: number }
   | { type: "Added"; seat: number; card: Rank }
-  /** `forced`: no card of the hand could be added. */
-  | { type: "Passed"; seat: number; forced: boolean }
+  /** Also when no card of the hand could be added. */
+  | { type: "Passed"; seat: number }
   | { type: "Contest"; reveals: TheJudgeReveal[]; survivors: number[]; gained: number[]; scores: number[] };
 
 export interface TheJudgeSeatView {

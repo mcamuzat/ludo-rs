@@ -303,6 +303,23 @@ impl Supply {
         self.unseen.extend(cards);
     }
 
+    /// For determinization: one copy of `wanted` in the draw pile or the
+    /// face-down discards becomes `given`. `false` when there is none.
+    pub fn swap_hidden(&mut self, wanted: Rank, given: Rank) -> bool {
+        match self
+            .deck
+            .iter_mut()
+            .chain(self.unseen.iter_mut())
+            .find(|c| **c == wanted)
+        {
+            Some(card) => {
+                *card = given;
+                true
+            }
+            None => false,
+        }
+    }
+
     pub fn deck_len(&self) -> usize {
         self.deck.len()
     }
