@@ -3,6 +3,8 @@
 //! clues name a single space of the map. Ask the others, then search.
 
 pub mod clues;
+mod determinize;
+pub mod knowledge;
 pub mod map;
 mod rules;
 pub mod testing;
