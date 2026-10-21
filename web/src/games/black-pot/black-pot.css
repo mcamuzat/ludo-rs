@@ -1,0 +1,34 @@
+.bp { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.bp-board { width: min(100%, 640px); height: auto; border-radius: 14px; }
+.bp-square { stroke: #1f1a17; stroke-width: 2; }
+.bp-cell.Lemon .bp-square { fill: #f6eab0; }
+.bp-cell.Cherry .bp-square { fill: #f0a050; }
+.bp-cell.BlackPot .bp-square { fill: #6b3a1e; }
+.bp-star { fill: #5cb030; }
+.bp-value { font: 800 26px var(--f-display); fill: #1f1a17; pointer-events: none; }
+.bp-cell.open { cursor: pointer; }
+.bp-cell.open:hover .bp-square { filter: brightness(1.12); }
+.bp-pawn circle { stroke: #1f1a17; stroke-width: 2; pointer-events: none; }
+.bp-pawn.team-0 circle { fill: #f7f0dc; }
+.bp-pawn.team-1 circle { fill: #7a4a26; }
+.bp-pawn .bp-mark { stroke: none; }
+.bp-pawn.team-0 .bp-mark { fill: #b07a1c; }
+.bp-pawn.team-1 .bp-mark { fill: #f3e4c4; }
+.bp-ghost { fill: none; stroke: var(--brass); stroke-width: 4; stroke-dasharray: 6 4; pointer-events: none; }
+.bp-line { stroke-width: 10; stroke-linecap: round; opacity: 0.55; pointer-events: none; }
+.bp-line.team-0 { stroke: #fffbe9; }
+.bp-line.team-1 { stroke: #3b200f; }
+.bp-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; border: 1px solid #1f1a17; }
+.bp-swatch.team-0 { background: #f7f0dc; }
+.bp-swatch.team-1 { background: #7a4a26; }
+.bp-roll { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.bp-dice { width: 160px; height: auto; }
+.bp-die { fill: #fffdf6; stroke: #1f1a17; stroke-width: 2; }
+.bp-pip { fill: #1f1a17; }
+.bp-dice .used { opacity: 0.35; }
+.bp-compose { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.bp-draft { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; margin: 0; font: 700 1.1rem var(--f-mono); }
+.bp-draft .current { color: var(--accent); }
+.bp-keys { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.bp-keys button { min-width: 44px; font-size: 1.1rem; }
+.bp-log { list-style: none; padding: 0; margin: 0; text-align: center; font-size: 0.9rem; }

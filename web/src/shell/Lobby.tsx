@@ -6,6 +6,7 @@ import type { TableSeat } from "../session/table";
 import { defaultConfig } from "../games/options";
 import { gameUi } from "../games/registry";
 import { GameOptions } from "./GameOptions";
+import { playersLabel } from "./players";
 import { RulesReminder } from "./RulesReminder";
 
 /** What the host picks for each seat after their own. */
@@ -22,7 +23,7 @@ interface Props {
 const LEVELS: Level[] = ["Easy", "Medium", "Hard"];
 
 export function Lobby({ game, onLocal, onHost, onBack }: Props) {
-  const [players, setPlayers] = useState(game.minPlayers);
+  const [players, setPlayers] = useState(game.playerCounts[0]);
   const [choices, setChoices] = useState<SeatChoice[]>(() => Array(game.maxPlayers - 1).fill("Medium"));
   const [clockId, setClockId] = useState(CLOCK_PRESETS[0].id);
   const [config, setConfig] = useState(() => defaultConfig(game));
@@ -53,7 +54,7 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
         </button>
         <h2>{game.name}</h2>
         <span className="pill">
-          {game.minPlayers === game.maxPlayers ? game.minPlayers : `${game.minPlayers}–${game.maxPlayers}`} joueurs
+          {playersLabel(game)} joueurs
         </span>
       </div>
       <RulesReminder rules={gameUi(game.id)?.rules} open />
@@ -64,7 +65,7 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
             <div className="row">
               <label htmlFor="players">Joueurs</label>
               <select id="players" value={players} onChange={(e) => setPlayers(Number(e.target.value))}>
-                {Array.from({ length: game.maxPlayers - game.minPlayers + 1 }, (_, k) => game.minPlayers + k).map((n) => (
+                {game.playerCounts.map((n) => (
                   <option key={n} value={n}>
                     {n}
                   </option>

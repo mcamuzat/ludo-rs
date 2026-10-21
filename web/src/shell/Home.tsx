@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { GameMeta } from "../engine/types";
 import { gameUi, type GameFamily } from "../games/registry";
 import { Die, Emblem } from "./Emblem";
+import { playersLabel } from "./players";
 import type { SavedHost } from "../session/storage";
 
 interface Props {
@@ -96,7 +97,7 @@ export function Home({ catalog, error, name, onName, onPick, onJoin, saved, onRe
                     <Emblem family={family} name={meta.name} />
                     <strong>{meta.name}</strong>
                     <small>
-                      {meta.minPlayers === meta.maxPlayers ? meta.minPlayers : `${meta.minPlayers}–${meta.maxPlayers}`}{" "}
+                      {playersLabel(meta)}{" "}
                       joueurs
                     </small>
                   </button>

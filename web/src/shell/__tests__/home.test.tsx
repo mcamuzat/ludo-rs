@@ -5,7 +5,7 @@ import { RulesReminder } from "../RulesReminder";
 import { Home } from "../Home";
 
 function meta(id: string, name: string): GameMeta {
-  return { id, name, minPlayers: 2, maxPlayers: 6, hiddenInfo: true, clock: false, options: [] };
+  return { id, name, minPlayers: 2, maxPlayers: 6, playerCounts: [2, 3, 4, 5, 6], hiddenInfo: true, clock: false, options: [] };
 }
 
 const CATALOG = [

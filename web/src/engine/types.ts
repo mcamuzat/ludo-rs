@@ -23,6 +23,8 @@ export interface GameMeta {
   name: string;
   minPlayers: number;
   maxPlayers: number;
+  /** The table sizes the game accepts (Black-Pot: 2 or 4). */
+  playerCounts: number[];
   hiddenInfo: boolean;
   clock: boolean;
   options: GameOption[];
