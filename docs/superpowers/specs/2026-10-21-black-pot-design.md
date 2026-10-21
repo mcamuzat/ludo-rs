@@ -1,7 +1,7 @@
 # ludo-rs — Black-Pot
 
 Date : 2026-10-21
-Statut : à valider
+Statut : livré (2026-10-21)
 
 ## 1. Objectif
 
