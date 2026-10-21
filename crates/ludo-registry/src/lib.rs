@@ -32,6 +32,7 @@ static MONAD: GameEntry<monad::Monad> = GameEntry::new();
 static VOLLTREFFER: GameEntry<volltreffer::Volltreffer> = GameEntry::new();
 static BLACK_VIENNA: GameEntry<black_vienna::BlackVienna> = GameEntry::new();
 static CRYPTIDE: GameEntry<cryptide::Cryptide> = GameEntry::new();
+static BLACK_POT: GameEntry<black_pot::BlackPot> = GameEntry::new();
 
 pub static GAMES: &[&dyn AnyGame] = &[
     &YAVALATH,
@@ -64,6 +65,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &VOLLTREFFER,
     &BLACK_VIENNA,
     &CRYPTIDE,
+    &BLACK_POT,
 ];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {
@@ -79,12 +81,19 @@ mod tests {
     use super::*;
 
     #[test]
+    fn black_pot_offers_two_or_four_players() {
+        assert_eq!(find("black-pot").unwrap().player_counts(), vec![2, 4]);
+        assert_eq!(find("bantu").unwrap().player_counts(), vec![2, 3, 4]);
+    }
+
+    #[test]
     fn ids_are_unique_and_every_game_starts() {
         let ids: HashSet<&str> = GAMES.iter().map(|g| g.meta().id).collect();
         assert_eq!(ids.len(), GAMES.len());
         for game in GAMES {
             let meta = game.meta();
-            for players in meta.min_players..=meta.max_players {
+            assert!(!game.player_counts().is_empty(), "{}", meta.id);
+            for players in game.player_counts() {
                 let m = game.new_match(Value::Null, players, 1).unwrap();
                 assert!(!m.pending().is_empty(), "{} à {players}", meta.id);
             }

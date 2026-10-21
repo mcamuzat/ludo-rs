@@ -3,10 +3,12 @@
 
 pub mod board;
 pub mod calc;
+mod heuristics;
 pub mod lines;
 pub mod testing;
 mod view;
 
+pub use heuristics::potential;
 pub use view::{Pawn, TeamView, View};
 
 use std::collections::HashSet;
@@ -162,7 +164,8 @@ pub fn plays(s: &State, seat: Seat) -> Vec<Action> {
             free[usize::from(cell.value)].push(id as CellId);
         }
     }
-    let mut seen: HashSet<Vec<CellId>> = HashSet::new();
+    // A move is known by its cells, sorted (`u8::MAX` pads unused slots).
+    let mut seen: HashSet<[CellId; 3]> = HashSet::new();
     let mut found = Vec::new();
     for partition in PARTITIONS {
         let options: Vec<Vec<(u32, Expr)>> = partition
@@ -171,7 +174,10 @@ pub fn plays(s: &State, seat: Seat) -> Vec<Action> {
             .collect();
         let mut chosen = Vec::new();
         assign(&options, &free, left, &mut chosen, &mut |groups| {
-            let mut key: Vec<CellId> = groups.iter().filter_map(|g| g.cell).collect();
+            let mut key = [CellId::MAX; 3];
+            for (slot, cell) in key.iter_mut().zip(groups.iter().filter_map(|g| g.cell)) {
+                *slot = cell;
+            }
             key.sort_unstable();
             if seen.insert(key) {
                 found.push(Action::Play {
@@ -181,6 +187,51 @@ pub fn plays(s: &State, seat: Seat) -> Vec<Action> {
         });
     }
     found
+}
+
+/// Whether `seat` has a move: `!plays(s, seat).is_empty()`, without
+/// listing them.
+pub fn has_play(s: &State, seat: Seat) -> bool {
+    if s.end.is_some() || s.queue.first() != Some(&seat) {
+        return false;
+    }
+    let left = usize::from(s.pawns_left[usize::from(team_of(s.players, seat))]);
+    let mut free = [0usize; 25];
+    for (id, cell) in cells().iter().enumerate() {
+        if s.owner[id].is_none() {
+            free[usize::from(cell.value)] += 1;
+        }
+    }
+    PARTITIONS.iter().any(|partition| {
+        let options: Vec<Vec<u32>> = partition
+            .iter()
+            .map(|group| values(&s.dice, group).into_keys().collect())
+            .collect();
+        fits(&options, &mut free, left)
+    })
+}
+
+/// Whether the groups in `options` can each take a value with a free cell
+/// left in `free` (counts by value), placing at most `left` pawns.
+fn fits(options: &[Vec<u32>], free: &mut [usize; 25], left: usize) -> bool {
+    let Some((first, rest)) = options.split_first() else {
+        return true;
+    };
+    first.iter().any(|&value| {
+        if value == 0 {
+            return fits(rest, free, left);
+        }
+        let Some(slot) = free.get(value as usize).copied() else {
+            return false;
+        };
+        if slot == 0 || left == 0 {
+            return false;
+        }
+        free[value as usize] -= 1;
+        let ok = fits(rest, free, left - 1);
+        free[value as usize] += 1;
+        ok
+    })
 }
 
 /// Every way to give the groups still in `options` a value and a free cell
@@ -258,7 +309,7 @@ impl State {
                 self.start_roll(Seat((self.roller.0 + 1) % self.players));
                 continue;
             };
-            if !plays(self, seat).is_empty() {
+            if has_play(self, seat) {
                 return;
             }
             // [R] A player who finds nothing passes.
@@ -459,7 +510,7 @@ impl Game for BlackPot {
                 *s = next;
             }
             Action::NotFound => {
-                if plays(s, seat).is_empty() {
+                if !has_play(s, seat) {
                     return Err(Illegal::new(
                         "Aucun coup n'existe : le tour passe tout seul.",
                     ));
@@ -482,7 +533,7 @@ impl Game for BlackPot {
 
     /// [U] Time out: « Je ne trouve pas », which shows no move.
     fn timeout_action(s: &State, seat: Seat) -> Option<Action> {
-        (!plays(s, seat).is_empty()).then_some(Action::NotFound)
+        has_play(s, seat).then_some(Action::NotFound)
     }
 }
 

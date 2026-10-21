@@ -125,16 +125,23 @@ pub struct GameInfo {
     #[serde(flatten)]
     pub meta: GameMeta,
     pub options: Vec<GameOption>,
+    /// The table sizes the game accepts, within `meta`'s bounds (a game may
+    /// refuse some, as Black-Pot refuses 3).
+    #[serde(rename = "playerCounts")]
+    pub player_counts: Vec<u8>,
 }
 
 pub trait AnyGame: Sync {
     fn meta(&self) -> GameMeta;
     fn options(&self) -> Vec<GameOption>;
+    /// The table sizes `check_config` accepts with the default options.
+    fn player_counts(&self) -> Vec<u8>;
 
     fn info(&self) -> GameInfo {
         GameInfo {
             meta: self.meta(),
             options: self.options(),
+            player_counts: self.player_counts(),
         }
     }
     /// `config` = `Value::Null` for the game's default options.
@@ -178,6 +185,13 @@ impl<G: Game + Determinize + Heuristics> AnyGame for GameEntry<G> {
 
     fn options(&self) -> Vec<GameOption> {
         G::options()
+    }
+
+    fn player_counts(&self) -> Vec<u8> {
+        let meta = G::meta();
+        (meta.min_players..=meta.max_players)
+            .filter(|&n| G::check_config(&G::Config::default(), n).is_ok())
+            .collect()
     }
 
     fn new_match(

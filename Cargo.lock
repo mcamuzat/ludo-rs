@@ -283,6 +283,7 @@ name = "ludo-registry"
 version = "0.1.0"
 dependencies = [
  "bantu",
+ "black-pot",
  "black-vienna",
  "cards",
  "cryptide",

@@ -416,3 +416,23 @@ fn the_dice_of_a_seed_are_pinned() {
 }
 
 const PINNED: [[u8; 3]; 5] = [[4, 4, 5], [6, 3, 6], [4, 3, 2], [5, 4, 6], [5, 6, 2]];
+
+#[test]
+fn has_play_agrees_with_plays() {
+    let mut rng = ChaCha8Rng::seed_from_u64(3);
+    for g in 0..30u64 {
+        let mut s = BlackPot::new(&Config::default(), 2, g);
+        while let Some(&seat) = BlackPot::pending(&s).0.first() {
+            // Shrink the stock and fill the board to reach scarce positions.
+            let plays = black_pot::plays(&s, seat);
+            assert_eq!(black_pot::has_play(&s, seat), !plays.is_empty());
+            let pick = rng.gen::<u32>() as usize % plays.len();
+            BlackPot::apply(&mut s, seat, &plays[pick]).unwrap();
+            let other = Seat(1 - seat.0);
+            assert_eq!(
+                black_pot::has_play(&s, other),
+                !black_pot::plays(&s, other).is_empty()
+            );
+        }
+    }
+}

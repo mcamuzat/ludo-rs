@@ -90,6 +90,8 @@ struct Layout {
     /// `grid[row][col]`.
     grid: [[Option<CellId>; SIZE as usize]; SIZE as usize],
     windows: Vec<Window>,
+    /// `by_cell[cell]`: indices in `windows` of the windows holding it.
+    by_cell: Vec<Vec<usize>>,
 }
 
 fn layout() -> &'static Layout {
@@ -127,10 +129,17 @@ fn layout() -> &'static Layout {
                 }
             }
         }
+        let mut by_cell = vec![Vec::new(); cells.len()];
+        for (i, w) in windows.iter().enumerate() {
+            for &c in &w.cells {
+                by_cell[usize::from(c)].push(i);
+            }
+        }
         Layout {
             cells,
             grid,
             windows,
+            by_cell,
         }
     })
 }
@@ -148,6 +157,11 @@ pub fn cell_at(row: i8, col: i8) -> Option<CellId> {
 /// Every run of five consecutive cells, by direction then by first cell.
 pub fn windows() -> &'static [Window] {
     &layout().windows
+}
+
+/// Indices in `windows()` of the windows holding `cell`.
+pub fn windows_of(cell: CellId) -> &'static [usize] {
+    &layout().by_cell[usize::from(cell)]
 }
 
 /// The board for the site to draw.
