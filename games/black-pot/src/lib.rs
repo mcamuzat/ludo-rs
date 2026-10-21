@@ -124,6 +124,9 @@ pub fn team_of(players: u8, seat: Seat) -> u8 {
     }
 }
 
+/// Salt of the draw of the first roller.
+const FIRST_ROLLER: u64 = 0xB1AC_4B07_F125_7000;
+
 /// Roll number `k` of a game seeded with `seed`.
 fn roll(seed: u64, k: u32) -> [u8; 3] {
     let mut rng =
@@ -458,7 +461,9 @@ impl Game for BlackPot {
 
     fn new(_config: &Config, players: u8, seed: u64) -> State {
         // [R] The first to throw is drawn (on the table, the highest die).
-        let first = ChaCha8Rng::seed_from_u64(seed).gen::<u32>() % u32::from(players);
+        // Drawn apart from the rolls, which start from `seed` itself.
+        let first =
+            ChaCha8Rng::seed_from_u64(seed ^ FIRST_ROLLER).gen::<u32>() % u32::from(players);
         let mut s = State {
             players,
             owner: vec![None; cells().len()],

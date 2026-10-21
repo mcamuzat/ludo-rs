@@ -203,9 +203,11 @@ export class HostSession extends Session {
           return;
         }
         // The engine checks it is this seat's decision and that it is legal.
+        // The resync goes first: the guest clears its notice on every update,
+        // and must still read why its move was refused.
         this.table.submit(seat, msg.action, msg.rev).catch((e) => {
-          this.send(conn, { type: "rejected", reason: errorMessage(e), fatal: false });
           this.sendUpdate(conn, seat);
+          this.send(conn, { type: "rejected", reason: errorMessage(e), fatal: false });
         });
         break;
       }

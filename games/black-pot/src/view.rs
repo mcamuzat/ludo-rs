@@ -38,6 +38,8 @@ pub struct View {
     pub last: Vec<Option<TurnRecord>>,
     /// Rounds of the table without a pawn placed left before the game stops.
     pub quiet_left: u32,
+    /// Turns played since the start (moves and passes): a new decision.
+    pub turns: u32,
     pub end: Option<End>,
     /// The teams ranked first once the game is over (both on a tie).
     pub winners: Vec<u8>,
@@ -77,6 +79,7 @@ impl View {
             alignments: s.alignments.clone(),
             last: s.last.clone(),
             quiet_left: quiet_turns_left.div_ceil(players),
+            turns: s.turns,
             end: s.end,
             winners: if s.end.is_some() {
                 let best = score(s, 0).max(score(s, 1));

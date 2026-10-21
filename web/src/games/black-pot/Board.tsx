@@ -75,7 +75,7 @@ export function exprText(e: Expr, dice: number[]): string {
 
 /** A draft belongs to one roll and one player's turn. */
 export function draftKey(v: BlackPotView): string {
-  return `${v.dice.join(",")}|${v.roller}|${v.turn}|${v.queue.length}`;
+  return `${v.turns}|${v.dice.join(",")}|${v.turn}`;
 }
 
 export function describeTurn(t: TurnRecord, name: string): string {

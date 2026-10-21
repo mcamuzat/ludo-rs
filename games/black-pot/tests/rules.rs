@@ -436,3 +436,15 @@ fn has_play_agrees_with_plays() {
         }
     }
 }
+
+/// The first roller and the first roll come from separate draws: who starts
+/// tells nothing about the dice.
+#[test]
+fn the_first_roller_does_not_tell_the_first_die() {
+    let mut seen = std::collections::HashSet::new();
+    for seed in 0..200u64 {
+        let s = BlackPot::new(&Config::default(), 2, seed);
+        seen.insert((s.roller.0, s.dice[0] % 2));
+    }
+    assert_eq!(seen.len(), 4, "{seen:?}");
+}

@@ -33,6 +33,7 @@ const VIEW: BlackPotView = {
   alignments: [],
   last: [null, null],
   quietLeft: 10,
+  turns: 0,
   end: null,
   winners: [],
 };
@@ -115,6 +116,8 @@ describe("the board", () => {
     expect(draftKey(VIEW)).toBe(draftKey({ ...VIEW }));
     expect(draftKey(VIEW)).not.toBe(draftKey({ ...VIEW, dice: [1, 2, 3] }));
     expect(draftKey(VIEW)).not.toBe(draftKey({ ...VIEW, turn: 1 }));
+    // The same dice rolled again later: a new turn all the same.
+    expect(draftKey(VIEW)).not.toBe(draftKey({ ...VIEW, turns: VIEW.turns + 2 }));
   });
 
   it("tells what each player did", () => {

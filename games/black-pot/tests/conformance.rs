@@ -27,6 +27,7 @@ fn the_view_shows_the_game_but_not_the_seed_nor_the_moves() {
     assert_eq!(view["teams"][1]["pawnsLeft"], 40);
     assert_eq!(view["teams"][1]["score"], 400);
     assert_eq!(view["quietLeft"], 10);
+    assert_eq!(view["turns"], s.turns);
     assert_eq!(view["end"], serde_json::Value::Null);
     assert_eq!(view["winners"], serde_json::json!([]));
 }

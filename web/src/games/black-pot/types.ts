@@ -57,6 +57,8 @@ export interface BlackPotView {
   alignments: Alignment[];
   last: (TurnRecord | null)[];
   quietLeft: number;
+  /** Turns played since the start (moves and passes). */
+  turns: number;
   end: End | null;
   /** Teams ranked first once the game is over (both on a tie). */
   winners: number[];
