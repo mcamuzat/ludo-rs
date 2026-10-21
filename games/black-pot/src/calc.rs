@@ -39,7 +39,9 @@ impl Op {
                 .ok_or_else(|| Illegal::new(format!("{l} − {r} donne un nombre négatif."))),
             Op::Mul => Ok(l * r),
             Op::Div if r == 0 => Err(Illegal::new("On ne divise pas par 0.")),
-            Op::Div if !l.is_multiple_of(r) => Err(Illegal::new(format!("{l} ÷ {r} ne tombe pas juste."))),
+            Op::Div if !l.is_multiple_of(r) => {
+                Err(Illegal::new(format!("{l} ÷ {r} ne tombe pas juste.")))
+            }
             Op::Div => Ok(l / r),
         }
     }
