@@ -5,6 +5,9 @@ pub mod board;
 pub mod calc;
 pub mod lines;
 pub mod testing;
+mod view;
+
+pub use view::{Pawn, TeamView, View};
 
 use std::collections::HashSet;
 
@@ -381,7 +384,7 @@ fn ranks(s: &State) -> Vec<u8> {
 impl Game for BlackPot {
     type State = State;
     type Action = Action;
-    type View = serde_json::Value;
+    type View = View;
     type Config = Config;
 
     fn meta() -> GameMeta {
@@ -469,8 +472,8 @@ impl Game for BlackPot {
         Ok(())
     }
 
-    fn view(_s: &State, _viewer: Viewer) -> serde_json::Value {
-        serde_json::Value::Null
+    fn view(s: &State, viewer: Viewer) -> View {
+        View::of(s, viewer)
     }
 
     fn outcome(s: &State) -> Option<Outcome> {
