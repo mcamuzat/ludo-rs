@@ -1,0 +1,658 @@
+{
+  "cells": [
+    {
+      "col": 2,
+      "kind": "BlackPot",
+      "row": 0,
+      "value": 19
+    },
+    {
+      "col": 3,
+      "kind": "Cherry",
+      "row": 0,
+      "value": 8
+    },
+    {
+      "col": 4,
+      "kind": "Lemon",
+      "row": 0,
+      "value": 3
+    },
+    {
+      "col": 5,
+      "kind": "Cherry",
+      "row": 0,
+      "value": 7
+    },
+    {
+      "col": 6,
+      "kind": "Lemon",
+      "row": 0,
+      "value": 5
+    },
+    {
+      "col": 7,
+      "kind": "Cherry",
+      "row": 0,
+      "value": 7
+    },
+    {
+      "col": 8,
+      "kind": "BlackPot",
+      "row": 0,
+      "value": 17
+    },
+    {
+      "col": 1,
+      "kind": "Lemon",
+      "row": 1,
+      "value": 1
+    },
+    {
+      "col": 2,
+      "kind": "Cherry",
+      "row": 1,
+      "value": 12
+    },
+    {
+      "col": 3,
+      "kind": "BlackPot",
+      "row": 1,
+      "value": 17
+    },
+    {
+      "col": 4,
+      "kind": "Cherry",
+      "row": 1,
+      "value": 9
+    },
+    {
+      "col": 5,
+      "kind": "Lemon",
+      "row": 1,
+      "value": 2
+    },
+    {
+      "col": 6,
+      "kind": "Cherry",
+      "row": 1,
+      "value": 8
+    },
+    {
+      "col": 7,
+      "kind": "BlackPot",
+      "row": 1,
+      "value": 13
+    },
+    {
+      "col": 8,
+      "kind": "Cherry",
+      "row": 1,
+      "value": 11
+    },
+    {
+      "col": 9,
+      "kind": "Lemon",
+      "row": 1,
+      "value": 1
+    },
+    {
+      "col": 0,
+      "kind": "BlackPot",
+      "row": 2,
+      "value": 19
+    },
+    {
+      "col": 1,
+      "kind": "Cherry",
+      "row": 2,
+      "value": 11
+    },
+    {
+      "col": 2,
+      "kind": "BlackPot",
+      "row": 2,
+      "value": 13
+    },
+    {
+      "col": 3,
+      "kind": "Cherry",
+      "row": 2,
+      "value": 10
+    },
+    {
+      "col": 4,
+      "kind": "Lemon",
+      "row": 2,
+      "value": 3
+    },
+    {
+      "col": 5,
+      "kind": "Cherry",
+      "row": 2,
+      "value": 20
+    },
+    {
+      "col": 6,
+      "kind": "Lemon",
+      "row": 2,
+      "value": 4
+    },
+    {
+      "col": 7,
+      "kind": "Cherry",
+      "row": 2,
+      "value": 9
+    },
+    {
+      "col": 8,
+      "kind": "BlackPot",
+      "row": 2,
+      "value": 14
+    },
+    {
+      "col": 9,
+      "kind": "Cherry",
+      "row": 2,
+      "value": 12
+    },
+    {
+      "col": 10,
+      "kind": "BlackPot",
+      "row": 2,
+      "value": 17
+    },
+    {
+      "col": 0,
+      "kind": "Lemon",
+      "row": 3,
+      "value": 2
+    },
+    {
+      "col": 1,
+      "kind": "BlackPot",
+      "row": 3,
+      "value": 14
+    },
+    {
+      "col": 2,
+      "kind": "Cherry",
+      "row": 3,
+      "value": 16
+    },
+    {
+      "col": 3,
+      "kind": "Lemon",
+      "row": 3,
+      "value": 2
+    },
+    {
+      "col": 4,
+      "kind": "Lemon",
+      "row": 3,
+      "value": 4
+    },
+    {
+      "col": 5,
+      "kind": "BlackPot",
+      "row": 3,
+      "value": 23
+    },
+    {
+      "col": 6,
+      "kind": "Lemon",
+      "row": 3,
+      "value": 3
+    },
+    {
+      "col": 7,
+      "kind": "Lemon",
+      "row": 3,
+      "value": 1
+    },
+    {
+      "col": 8,
+      "kind": "Cherry",
+      "row": 3,
+      "value": 15
+    },
+    {
+      "col": 9,
+      "kind": "BlackPot",
+      "row": 3,
+      "value": 21
+    },
+    {
+      "col": 10,
+      "kind": "Lemon",
+      "row": 3,
+      "value": 2
+    },
+    {
+      "col": 0,
+      "kind": "Lemon",
+      "row": 4,
+      "value": 5
+    },
+    {
+      "col": 1,
+      "kind": "Cherry",
+      "row": 4,
+      "value": 15
+    },
+    {
+      "col": 2,
+      "kind": "Lemon",
+      "row": 4,
+      "value": 4
+    },
+    {
+      "col": 3,
+      "kind": "Lemon",
+      "row": 4,
+      "value": 6
+    },
+    {
+      "col": 4,
+      "kind": "BlackPot",
+      "row": 4,
+      "value": 21
+    },
+    {
+      "col": 5,
+      "kind": "Cherry",
+      "row": 4,
+      "value": 18
+    },
+    {
+      "col": 6,
+      "kind": "BlackPot",
+      "row": 4,
+      "value": 21
+    },
+    {
+      "col": 7,
+      "kind": "Lemon",
+      "row": 4,
+      "value": 5
+    },
+    {
+      "col": 8,
+      "kind": "Lemon",
+      "row": 4,
+      "value": 3
+    },
+    {
+      "col": 9,
+      "kind": "Cherry",
+      "row": 4,
+      "value": 16
+    },
+    {
+      "col": 10,
+      "kind": "Lemon",
+      "row": 4,
+      "value": 6
+    },
+    {
+      "col": 0,
+      "kind": "Lemon",
+      "row": 5,
+      "value": 1
+    },
+    {
+      "col": 1,
+      "kind": "Lemon",
+      "row": 5,
+      "value": 2
+    },
+    {
+      "col": 2,
+      "kind": "Cherry",
+      "row": 5,
+      "value": 10
+    },
+    {
+      "col": 3,
+      "kind": "BlackPot",
+      "row": 5,
+      "value": 22
+    },
+    {
+      "col": 4,
+      "kind": "Cherry",
+      "row": 5,
+      "value": 24
+    },
+    {
+      "col": 5,
+      "kind": "BlackPot",
+      "row": 5,
+      "value": 23
+    },
+    {
+      "col": 6,
+      "kind": "Cherry",
+      "row": 5,
+      "value": 24
+    },
+    {
+      "col": 7,
+      "kind": "BlackPot",
+      "row": 5,
+      "value": 22
+    },
+    {
+      "col": 8,
+      "kind": "Cherry",
+      "row": 5,
+      "value": 10
+    },
+    {
+      "col": 9,
+      "kind": "Lemon",
+      "row": 5,
+      "value": 2
+    },
+    {
+      "col": 10,
+      "kind": "Lemon",
+      "row": 5,
+      "value": 1
+    },
+    {
+      "col": 0,
+      "kind": "Lemon",
+      "row": 6,
+      "value": 6
+    },
+    {
+      "col": 1,
+      "kind": "Cherry",
+      "row": 6,
+      "value": 16
+    },
+    {
+      "col": 2,
+      "kind": "Lemon",
+      "row": 6,
+      "value": 3
+    },
+    {
+      "col": 3,
+      "kind": "Lemon",
+      "row": 6,
+      "value": 5
+    },
+    {
+      "col": 4,
+      "kind": "BlackPot",
+      "row": 6,
+      "value": 21
+    },
+    {
+      "col": 5,
+      "kind": "Cherry",
+      "row": 6,
+      "value": 18
+    },
+    {
+      "col": 6,
+      "kind": "BlackPot",
+      "row": 6,
+      "value": 21
+    },
+    {
+      "col": 7,
+      "kind": "Lemon",
+      "row": 6,
+      "value": 6
+    },
+    {
+      "col": 8,
+      "kind": "Lemon",
+      "row": 6,
+      "value": 4
+    },
+    {
+      "col": 9,
+      "kind": "Cherry",
+      "row": 6,
+      "value": 15
+    },
+    {
+      "col": 10,
+      "kind": "Lemon",
+      "row": 6,
+      "value": 5
+    },
+    {
+      "col": 0,
+      "kind": "Lemon",
+      "row": 7,
+      "value": 2
+    },
+    {
+      "col": 1,
+      "kind": "BlackPot",
+      "row": 7,
+      "value": 21
+    },
+    {
+      "col": 2,
+      "kind": "Cherry",
+      "row": 7,
+      "value": 15
+    },
+    {
+      "col": 3,
+      "kind": "Lemon",
+      "row": 7,
+      "value": 1
+    },
+    {
+      "col": 4,
+      "kind": "Lemon",
+      "row": 7,
+      "value": 3
+    },
+    {
+      "col": 5,
+      "kind": "BlackPot",
+      "row": 7,
+      "value": 23
+    },
+    {
+      "col": 6,
+      "kind": "Lemon",
+      "row": 7,
+      "value": 4
+    },
+    {
+      "col": 7,
+      "kind": "Lemon",
+      "row": 7,
+      "value": 2
+    },
+    {
+      "col": 8,
+      "kind": "Cherry",
+      "row": 7,
+      "value": 16
+    },
+    {
+      "col": 9,
+      "kind": "BlackPot",
+      "row": 7,
+      "value": 14
+    },
+    {
+      "col": 10,
+      "kind": "Lemon",
+      "row": 7,
+      "value": 2
+    },
+    {
+      "col": 0,
+      "kind": "BlackPot",
+      "row": 8,
+      "value": 17
+    },
+    {
+      "col": 1,
+      "kind": "Cherry",
+      "row": 8,
+      "value": 12
+    },
+    {
+      "col": 2,
+      "kind": "BlackPot",
+      "row": 8,
+      "value": 14
+    },
+    {
+      "col": 3,
+      "kind": "Cherry",
+      "row": 8,
+      "value": 9
+    },
+    {
+      "col": 4,
+      "kind": "Lemon",
+      "row": 8,
+      "value": 4
+    },
+    {
+      "col": 5,
+      "kind": "Cherry",
+      "row": 8,
+      "value": 20
+    },
+    {
+      "col": 6,
+      "kind": "Lemon",
+      "row": 8,
+      "value": 3
+    },
+    {
+      "col": 7,
+      "kind": "Cherry",
+      "row": 8,
+      "value": 10
+    },
+    {
+      "col": 8,
+      "kind": "BlackPot",
+      "row": 8,
+      "value": 13
+    },
+    {
+      "col": 9,
+      "kind": "Cherry",
+      "row": 8,
+      "value": 11
+    },
+    {
+      "col": 10,
+      "kind": "BlackPot",
+      "row": 8,
+      "value": 19
+    },
+    {
+      "col": 1,
+      "kind": "Lemon",
+      "row": 9,
+      "value": 1
+    },
+    {
+      "col": 2,
+      "kind": "Cherry",
+      "row": 9,
+      "value": 11
+    },
+    {
+      "col": 3,
+      "kind": "BlackPot",
+      "row": 9,
+      "value": 13
+    },
+    {
+      "col": 4,
+      "kind": "Cherry",
+      "row": 9,
+      "value": 8
+    },
+    {
+      "col": 5,
+      "kind": "Lemon",
+      "row": 9,
+      "value": 2
+    },
+    {
+      "col": 6,
+      "kind": "Cherry",
+      "row": 9,
+      "value": 9
+    },
+    {
+      "col": 7,
+      "kind": "BlackPot",
+      "row": 9,
+      "value": 17
+    },
+    {
+      "col": 8,
+      "kind": "Cherry",
+      "row": 9,
+      "value": 12
+    },
+    {
+      "col": 9,
+      "kind": "Lemon",
+      "row": 9,
+      "value": 1
+    },
+    {
+      "col": 2,
+      "kind": "BlackPot",
+      "row": 10,
+      "value": 17
+    },
+    {
+      "col": 3,
+      "kind": "Cherry",
+      "row": 10,
+      "value": 7
+    },
+    {
+      "col": 4,
+      "kind": "Lemon",
+      "row": 10,
+      "value": 5
+    },
+    {
+      "col": 5,
+      "kind": "Cherry",
+      "row": 10,
+      "value": 7
+    },
+    {
+      "col": 6,
+      "kind": "Lemon",
+      "row": 10,
+      "value": 3
+    },
+    {
+      "col": 7,
+      "kind": "Cherry",
+      "row": 10,
+      "value": 8
+    },
+    {
+      "col": 8,
+      "kind": "BlackPot",
+      "row": 10,
+      "value": 19
+    }
+  ]
+}
