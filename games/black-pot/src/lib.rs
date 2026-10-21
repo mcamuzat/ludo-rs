@@ -2,3 +2,4 @@
 //! Rules and their sources: RULES.md.
 
 pub mod board;
+pub mod calc;
