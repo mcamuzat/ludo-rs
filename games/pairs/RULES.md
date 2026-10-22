@@ -931,3 +931,41 @@ Source : **[C]** fiche mensuelle Cheapass 2018 n° 4, *The Cave*.
 1. ❓ Le premier donneur est tiré au sort.
 2. ❓ Une carte posée dans une grotte vide n'y capture rien.
 3. ❓ Égalité en tête : victoire partagée.
+
+## Pickup (`pairs-pickup`, 2 à 6 joueurs)
+
+Source : **[P]** fiche mensuelle Cheapass 2018 n° 11, *Pickup*.
+
+### Mise en place [P]
+- On donne 7, 6 ou 5 cartes pour 2, 3–4 ou 5–6 joueurs.
+
+### Tour [P]
+- 5 cartes de la pioche forment la réserve, face visible.
+- Chacun choisit en secret une carte de sa main, puis on révèle.
+- Les cartes agissent de la plus basse à la plus haute. À égalité, le joueur
+  le plus proche à gauche de celui qui a agi en dernier passe d'abord (au
+  premier coup d'un tour, à gauche du dernier à avoir agi au tour
+  précédent ; au tout premier coup, à gauche du donneur).
+- **Prise** : on prend une carte de la réserve de rang inférieur ou égal à
+  la sienne et on la garde dans sa pile ; la carte jouée est défaussée.
+  Toutes les cartes de ce rang chez les autres joueurs et dans la réserve
+  sont défaussées.
+- **Empilement** : rien de prenable (ou réserve vide) : la carte jouée va
+  dans sa propre pile, sans rien éliminer.
+- Fin du tour : le reste de la réserve est défaussé, une nouvelle est
+  donnée.
+
+### Fin [P]
+- La donne finit quand les mains sont vides ; chaque carte d'une pile vaut
+  sa valeur. Partie courte : une donne. Partie longue (option du lobby) :
+  on redonne jusqu'à 150, 100 ou 75 points à 2, 3–4 ou 5–6 joueurs.
+
+### Choix sur les points non tranchés
+1. ❓ Le joueur choisit la carte prise à son rang d'action ; s'il n'y a
+   qu'un rang prenable, le moteur la prend sans demander.
+2. ❓ Pioche trop courte : la réserve prend ce qui reste.
+3. ❓ Partie longue : elle s'arrête à la fin de la donne où quelqu'un atteint
+   la cible, le plus haut total gagne ; garde-fou de 30 donnes. La donne
+   passe à gauche.
+4. ❓ Le premier donneur est tiré au sort ; égalité en tête : victoire
+   partagée.
