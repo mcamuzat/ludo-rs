@@ -11,6 +11,7 @@ interface Props {
   name: string;
   onName(name: string): void;
   onPick(game: GameMeta): void;
+  onRiddles(): void;
   onJoin(code: string): void;
   saved: SavedHost | null;
   onResume(): void;
@@ -27,7 +28,7 @@ const SHELVES: { title: string; families: GameFamily[] }[] = [
   { title: "Jeux d'échange", families: ["trade"] },
 ];
 
-export function Home({ catalog, error, name, onName, onPick, onJoin, saved, onResume, onAbandon }: Props) {
+export function Home({ catalog, error, name, onName, onPick, onRiddles, onJoin, saved, onResume, onAbandon }: Props) {
   const [code, setCode] = useState("");
   const games = (catalog ?? [])
     .flatMap((meta) => {
@@ -107,6 +108,23 @@ export function Home({ catalog, error, name, onName, onPick, onJoin, saved, onRe
           </section>
         );
       })}
+      {catalog && (
+        <section className="family">
+          <div className="family-head">
+            <h2>Énigmes</h2>
+            <span>entraînement</span>
+          </div>
+          <ul className="games">
+            <li>
+              <button className="game" onClick={onRiddles}>
+                <Emblem family="modern" name="Cryptide" />
+                <strong>Cryptide</strong>
+                <small>Trouve l'habitat à la place d'une IA</small>
+              </button>
+            </li>
+          </ul>
+        </section>
+      )}
     </main>
   );
 }

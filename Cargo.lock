@@ -303,6 +303,7 @@ name = "ludo-wasm"
 version = "0.1.0"
 dependencies = [
  "console_error_panic_hook",
+ "cryptide",
  "getrandom 0.2.17",
  "getrandom 0.4.3",
  "js-sys",

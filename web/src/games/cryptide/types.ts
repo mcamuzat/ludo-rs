@@ -67,6 +67,22 @@ export interface CryptideView {
   reveal: Reveal | null;
 }
 
+/** A table of AIs stopped once `solver` knows the habitat (riddle.rs). */
+export interface Riddle {
+  players: number;
+  mode: Mode;
+  squares: Square[];
+  tokens: Tokens[];
+  log: CryptideEvent[];
+  solver: number;
+  hint: Hint;
+  habitat: Cell;
+  hints: Hint[];
+  /** What the solver can tell of each other seat's hint. */
+  deduction: Hint[][];
+  mode_hints: Hint[];
+}
+
 export type CryptideAction =
   | { Cube: Cell }
   | { Ask: { cell: Cell; target: number } }

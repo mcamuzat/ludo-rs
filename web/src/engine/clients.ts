@@ -40,6 +40,11 @@ export class EngineClient {
     return this.rpc.call<unknown | null>({ kind: "timeoutAction", seat });
   }
 
+  /** A Cryptide riddle (games/cryptide/src/riddle.rs); needs no match. */
+  cryptideRiddle<T>(mode: string, players: number, seed: number) {
+    return this.rpc.call<T>({ kind: "cryptideRiddle", mode, players, seed });
+  }
+
   dispose() {
     this.rpc.dispose();
   }

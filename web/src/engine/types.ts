@@ -73,7 +73,8 @@ export type EngineRequest =
   | { kind: "snapshot"; viewers: (Seat | null)[] }
   | { kind: "exportState" }
   | { kind: "exportLog" }
-  | { kind: "timeoutAction"; seat: Seat };
+  | { kind: "timeoutAction"; seat: Seat }
+  | { kind: "cryptideRiddle"; mode: string; players: number; seed: number };
 
 export interface AiRequest {
   gameId: string;

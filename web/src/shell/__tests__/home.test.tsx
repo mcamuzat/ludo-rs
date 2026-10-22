@@ -30,6 +30,7 @@ function home(): string {
       name="Ana"
       onName={noop}
       onPick={noop}
+      onRiddles={noop}
       onJoin={noop}
       saved={null}
       onResume={noop}
@@ -53,7 +54,13 @@ describe("Home", () => {
       "Président",
       "Pennywise",
       "Monad",
+      // The riddles shelf, last.
+      "Cryptide",
     ]);
+  });
+
+  it("offers the Cryptide riddles", () => {
+    expect(home()).toContain("Énigmes");
   });
 
   it("shows a rules reminder only when there are rules", () => {

@@ -7,6 +7,7 @@ mod determinize;
 mod heuristics;
 pub mod knowledge;
 pub mod map;
+mod riddle;
 mod rules;
 pub mod testing;
 mod view;
@@ -17,5 +18,6 @@ pub use map::{
     distance, random_layout, within, Animal, Board, Cell, Color, Kind, Layout, Mask, Square,
     Structure, Terrain, CELLS,
 };
+pub use riddle::{riddle, Riddle};
 pub use rules::{Action, Answer, Config, Cryptide, Event, Phase, State, TableCache, Tokens, Why};
 pub use view::{Reveal, View};

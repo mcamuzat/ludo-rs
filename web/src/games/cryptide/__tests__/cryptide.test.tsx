@@ -3,8 +3,9 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { CryptideBoard, TurnControls, actionsAt, describeEvent, place } from "../Board";
 import { HintHelp } from "../HintHelp";
+import { RiddleBoard } from "../Riddle";
 import { hintLabel } from "../hints";
-import type { Clue, CryptideAction, CryptideView, Hint, Terrain } from "../types";
+import type { Clue, CryptideAction, CryptideView, Hint, Riddle, Terrain } from "../types";
 
 type AnyElement = ReactElement<Record<string, unknown>>;
 
@@ -143,5 +144,58 @@ describe("Cryptide board", () => {
     expect(html).toContain("Hugo : L'habitat se trouve dans, ou à 1 case d'un Désert.");
     expect(html).toContain("L'habitat était en ligne 3, colonne 7.");
     expect(html).toContain("Ana a trouvé l'habitat !");
+  });
+
+  describe("riddles", () => {
+    const RIDDLE: Riddle = {
+      players: 3,
+      mode: "Normal",
+      squares: VIEW.squares,
+      tokens: VIEW.tokens,
+      log: [{ type: "Asked", by: 2, target: 0, cell: 6 }],
+      solver: 1,
+      hint: NORMAL[11],
+      habitat: 30,
+      hints: [NORMAL[0], NORMAL[11], NORMAL[20]],
+      deduction: [[NORMAL[0], NORMAL[3]], [], [NORMAL[20]]],
+      mode_hints: NORMAL,
+    };
+    const board = (misses: number[], solved: "found" | "shown" | null) =>
+      hostElements(
+        <RiddleBoard riddle={RIDDLE} misses={misses} solved={solved} onGuess={() => {}} onGiveUp={() => {}} />,
+      );
+    const html = (misses: number[], solved: "found" | "shown" | null) =>
+      renderToStaticMarkup(
+        <RiddleBoard riddle={RIDDLE} misses={misses} solved={solved} onGuess={() => {}} onGiveUp={() => {}} />,
+      ).replaceAll("&#x27;", "'");
+
+    it("gives the solver's clue and keeps the others hidden", () => {
+      const page = html([], null);
+      expect(page).toContain("Hugo (IA)</strong> sait où se trouve l'habitat");
+      expect(page).toContain("Indice de Hugo (IA) :</strong> L'habitat se trouve dans, ou à 1 case d'un Désert.");
+      expect(page).not.toContain("pouvait déduire");
+      expect(page).not.toContain("habitat est en");
+      expect(page).toContain("Lina (IA) demande à Margot (IA)");
+    });
+
+    it("lets every space without a cube or a miss be guessed", () => {
+      const map = board([12], null).find((el) => el.type === "svg");
+      expect(map).toBeDefined();
+      const spaces = hostElements(map).filter((el) => el.props["data-cell"] !== undefined);
+      const clickable = spaces.filter((el) => el.props.onClick).map((el) => el.props["data-cell"]);
+      expect(clickable).toHaveLength(106);
+      expect(clickable).not.toContain(5);
+      expect(clickable).not.toContain(12);
+      expect(html([12], null)).toContain("Raté : 1 essai");
+    });
+
+    it("shows the answer and what the solver could tell of the others", () => {
+      const page = html([12], "found");
+      expect(page).toContain("Trouvé en 2 essais !");
+      expect(page).toContain("L'habitat est en ligne 3, colonne 7.");
+      expect(page).toContain("Margot (IA) : un indice parmi 2");
+      expect(page).toContain("Lina (IA) : un seul indice possible");
+      expect(page).toContain(`<li class="true">${hintLabel(NORMAL[20])}</li>`);
+    });
   });
 });

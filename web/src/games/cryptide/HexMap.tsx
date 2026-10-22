@@ -95,10 +95,12 @@ export interface HexMapProps {
   selected: Cell | null;
   focus: Cell | null;
   habitat: Cell | null;
+  /** Wrong guesses, crossed out (riddles). */
+  misses?: Cell[];
   onPick(cell: Cell): void;
 }
 
-export function HexMap({ squares, tokens, playable, selected, focus, habitat, onPick }: HexMapProps) {
+export function HexMap({ squares, tokens, playable, selected, focus, habitat, misses = [], onPick }: HexMapProps) {
   const width = R * 2 + (COLS - 1) * 1.5 * R;
   const height = SQRT3 * R * ROWS + (SQRT3 / 2) * R;
   return (
@@ -121,6 +123,12 @@ export function HexMap({ squares, tokens, playable, selected, focus, habitat, on
             )}
             {sq.structure && structure(sq.structure[0], sq.structure[1], x, y)}
             {tokensAt(tokens[cell], x, y)}
+            {misses.includes(cell) && (
+              <path
+                className="cr-miss"
+                d={`M${x - R * 0.45},${y - R * 0.45} L${x + R * 0.45},${y + R * 0.45} M${x + R * 0.45},${y - R * 0.45} L${x - R * 0.45},${y + R * 0.45}`}
+              />
+            )}
           </g>
         );
       })}

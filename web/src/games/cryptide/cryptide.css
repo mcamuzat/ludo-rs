@@ -23,3 +23,8 @@
 .cr-help ul { margin: 0; padding-left: 1.2em; font-size: 0.9rem; }
 .cr-help-note { margin: 6px 0 0; font-size: 0.85rem; }
 .cr-log { width: 100%; max-width: 720px; margin: 0; padding-left: 1.6em; font-size: 0.85rem; box-sizing: border-box; }
+.cr-miss { stroke: #fff; stroke-width: 3.5; stroke-linecap: round; pointer-events: none; filter: drop-shadow(0 0 1px #000); }
+.cr-reveal h4 { margin: 12px 0 4px; }
+.cr-reveal > ul > li { margin-top: 6px; }
+.cr-deduction { list-style: disc; padding-left: 2.2em !important; font-size: 0.9rem; color: var(--muted); }
+.cr-deduction li.true { color: var(--fg); font-weight: 700; }

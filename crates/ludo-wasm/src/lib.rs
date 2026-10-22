@@ -163,3 +163,17 @@ pub fn visible_pending(handle: u32, seat: Option<u8>) -> Result<Vec<u8>, JsError
 pub fn timeout_action(handle: u32, seat: u8) -> Result<String, JsError> {
     with_match(handle, |m| Ok(text(&m.timeout_action_json(Seat(seat)))))
 }
+
+/// A Cryptide riddle (`cryptide::riddle`): a table of AIs stopped as soon
+/// as one of them knows the habitat.
+#[wasm_bindgen(js_name = cryptideRiddle)]
+pub fn cryptide_riddle(mode: &str, players: u8, seed: u32) -> Result<String, JsError> {
+    let mode: cryptide::Mode = serde_json::from_value(Value::from(mode))
+        .map_err(|_| JsError::new(&format!("Mode inconnu : {mode}.")))?;
+    if !(3..=5).contains(&players) {
+        return Err(JsError::new("Une énigme se joue à 3, 4 ou 5."));
+    }
+    let riddle = cryptide::riddle(mode, players, seed.into())
+        .ok_or_else(|| JsError::new("Aucune énigme trouvée pour cette graine."))?;
+    Ok(text(&riddle))
+}

@@ -10,8 +10,13 @@ import { clearHost, loadHost, loadName, saveName } from "./session/storage";
 import { Home } from "./shell/Home";
 import { Lobby, type SeatChoice } from "./shell/Lobby";
 import { TableScreen } from "./shell/TableScreen";
+import { CryptideRiddles } from "./games/cryptide/Riddle";
 
-type Screen = { name: "home" } | { name: "lobby"; game: GameMeta } | { name: "table"; session: Session };
+type Screen =
+  | { name: "home" }
+  | { name: "lobby"; game: GameMeta }
+  | { name: "table"; session: Session }
+  | { name: "riddles" };
 
 function hostChoice(choice: SeatChoice): HostChoice {
   return choice === "open" || choice === "local" ? { kind: "open" } : { kind: "ai", level: choice };
@@ -55,6 +60,7 @@ export function App() {
             saveName(n);
           }}
           onPick={(game) => setScreen({ name: "lobby", game })}
+          onRiddles={() => setScreen({ name: "riddles" })}
           onJoin={(code) => open(new GuestSession(code, name))}
           saved={saved}
           onResume={() => saved && open(HostSession.resume(saved))}
@@ -77,5 +83,7 @@ export function App() {
       );
     case "table":
       return <TableScreen session={screen.session} games={catalog ?? []} onLeave={home} />;
+    case "riddles":
+      return <CryptideRiddles onBack={home} />;
   }
 }

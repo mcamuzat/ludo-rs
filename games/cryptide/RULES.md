@@ -103,3 +103,20 @@ Moyen suit Cryptid-Bot [B] ; Difficile ajoute les garanties du générateur ;
 Facile raisonne joueur par joueur. L'IA ne fouille pas pendant le premier
 tour de table : sinon, à 3 joueurs, elle gagnait souvent avant que les
 autres aient joué [U]. Un joueur humain le peut.
+
+## Énigmes (entraînement) [U 2026-10-22]
+Hors de la règle : un écran d'entraînement, `riddle.rs`.
+- Une table d'IA Difficile (3 à 5 sièges, mode normal ou avancé) joue une
+  partie normale.
+- Après chaque coup, hors partage initial, le moteur cherche un siège qui
+  sait où est l'habitat : toutes les combinaisons d'indices distincts qui
+  s'accordent aux jetons, avec son propre indice, désignent la même case
+  unique (le raisonnement de [B], sans les garanties du générateur). Le
+  premier trouvé, depuis le siège qui a la main, est le « résolveur ».
+- La partie s'arrête là. Le joueur voit la carte, tous les jetons, le
+  déroulement et l'indice du résolveur seulement ; il clique sur une case
+  sans cube. Il peut se tromper autant qu'il veut ou demander la solution.
+- Avec la solution : la case, et pour chaque autre siège les indices que le
+  résolveur pouvait encore lui prêter (le vrai en gras).
+- Une partie finie par une fouille avant que quiconque sache est rejetée ;
+  on essaie la graine suivante (32 au plus).
