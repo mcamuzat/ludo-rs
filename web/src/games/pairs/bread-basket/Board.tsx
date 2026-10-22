@@ -26,7 +26,7 @@ export function describeBreadBasketEvent(e: BreadBasketEvent, all: string[]): st
         .map(num)
         .join(", ")} (${signed(e.points)}).`;
     case "Air":
-      return `${all[e.seat]} fait un sandwich d'air de ${e.card === -5 ? "Oignons" : e.card} et doit piocher.`;
+      return `${all[e.seat]} fait un sandwich d'air ${e.card === -5 ? "d'Oignons" : `de ${e.card}`} et doit piocher.`;
     case "Drew":
       return `${all[e.seat]} pioche.`;
     case "LineStarted":

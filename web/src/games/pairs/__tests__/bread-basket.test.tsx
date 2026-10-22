@@ -57,6 +57,7 @@ function board(view: BreadBasketView, legal: BreadBasketAction[], me: number | n
 }
 
 describe("Bread Basket board", () => {
+
   it("submits exactly the legal actions, one per control", () => {
     const sent: unknown[] = [];
     hostElements(board(PLAY, LEGAL, 0, (a) => sent.push(a)))
@@ -98,6 +99,7 @@ describe("Bread Basket board", () => {
       "Ana fait un sandwich au 9 : 8, 6 (+14).",
     );
     expect(say({ type: "Air", seat: 1, card: 7 })).toBe("Hugo fait un sandwich d'air de 7 et doit piocher.");
+    expect(say({ type: "Air", seat: 0, card: -5 })).toBe("Ana fait un sandwich d'air d'Oignons et doit piocher.");
     expect(say({ type: "WentOut", seat: 2 })).toBe("Cléo n'a plus de cartes : un dernier tour pour les autres.");
     expect(
       say({ type: "HandOver", end: "DeckEmpty", gained: [14, 0, -5], penalties: [3, 0, 10], scores: [11, 0, -15] }),
