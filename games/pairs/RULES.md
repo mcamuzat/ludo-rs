@@ -969,3 +969,46 @@ Source : **[P]** fiche mensuelle Cheapass 2018 n° 11, *Pickup*.
    passe à gauche.
 4. ❓ Le premier donneur est tiré au sort ; égalité en tête : victoire
    partagée.
+
+## Market Day (`pairs-market-day`, 2 à 8 joueurs)
+
+Source : **[M]** fiche mensuelle Cheapass 2018 n° 6, *Market Day*.
+
+### Mise en place [M]
+- 6 cartes chacun ; à 2 ou 3 joueurs, 10 cartes, et chacun pose deux cartes
+  par tour (on fait deux fois le tour de table).
+
+### Tour [M]
+- Chacun pose une carte face visible, à tour de rôle. Au premier tour de la
+  main, le joueur à gauche du donneur commence ; ensuite celui qui a le plus
+  marqué au tour précédent (égalité : le même meneur).
+- Chaque carte vaut son rang. Un rang posé plusieurs fois : seul le dernier
+  marque, les précédents sont gâchés.
+- **1 Bricoleur** : en fin de tour, il peut échanger sa place avec une autre
+  carte.
+- **2 Chevalier** : avant le compte, il tue la carte qui marque le plus ;
+  jamais un rang 3 ou moins. Un second Chevalier ne gâche pas le premier,
+  chacun tue une carte.
+- **3 Royal** : jamais échangé, tué ni gâché ; il marque toujours.
+- **7 Pluie** : une Pluie seule gâche tout sauf les Royaux (1 et 2 compris)
+  et marque elle-même ; plusieurs Pluies sont des 7 ordinaires.
+- **9 Bandit** : le premier Bandit marque, les suivants sont gâchés.
+- Ordre : retirer les cartes gâchées, puis Royaux, Pluie, Chevaliers,
+  Bricoleur.
+
+### Fin [M]
+- La main finit quand toutes les cartes sont posées. La partie compte six
+  mains, ou une par joueur s'ils sont plus de six ; la donne passe à
+  gauche. Le plus haut total gagne.
+
+### Choix sur les points non tranchés
+1. ❓ Bricoleur (lecture validée par l'utilisateur) : son joueur peut
+   échanger son 1 avec la carte d'un autre joueur qui marque encore, sauf un
+   Royal ; chacun marque la carte reçue. Il peut aussi garder. Un Bricoleur
+   gâché (doublon, Pluie) n'agit pas.
+2. ❓ Les Chevaliers tuent l'un après l'autre, dans l'ordre de pose, la
+   carte de plus haut rang (4 ou plus) qui marque encore ; à rang égal, la
+   dernière posée.
+3. ❓ À 2–3 joueurs, le meneur pose sa première carte, puis tout le tour de
+   table, puis sa seconde, etc. ; « le plus marqué » compte les deux cartes.
+4. ❓ Premier donneur tiré au sort ; égalité en tête : victoire partagée.
