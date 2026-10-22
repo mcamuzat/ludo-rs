@@ -4,6 +4,8 @@ import { BantuBoard } from "./bantu/Board";
 import { BANTU_RULES } from "./bantu/rules";
 import { BlackPotBoard } from "./black-pot/Board";
 import { BLACK_POT_RULES } from "./black-pot/rules";
+import { ManoeverBoard } from "./manoever/Board";
+import { MANOEVER_RULES } from "./manoever/rules";
 import { PresidentBoard } from "./cards/president/Board";
 import { PRESIDENT_RULES } from "./cards/president/rules";
 import type { ComponentType } from "react";
@@ -91,6 +93,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "yavalath", family: "board", Board: YavalathBoard },
   { id: "bantu", family: "board", Board: BantuBoard, rules: BANTU_RULES },
   { id: "black-pot", family: "board", Board: BlackPotBoard, rules: BLACK_POT_RULES },
+  { id: "manoever", family: "board", Board: ManoeverBoard, rules: MANOEVER_RULES },
   { id: "riichi", family: "tiles", Board: RiichiBoard, hidden: true },
   { id: "pairs-continuous", family: "pairs", Board: ContinuousBoard, rules: CONTINUOUS_RULES },
   { id: "pairs-auberge", family: "pairs", Board: AubergeBoard, rules: AUBERGE_RULES },

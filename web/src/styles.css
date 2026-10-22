@@ -160,6 +160,28 @@ label { color: var(--muted); font-size: 0.85rem; font-weight: 500; }
 .last-move { fill: var(--brass); }
 
 /* Bantu */
+.manoever { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.manoever-board { width: min(100%, 620px); height: auto; border-radius: 18px; }
+.manoever-track { fill: none; stroke: #6fbf5a; stroke-width: 84; stroke-linecap: round; stroke-linejoin: round; opacity: 0.55; }
+.manoever-cell { fill: #f4c9c4; stroke: #c9473c; stroke-width: 3; }
+.manoever-cell.end { fill: #fbf0b8; stroke: #d7b22c; }
+.manoever-cell.last { stroke: var(--brass); stroke-width: 6; }
+.manoever-cell.target { fill: #fff3c4; stroke: var(--brass); stroke-width: 7; cursor: pointer; }
+.manoever-cell-number { font: 700 15px var(--f-display); fill: #7a2a22; pointer-events: none; paint-order: stroke; stroke: #fff8f0; stroke-width: 3px; }
+.manoever-barracks { fill: #f0a63a; stroke: #e0c341; stroke-width: 3; }
+.manoever-barracks.target { stroke: var(--brass); stroke-width: 7; cursor: pointer; }
+.manoever-place rect { fill: #d8463c; stroke: #e8cf4a; stroke-width: 2; }
+.manoever-roman { font: 800 24px var(--f-display); fill: #4a2a20; pointer-events: none; }
+.manoever-disc.black { fill: #1b1b1b; stroke: #000; stroke-width: 2; }
+.manoever-disc.white { fill: #fafafa; stroke: #888; stroke-width: 2; }
+.manoever-gray circle { fill: #9a9a9a; stroke: #555; stroke-width: 2; }
+.manoever-gray text { font: 800 18px var(--f-display); fill: #fff; }
+.soldier-disc { stroke: #1f1a17; stroke-width: 2; }
+.soldier-disc.selected { stroke: var(--brass); stroke-width: 6; }
+.soldier.movable { cursor: pointer; }
+.soldier.movable .soldier-disc { stroke: #fff; stroke-width: 4; }
+.soldier.movable .soldier-disc.selected { stroke: var(--brass); stroke-width: 6; }
+.soldier-number { font: 800 20px var(--f-display); fill: #fff; pointer-events: none; paint-order: stroke; stroke: #1f1a17; stroke-width: 2px; }
 .bantu { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .bantu-board { width: min(100%, 680px); height: auto; border-radius: 18px; }
 .bantu-disc { fill: #8f4a1c; }
