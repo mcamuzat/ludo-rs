@@ -174,3 +174,11 @@ export const THE_CAVE_RULES = [
   "Quand les mains sont vides : pour chaque rang, qui en a capturé le plus marque 1 point par carte de ce rang (égalité : chacun marque).",
   "Une manche par joueur, la donne passe à gauche.",
 ];
+
+export const PICKUP_RULES = [
+  "On reçoit 7, 6 ou 5 cartes à 2, 3–4 ou 5–6 joueurs. À chaque tour, 5 cartes forment la réserve.",
+  "Chacun joue une carte face cachée, puis on révèle. Les cartes agissent de la plus basse à la plus haute (égalité : à gauche de celui qui a agi en dernier).",
+  "Agir : prends dans la réserve une carte de rang inférieur ou égal ; ta carte est défaussée. Toutes les cartes de ce rang chez les autres et dans la réserve sont éliminées.",
+  "Rien à prendre : ta carte va dans ta pile, sans rien éliminer.",
+  "Quand les mains sont vides, chaque carte de ta pile vaut sa valeur. Partie longue (lobby) : jusqu'à 150, 100 ou 75 points.",
+];

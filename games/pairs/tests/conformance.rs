@@ -227,3 +227,19 @@ fn the_cave_conforms_at_every_table_size() {
         check::<TheCave>(&Config::default(), players, 30, 2100 + u64::from(players));
     }
 }
+
+#[test]
+fn pickup_conforms_at_every_table_size() {
+    use pairs::pickup::{Config, Length, Pickup};
+    for players in 2..=6u8 {
+        check::<Pickup>(&Config::default(), players, 30, 2200 + u64::from(players));
+    }
+    check::<Pickup>(
+        &Config {
+            length: Length::Target,
+        },
+        3,
+        10,
+        2211,
+    );
+}

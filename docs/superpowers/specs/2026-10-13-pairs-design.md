@@ -1067,7 +1067,11 @@ Choix secret : la carte qui rapporte le plus en estimant ce que les plus
 basses prendront avant elle ; prise : la plus forte carte prenable, en
 préférant un rang qui élimine des cartes chez le meneur. Déterminisation :
 les cartes choisies par les autres et non révélées sont oubliées, mains et
-pioche redistribuées.
+pioche redistribuées. Réalisé : chaque carte est notée par sa meilleure prise (sa
+valeur plus celle des cartes qu'elle élimine chez les autres), ou sa propre
+valeur si elle s'empile, moins 0,6 × sa valeur (la dépenser coûte) ; la
+prise suit la même note. Mesuré : Difficile contre Facile 0,667 à 2
+joueurs, 0,633 à 4 (200 parties ; 0,700 et 0,555 avec un coût de 0,3).
 
 ## 32. Market Day (plan 22)
 
