@@ -182,3 +182,12 @@ export const PICKUP_RULES = [
   "Rien à prendre : ta carte va dans ta pile, sans rien éliminer.",
   "Quand les mains sont vides, chaque carte de ta pile vaut sa valeur. Partie longue (lobby) : jusqu'à 150, 100 ou 75 points.",
 ];
+
+export const MARKET_DAY_RULES = [
+  "6 cartes chacun ; à 2 ou 3 joueurs, 10 cartes et deux cartes par tour (deux tours de table).",
+  "Chacun pose une carte face visible à tour de rôle. Chaque carte vaut son rang ; un rang posé plusieurs fois : seul le dernier marque.",
+  "1 Bricoleur : en fin de tour, peut échanger sa place avec une carte d'un autre qui marque (pas un Royal). 2 Chevalier : tue la carte qui marque le plus (rang 4 ou plus). 3 Royal : marque toujours.",
+  "7 Pluie : seule, elle gâche tout sauf les Royaux et marque elle-même ; plusieurs Pluies sont des 7 ordinaires. 9 Bandit : c'est le premier qui marque.",
+  "Ordre : cartes gâchées, Royaux, Pluie, Chevaliers, Bricoleur. Le meilleur du tour mène le suivant.",
+  "Six mains, ou une par joueur s'ils sont plus de six. Le plus haut total gagne.",
+];

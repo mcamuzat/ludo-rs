@@ -30,6 +30,7 @@ ludo-rs : plateforme de jeux traditionnels. Moteur Rust (`crates/ludo-core`, `ga
 - `cargo run --release -p ludo-cli -- arena pairs-bread-basket 200 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.995 mesuré à 2 joueurs, 0.931 à 4).
 - `cargo run --release -p ludo-cli -- arena pairs-the-cave 200 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.818 mesuré à 2 joueurs, 0.692 à 4).
 - `cargo run --release -p ludo-cli -- arena pairs-pickup 200 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.667 mesuré à 2 joueurs, 0.633 à 4).
+- `cargo run --release -p ludo-cli -- arena pairs-market-day 200 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.935 mesuré à 2 joueurs, 0.718 à 4).
 - `cargo run --release -p ludo-cli -- arena cards-president 200 hard easy 4` : Difficile doit marquer ≥ 0.55 contre Facile (0.87 mesuré ; 0.85 avec `--config '{"revolution":true,"jokers":"Wild"}'`).
 - `cargo run --release -p ludo-cli -- arena cards-collusion 200 hard easy 4` : Difficile doit marquer ≥ 0.55 contre Facile (0.70 mesuré ; ~140 s pour 200 parties).
 - `cargo run --release -p ludo-cli -- arena bantu 200 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.95 mesuré à 2 joueurs ; 0.89 à 4 joueurs sur 60 parties, `arena bantu 60 hard easy 4`, une partie à 4 durant ~440 coups). Plateau : `scripts/bantu-board.py <règle.pdf> <dossier>` régénère `games/bantu/src/board_data.rs` depuis le PDF (hors dépôt), puis `UPDATE_BOARD_JSON=1 cargo test -p bantu` met à jour `web/src/games/bantu/board.json`.

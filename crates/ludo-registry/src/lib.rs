@@ -27,6 +27,7 @@ static PAIRS_THE_JUDGE: GameEntry<pairs::TheJudge> = GameEntry::new();
 static PAIRS_BREAD_BASKET: GameEntry<pairs::BreadBasket> = GameEntry::new();
 static PAIRS_THE_CAVE: GameEntry<pairs::TheCave> = GameEntry::new();
 static PAIRS_PICKUP: GameEntry<pairs::Pickup> = GameEntry::new();
+static PAIRS_MARKET_DAY: GameEntry<pairs::MarketDay> = GameEntry::new();
 static CARDS_PRESIDENT: GameEntry<cards::President> = GameEntry::new();
 static CARDS_COLLUSION: GameEntry<cards::Collusion> = GameEntry::new();
 static PENNYWISE: GameEntry<pennywise::Pennywise> = GameEntry::new();
@@ -64,6 +65,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &PAIRS_BREAD_BASKET,
     &PAIRS_THE_CAVE,
     &PAIRS_PICKUP,
+    &PAIRS_MARKET_DAY,
     &CARDS_PRESIDENT,
     &CARDS_COLLUSION,
     &PENNYWISE,

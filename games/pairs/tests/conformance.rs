@@ -243,3 +243,11 @@ fn pickup_conforms_at_every_table_size() {
         2211,
     );
 }
+
+#[test]
+fn market_day_conforms_at_every_table_size() {
+    use pairs::market_day::{Config, MarketDay};
+    for players in 2..=8u8 {
+        check::<MarketDay>(&Config::default(), players, 20, 2300 + u64::from(players));
+    }
+}

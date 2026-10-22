@@ -3,6 +3,8 @@
 //! bend the rules. Rules and their sources: RULES.md, where [M] is the
 //! monthly sheet.
 
+mod determinize;
+mod heuristics;
 pub mod testing;
 mod view;
 

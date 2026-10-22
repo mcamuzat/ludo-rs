@@ -86,3 +86,6 @@
   .pendleton-side { min-height: 80px; }
   .pendleton-target .pairs-card { width: 38px; height: 54px; font-size: 1.25rem; }
 }
+/* Market Day : chaque carte du marché porte le nom de qui l'a posée. */
+.md-stall { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+.md-stall small { color: var(--table-muted); font-size: 0.75rem; }
