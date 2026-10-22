@@ -903,3 +903,31 @@ Ernest), 29/10/2025. Elle remplace la fiche mensuelle *Lunch Rush* (Cheapass
 4. ❓ Égalité en tête en fin de partie : victoire partagée.
 5. La permission de défausser les cartes qui s'annulent (un Oignon contre
    5 points) ne sert qu'à la table : le site fait le compte.
+
+## The Cave (`pairs-the-cave`, 2 à 6 joueurs)
+
+Source : **[C]** fiche mensuelle Cheapass 2018 n° 4, *The Cave*.
+
+### Mise en place [C]
+- On donne 7, 6, 5, 5 ou 4 cartes pour 2, 3, 4, 5 ou 6 joueurs, puis 5
+  cartes face visible au centre : la grotte.
+- Le joueur à gauche du donneur commence ; on joue dans le sens horaire.
+
+### Tour [C]
+- On pose une carte de sa main. S'il y a plus bas dans la grotte, elle
+  capture toutes les cartes du rang le plus proche en dessous (grotte
+  4-7-7-8-9 et un 8 : les deux 7). Sinon, elle capture toutes les cartes du
+  rang le plus haut, même s'il est égal au sien.
+- La carte posée entre dans la grotte, que la pioche complète à 5 cartes.
+  Pioche vide : la grotte n'est plus complétée et le jeu continue.
+
+### Fin de manche et partie [C]
+- La manche finit quand toutes les mains sont vides. Pour chaque rang, le ou
+  les joueurs qui en ont capturé le plus marquent 1 point par carte de ce
+  rang ; les autres ne marquent rien pour ce rang.
+- Une manche par joueur, la donne passe à gauche ; le plus haut total gagne.
+
+### Choix sur les points non tranchés
+1. ❓ Le premier donneur est tiré au sort.
+2. ❓ Une carte posée dans une grotte vide n'y capture rien.
+3. ❓ Égalité en tête : victoire partagée.
