@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Le tapis de la table, cerclé de laiton (thème « Salle de jeux »). -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#2f5f50" stroke="#b07a1c" stroke-width="3"/>
+  <!-- Un dé ivoire, légèrement tourné, sur le cinq. -->
+  <g transform="rotate(-10 32 32)">
+    <rect x="13" y="13" width="38" height="38" rx="8" fill="#fbfaf6" stroke="#1f2421" stroke-opacity=".25" stroke-width="1.5"/>
+    <g fill="#1f2421">
+      <circle cx="22.5" cy="22.5" r="4"/>
+      <circle cx="41.5" cy="22.5" r="4"/>
+      <circle cx="32" cy="32" r="4"/>
+      <circle cx="22.5" cy="41.5" r="4"/>
+      <circle cx="41.5" cy="41.5" r="4"/>
+    </g>
+  </g>
+</svg>
