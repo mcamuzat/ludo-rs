@@ -1,0 +1,13 @@
+[package]
+name = "manoever"
+description = "Das glorreiche Manöver rules for ludo-rs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ludo-core.workspace = true
+rand.workspace = true
+rand_chacha.workspace = true
+serde.workspace = true
+serde_json.workspace = true
