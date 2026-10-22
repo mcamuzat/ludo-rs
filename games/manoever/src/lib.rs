@@ -3,9 +3,11 @@
 //! higher it stands. Rules and their sources: RULES.md.
 
 pub mod board;
+mod moves;
 pub mod testing;
 mod view;
 
+pub use moves::{bonus, destinations, find, height, max_move, position, room, scores, to_move};
 pub use view::View;
 
 use ludo_core::{Determinize, Game, GameMeta, Illegal, Outcome, Pending, Seat, Viewer};
@@ -13,7 +15,7 @@ use rand::{Rng, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 use serde::{Deserialize, Serialize};
 
-use board::{Square, LAST};
+use board::{Square, GRAYS, LAST};
 
 pub struct Manoever;
 
@@ -122,13 +124,85 @@ impl State {
         *waiting -= 1;
         self.stacks[usize::from(square)].push(Soldier { seat, number });
         self.last_roll = Some((seat, square));
-        // The next seat with a soldier waiting; seat 0 opens the march.
-        self.turn = Some(
-            (1..=self.players)
-                .map(|k| Seat((seat.0 + k) % self.players))
-                .find(|s| self.waiting[s.index()] > 0)
-                .unwrap_or(Seat(0)),
-        );
+        // The next seat with a soldier waiting, else the march opens.
+        match (1..=self.players)
+            .map(|k| Seat((seat.0 + k) % self.players))
+            .find(|s| self.waiting[s.index()] > 0)
+        {
+            Some(next) => self.turn = Some(next),
+            // Seat 0 opens the march, or the first after it that can move.
+            None => self.pass_from(Seat(self.players - 1)),
+        }
+    }
+
+    /// Gives the turn to the first seat after `from` (`from` itself last)
+    /// that has a soldier to move; [K] the others pass.
+    fn pass_from(&mut self, from: Seat) {
+        self.moved.clear();
+        let next = (1..=self.players)
+            .map(|k| Seat((from.0 + k) % self.players))
+            .find(|&s| !to_move(self, s).is_empty());
+        match next {
+            Some(seat) => self.turn = Some(seat),
+            // Cannot happen (see RULES.md, « Fin »): kept as a guard.
+            None => self.finish(),
+        }
+    }
+
+    fn finish(&mut self) {
+        self.over = true;
+        self.turn = None;
+    }
+
+    /// Plays a legal move of `soldier` of `seat` to `to`.
+    fn advance(&mut self, seat: Seat, number: u8, to: Dest) {
+        let soldier = Soldier { seat, number };
+        let (from, _) = find(self, soldier).expect("a legal move has its soldier");
+        self.stacks[usize::from(from)].pop();
+        let mut record = MoveRecord {
+            number,
+            from,
+            to,
+            gray: None,
+            place: None,
+        };
+        match to {
+            Dest::Square(sq) => {
+                self.stacks[usize::from(sq)].push(soldier);
+                // [R] The first to land on a gray piece wins it.
+                if let Some(k) = GRAYS.iter().position(|&(g, _)| g == sq) {
+                    if self.grays[k].is_none() {
+                        self.grays[k] = Some(seat);
+                        record.gray = Some(GRAYS[k].1);
+                    }
+                }
+            }
+            Dest::Barracks => record.place = Some(self.house(soldier)),
+        }
+        self.turn_log.push(record);
+        self.moved.push(number);
+        // [R] Once place II is taken, the last soldier goes to place I.
+        if self.barracks.iter().filter(|p| p.is_some()).count() == 11 {
+            if let Some(last) = (1..=LAST).find_map(|sq| self.stacks[usize::from(sq)].pop()) {
+                self.house(last);
+            }
+            self.last_turns[seat.index()] = std::mem::take(&mut self.turn_log);
+            self.finish();
+        } else if to_move(self, seat).is_empty() {
+            self.last_turns[seat.index()] = std::mem::take(&mut self.turn_log);
+            self.pass_from(seat);
+        }
+    }
+
+    /// [R] A soldier home takes the highest free place; returns it (1..=12).
+    fn house(&mut self, soldier: Soldier) -> u8 {
+        let i = self
+            .barracks
+            .iter()
+            .rposition(Option::is_none)
+            .expect("a soldier on the track has a free place");
+        self.barracks[i] = Some(soldier);
+        i as u8 + 1
     }
 }
 
@@ -179,7 +253,17 @@ impl Game for Manoever {
         if s.in_setup() {
             return vec![Action::Roll];
         }
-        Vec::new()
+        to_move(s, seat)
+            .into_iter()
+            .flat_map(|number| {
+                destinations(s, Soldier { seat, number })
+                    .into_iter()
+                    .map(move |to| Action::Move {
+                        soldier: number,
+                        to,
+                    })
+            })
+            .collect()
     }
 
     fn apply(s: &mut State, seat: Seat, action: &Action) -> Result<(), Illegal> {
@@ -192,7 +276,12 @@ impl Game for Manoever {
         match *action {
             Action::Roll if s.in_setup() => s.roll(seat),
             Action::Roll => return Err(Illegal::new("Le dé ne sert plus.")),
-            Action::Move { .. } => return Err(Illegal::new("Ce soldat ne peut pas aller là.")),
+            Action::Move { soldier, to } => {
+                if s.in_setup() || !Self::legal_actions(s, seat).contains(action) {
+                    return Err(Illegal::new("Ce soldat ne peut pas aller là."));
+                }
+                s.advance(seat, soldier, to);
+            }
         }
         s.moves += 1;
         Ok(())
@@ -202,8 +291,18 @@ impl Game for Manoever {
         View::of(s, viewer)
     }
 
-    fn outcome(_s: &State) -> Option<Outcome> {
-        None
+    /// [R] Highest total wins; ❓ ties share their rank.
+    fn outcome(s: &State) -> Option<Outcome> {
+        if !s.over {
+            return None;
+        }
+        let totals = scores(s);
+        Some(Outcome::Ranked(
+            totals
+                .iter()
+                .map(|&mine| totals.iter().filter(|&&t| t > mine).count() as u8)
+                .collect(),
+        ))
     }
 }
 
