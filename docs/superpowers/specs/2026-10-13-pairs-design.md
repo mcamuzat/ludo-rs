@@ -1016,7 +1016,10 @@ Politique de simulation : poser la carte qui capture le plus de points
 probables (les cartes d'un rang où l'on mène ou peut mener la majorité),
 en évitant de laisser une grotte qui offre beaucoup au suivant ; un coup
 sur dix au hasard. Déterminisation : mains des autres et pioche
-redistribuées parmi les cartes non vues.
+redistribuées parmi les cartes non vues. Réalisé : chaque pose est notée
+par le gain de points de majorité, moins la moitié de la plus grosse
+capture que la grotte laissée offre au suivant. Mesuré : Difficile contre
+Facile 0,818 à 2 joueurs, 0,692 à 4 (200 parties).
 
 ## 31. Pickup (plan 22)
 

@@ -2,6 +2,8 @@
 //! five face-up cards to capture its monsters. Rules and their sources:
 //! RULES.md, where [C] is the monthly sheet.
 
+mod determinize;
+mod heuristics;
 pub mod testing;
 mod view;
 

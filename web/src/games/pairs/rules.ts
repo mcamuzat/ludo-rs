@@ -166,3 +166,11 @@ export const BREAD_BASKET_RULES = [
   "La main s'arrête dès que la pioche est vide, ou après un dernier tour des autres quand un joueur n'a plus de cartes. On retire alors ses cartes en main (un Oignon compte −5).",
   "Partie en 6 mains ou une donne par joueur, réglable dans le lobby. Le plus haut total gagne.",
 ];
+
+export const THE_CAVE_RULES = [
+  "On reçoit 7, 6, 5, 5 ou 4 cartes de 2 à 6 joueurs ; 5 cartes face visible forment la grotte.",
+  "À ton tour, pose une carte dans la grotte : elle capture toutes les cartes du rang le plus proche en dessous ; s'il n'y a rien de plus bas, toutes celles du rang le plus haut.",
+  "La carte posée reste dans la grotte, que la pioche complète à 5 cartes tant qu'elle n'est pas vide.",
+  "Quand les mains sont vides : pour chaque rang, qui en a capturé le plus marque 1 point par carte de ce rang (égalité : chacun marque).",
+  "Une manche par joueur, la donne passe à gauche.",
+];

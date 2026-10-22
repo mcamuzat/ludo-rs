@@ -219,3 +219,11 @@ fn bread_basket_conforms_at_every_table_size() {
         2011,
     );
 }
+
+#[test]
+fn the_cave_conforms_at_every_table_size() {
+    use pairs::the_cave::{Config, TheCave};
+    for players in 2..=6u8 {
+        check::<TheCave>(&Config::default(), players, 30, 2100 + u64::from(players));
+    }
+}
