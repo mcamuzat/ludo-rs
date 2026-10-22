@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { ManoeverBoard, describeMax, selectionAfter } from "../Board";
+import { ManoeverBoard, describeMax, selectionAfter, soldierClick } from "../Board";
 import type { ManoeverAction, ManoeverView, Mover } from "../types";
 
 const NAMES = ["Ana", "Hugo"];
@@ -83,5 +83,18 @@ describe("Das glorreiche Manöver board", () => {
     expect(selectionAfter({ ...v, toMove: [] }, 0, 1)).toBeNull();
     expect(selectionAfter({ ...v, turn: 1 }, 0, 1)).toBeNull();
     expect(selectionAfter(v, 0, null)).toBeNull();
+  });
+
+  it("switches selection on one of my soldiers even when its square is a destination", () => {
+    const v: ManoeverView = { ...march(), toMove: [MOVER, { ...MOVER, number: 2, square: 50 }] };
+    const two = { seat: 0, number: 2 };
+    // Soldier 1 selected, soldier 2 free on one of its destinations.
+    expect(soldierClick(v, 0, 1, two, true, true)).toBe("select");
+    // An opponent's soldier on a destination: the move is played.
+    expect(soldierClick(v, 0, 1, { seat: 1, number: 2 }, true, true)).toBe("play");
+    // The selected soldier itself toggles off.
+    expect(soldierClick(v, 0, 1, { seat: 0, number: 1 }, true, false)).toBe("select");
+    // A covered soldier of mine does nothing.
+    expect(soldierClick(v, 0, null, two, false, false)).toBeNull();
   });
 });

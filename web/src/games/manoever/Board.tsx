@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { BoardProps } from "../registry";
 import boardJson from "./board.json";
-import type { BoardData, Dest, ManoeverAction, ManoeverView, MoveRecord, Mover } from "./types";
+import type { BoardData, Dest, ManoeverAction, ManoeverView, MoveRecord, Mover, Soldier } from "./types";
 
 const BOARD = boardJson as BoardData;
 
@@ -33,6 +33,26 @@ export function describeMax(m: Mover): string {
 export function selectionAfter(v: ManoeverView, me: number | null, selected: number | null): number | null {
   if (selected === null || v.turn === null || v.turn !== me) return null;
   return v.toMove.some((m) => m.number === selected) ? selected : null;
+}
+
+/**
+ * What a click on soldier `s` does: select it (one of my soldiers still to
+ * move, even on a square the selected soldier could reach, so switching
+ * selection never plays a move by accident), play the selected soldier onto
+ * its square (`dest`), or nothing.
+ */
+export function soldierClick(
+  v: ManoeverView,
+  me: number | null,
+  selected: number | null,
+  s: Soldier,
+  top: boolean,
+  dest: boolean,
+): "select" | "play" | null {
+  const movable = top && s.seat === me && v.turn === me && v.toMove.some((m) => m.number === s.number);
+  if (movable && s.number !== selected) return "select";
+  if (dest) return "play";
+  return movable ? "select" : null;
 }
 
 function elide(name: string): string {
@@ -184,6 +204,7 @@ export function ManoeverBoard({ view, legalActions, me, seatNames, submit }: Boa
               {stack.map((s, level) => {
                 const y = p.y - (base + level) * LEVEL_DY;
                 const top = level === stack.length - 1;
+                const click = soldierClick(v, me, selected, s, top, dest);
                 const movable = top && s.seat === me && mine(s.number);
                 const name = `Soldat ${s.number} (${COLOUR_NAMES[s.seat]})`;
                 return (
@@ -192,14 +213,12 @@ export function ManoeverBoard({ view, legalActions, me, seatNames, submit }: Boa
                     data-square={sq}
                     className={movable ? "soldier movable" : "soldier"}
                     onClick={
-                      dest
-                        ? undefined
-                        : movable
-                          ? (e) => {
-                              e.stopPropagation();
-                              setPicked(selected === s.number ? null : s.number);
-                            }
-                          : undefined
+                      click === "select"
+                        ? (e) => {
+                            e.stopPropagation();
+                            setPicked(selected === s.number ? null : s.number);
+                          }
+                        : undefined
                     }
                   >
                     <title>{name}</title>
