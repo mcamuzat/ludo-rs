@@ -24,6 +24,7 @@ static PAIRS_TROLL_GUTS: GameEntry<pairs::TrollGuts> = GameEntry::new();
 static PAIRS_BLACKSTONE: GameEntry<pairs::Blackstone> = GameEntry::new();
 static PAIRS_HORN_OF_PLENTY: GameEntry<pairs::HornOfPlenty> = GameEntry::new();
 static PAIRS_THE_JUDGE: GameEntry<pairs::TheJudge> = GameEntry::new();
+static PAIRS_BREAD_BASKET: GameEntry<pairs::BreadBasket> = GameEntry::new();
 static CARDS_PRESIDENT: GameEntry<cards::President> = GameEntry::new();
 static CARDS_COLLUSION: GameEntry<cards::Collusion> = GameEntry::new();
 static PENNYWISE: GameEntry<pennywise::Pennywise> = GameEntry::new();
@@ -58,6 +59,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &PAIRS_BLACKSTONE,
     &PAIRS_HORN_OF_PLENTY,
     &PAIRS_THE_JUDGE,
+    &PAIRS_BREAD_BASKET,
     &CARDS_PRESIDENT,
     &CARDS_COLLUSION,
     &PENNYWISE,

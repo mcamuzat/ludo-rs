@@ -203,3 +203,19 @@ fn the_judge_conforms_at_every_table_size() {
         check::<TheJudge>(&Config::default(), players, 30, 1900 + u64::from(players));
     }
 }
+
+#[test]
+fn bread_basket_conforms_at_every_table_size() {
+    use pairs::bread_basket::{BreadBasket, Config, Rounds};
+    for players in 2..=6u8 {
+        check::<BreadBasket>(&Config::default(), players, 30, 2000 + u64::from(players));
+    }
+    check::<BreadBasket>(
+        &Config {
+            rounds: Rounds::PerPlayer,
+        },
+        5,
+        30,
+        2011,
+    );
+}

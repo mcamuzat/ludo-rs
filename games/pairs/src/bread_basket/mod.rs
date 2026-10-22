@@ -3,6 +3,8 @@
 //! sources: RULES.md, where [B] is the v3.11 rules sheet.
 
 pub mod cards;
+mod determinize;
+mod heuristics;
 pub mod testing;
 mod view;
 

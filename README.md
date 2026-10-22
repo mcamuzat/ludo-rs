@@ -28,6 +28,7 @@ Jeux :
 - **Blackstone** (2–8 joueurs, jeu à jetons, deck Pairs) ;
 - **Horn of Plenty** (2–6 joueurs, jeu de bluff, deck Pairs) ;
 - **The Judge** (2–6 joueurs, deck Pairs) ;
+- **Bread Basket** (2–6 joueurs, paquet à Oignons de Crab Fragment Labs) ;
 - **Président** (4–7 joueurs, cartes traditionnelles, règles d'après Wikipédia et Pagat ; révolution, fin sur un 2 et jokers en options) ;
 - **Collusion** (4 joueurs, jeu de plis de David Parlett où l'on vise autant de plis qu'un autre joueur ; phrases toutes faites à table, cible de 50 à 100 points) ;
 - **Pennywise** (2–6 joueurs, James Ernest / Cheapass Games, jeu de pièces ; personnage Cody, Darlene, Sugar ou Taylor en option) ;
