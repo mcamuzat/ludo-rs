@@ -893,3 +893,83 @@ Réalisé plus simplement : ajouter la carte qui augmente le plus l'espérance
 de la recette (ses points × la chance, hypergéométrique, que le Juge n'en
 tienne aucun rang), sinon passer ; un coup sur dix au hasard. Mesuré :
 Difficile contre Facile 0,75 à 2 joueurs comme à 4 (200 parties).
+
+## 29. Bread Basket (plan 21)
+
+Jeu de sandwiches de James Ernest (`pairs-bread-basket`, 2–6 joueurs).
+Version 3.11 (Crab Fragment Labs, 29/10/2025), qui remplace la fiche
+mensuelle *Lunch Rush* (Cheapass 2018). Décision de l'utilisateur :
+appliquer la version 2025 en entier, avec sa nouvelle distribution des
+cartes, et garder le nom donné par l'auteur. Source hors dépôt :
+`~/Téléchargements/Bread+Basket311.pdf`. Règles et points non tranchés :
+`games/pairs/RULES.md`. Aucune statistique affichée.
+
+### Matériel
+
+C'est le premier jeu de la crate qui n'utilise pas le deck Pairs. Son
+paquet compte 55 cartes : cinq exemplaires de chaque rang de 1 à 10, plus
+cinq **Oignons** qui valent −5. L'Oignon est la carte la plus basse. Il
+faut un type de carte propre au jeu (Oignon ou rang) plutôt qu'un `Rank`
+élargi, parce que `Rank` reste borné à 1–10 pour tous les autres jeux. Le
+mélange, la pioche et la défausse viennent de `deck.rs`, qu'on rend
+générique sur le type de carte si besoin, au lieu de les recopier.
+
+### Règles retenues
+
+- **Donne** (à chaque manche, avec le paquet complet remélangé) : 10, 9, 8,
+  7 ou 6 cartes par joueur pour 2, 3, 4, 5 ou 6 joueurs. Une carte de la
+  pioche ouvre la **file** au centre. Le joueur à gauche du donneur
+  commence.
+- **Tour** : on pose une carte de sa main au bout de la file, ou on pioche
+  une carte. La pioche est toujours permise.
+- **Sandwich** : la carte posée en complète un quand on trouve, en
+  remontant la file, une carte égale avant toute carte supérieure ou égale
+  (toutes les cartes entre les deux sont plus basses, et il y en a au moins
+  une). Le sandwich est ramassé d'office. Les deux pains vont à la défausse
+  et valent 0 ; la garniture reste face visible devant le joueur et compte
+  sa valeur, −5 pour un Oignon. Comme les sandwiches sont ramassés
+  aussitôt, la carte égale trouvée est unique.
+- **Sandwich d'air** : la carte posée est égale à la précédente (deux
+  Oignons compris). Les deux cartes vont à la défausse et le joueur
+  **doit** piocher une carte.
+- **File vide** : la pioche y remet une carte.
+- **Fin de main** :
+  - Pioche vide : la main s'arrête tout de suite, que ce soit en piochant,
+    à la pioche forcée d'un sandwich d'air ou en relançant la file.
+  - Main vide : quand un joueur n'a plus de cartes, chacun des autres joue
+    encore un tour, puis la main s'arrête.
+- **Score de la main** : la garniture ramassée, moins la valeur des cartes
+  qui restent en main (un Oignon en main compte −5, c'est-à-dire qu'il ôte
+  5 points). Les scores peuvent devenir négatifs.
+- **Partie** : la donne passe à gauche à chaque manche. Option `rounds` :
+  `six` (6 manches, par défaut) ou `per-player` (une donne par joueur). Le
+  plus haut total gagne.
+
+### Choix du site
+
+- ❓ Le premier donneur est tiré au hasard.
+- ❓ À la fin d'un sandwich d'air, on pioche avant de relancer la file. Si
+  la pioche est vide à ce moment-là, la main s'arrête sans pioche.
+- ❓ Pendant le dernier tour de table qui suit une main vide, un autre
+  joueur peut vider sa main à son tour. Cela ne rallonge rien, et la main
+  s'arrête quand même après le dernier de ce tour de table.
+- ❓ Égalité en tête à la fin de la partie : victoire partagée.
+- La permission de « défausser les cartes qui s'annulent » est purement
+  pratique sur table. Elle est ignorée : le site fait le compte.
+- Information cachée : les mains des autres (seul leur nombre de cartes est
+  visible) et la pioche. La file, la défausse, la garniture ramassée par
+  chacun et les scores sont publics.
+
+### IA
+
+Politique de simulation :
+- compléter le meilleur sandwich possible ;
+- sinon, poser une carte qui n'offre pas de bon sandwich au joueur
+  suivant, en se débarrassant d'abord des Oignons et des cartes hautes
+  isolées ;
+- piocher quand toute pose ouvre un sandwich coûteux ;
+- un coup sur dix au hasard.
+
+Déterminisation : redistribuer les mains cachées et la pioche parmi les
+cartes non vues. À mesurer en arène : Difficile contre Facile, à 2 et à 4
+joueurs.
