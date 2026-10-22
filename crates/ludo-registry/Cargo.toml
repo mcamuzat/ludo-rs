@@ -10,6 +10,7 @@ ludo-core.workspace = true
 yavalath.workspace = true
 bantu.workspace = true
 black-pot.workspace = true
+manoever.workspace = true
 riichi.workspace = true
 pairs.workspace = true
 cards.workspace = true

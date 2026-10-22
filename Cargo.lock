@@ -288,6 +288,7 @@ dependencies = [
  "cards",
  "cryptide",
  "ludo-core",
+ "manoever",
  "monad",
  "pairs",
  "pennywise",

@@ -33,6 +33,7 @@ static VOLLTREFFER: GameEntry<volltreffer::Volltreffer> = GameEntry::new();
 static BLACK_VIENNA: GameEntry<black_vienna::BlackVienna> = GameEntry::new();
 static CRYPTIDE: GameEntry<cryptide::Cryptide> = GameEntry::new();
 static BLACK_POT: GameEntry<black_pot::BlackPot> = GameEntry::new();
+static MANOEVER: GameEntry<manoever::Manoever> = GameEntry::new();
 
 pub static GAMES: &[&dyn AnyGame] = &[
     &YAVALATH,
@@ -66,6 +67,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &BLACK_VIENNA,
     &CRYPTIDE,
     &BLACK_POT,
+    &MANOEVER,
 ];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {
@@ -84,6 +86,7 @@ mod tests {
     fn black_pot_offers_two_or_four_players() {
         assert_eq!(find("black-pot").unwrap().player_counts(), vec![2, 4]);
         assert_eq!(find("bantu").unwrap().player_counts(), vec![2, 3, 4]);
+        assert_eq!(find("manoever").unwrap().player_counts(), vec![2, 3, 4]);
     }
 
     #[test]

@@ -3,6 +3,7 @@
 //! higher it stands. Rules and their sources: RULES.md.
 
 pub mod board;
+mod heuristics;
 mod moves;
 pub mod testing;
 mod view;
@@ -289,6 +290,22 @@ impl Game for Manoever {
 
     fn view(s: &State, viewer: Viewer) -> View {
         View::of(s, viewer)
+    }
+
+    /// Rolls, or sends the first soldier to move as far as it can.
+    fn timeout_action(s: &State, seat: Seat) -> Option<Action> {
+        if s.turn != Some(seat) {
+            return None;
+        }
+        if s.in_setup() {
+            return Some(Action::Roll);
+        }
+        let number = *to_move(s, seat).first()?;
+        let to = *destinations(s, Soldier { seat, number }).last()?;
+        Some(Action::Move {
+            soldier: number,
+            to,
+        })
     }
 
     /// [R] Highest total wins; ❓ ties share their rank.
