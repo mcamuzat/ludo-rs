@@ -16,11 +16,20 @@ export function Card({
   /** Picked out of a hand (to discard, say). */
   raised?: boolean;
 }) {
-  const cls = `pairs-card r${rank}${small ? " small" : ""}${raised ? " raised" : ""}`;
-  if (!onClick) return <span className={cls}>{rank}</span>;
+  // Bread Basket's Onion is worth −5; no other game deals one.
+  const onion = rank === -5;
+  const cls = `pairs-card ${onion ? "onion" : `r${rank}`}${small ? " small" : ""}${raised ? " raised" : ""}`;
+  const label = onion ? "−5" : rank;
+  const hint = title ?? (onion ? "Oignon" : undefined);
+  if (!onClick)
+    return (
+      <span className={cls} title={hint}>
+        {label}
+      </span>
+    );
   return (
-    <button type="button" className={`${cls} playable`} onClick={onClick} title={title} aria-label={title}>
-      {rank}
+    <button type="button" className={`${cls} playable`} onClick={onClick} title={hint} aria-label={hint}>
+      {label}
     </button>
   );
 }

@@ -26,6 +26,10 @@
 .pairs-card.r8 { --rank: hsl(52 80% 30%); }
 .pairs-card.r9 { --rank: hsl(5 75% 44%); }
 .pairs-card.r10 { --rank: hsl(175 55% 28%); }
+/* L'Oignon de Bread Basket : face teintée pour ne pas le confondre avec le 5. */
+.pairs-card.onion { --rank: hsl(320 55% 36%); background: color-mix(in srgb, var(--rank) 18%, var(--face)); }
+.pairs-line { display: flex; flex-wrap: wrap; gap: 4px; min-height: 56px; justify-content: center; }
+.pairs-piles { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
 
 .pairs-pile { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.8rem; color: var(--muted); }
 .felt .pairs-pile, .felt .pairs-unlocated { color: var(--table-muted); }

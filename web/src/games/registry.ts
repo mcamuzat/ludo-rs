@@ -27,6 +27,7 @@ import { RocketBoard } from "./pairs/rocket/Board";
 import { StarboardBoard } from "./pairs/starboard/Board";
 import { SweepBoard } from "./pairs/sweep/Board";
 import { TheJudgeBoard } from "./pairs/the-judge/Board";
+import { BreadBasketBoard } from "./pairs/bread-basket/Board";
 import { ToTheMoonBoard } from "./pairs/to-the-moon/Board";
 import { TrollGutsBoard } from "./pairs/troll-guts/Board";
 import {
@@ -47,6 +48,7 @@ import {
   STARBOARD_RULES,
   SWEEP_RULES,
   THE_JUDGE_RULES,
+  BREAD_BASKET_RULES,
   TO_THE_MOON_RULES,
   TROLL_GUTS_RULES,
   ZOMBIE_LIFE_RULES,
@@ -115,6 +117,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "pairs-blackstone", family: "pairs", Board: BlackstoneBoard, rules: BLACKSTONE_RULES },
   { id: "pairs-horn-of-plenty", family: "pairs", Board: HornOfPlentyBoard, rules: HORN_OF_PLENTY_RULES },
   { id: "pairs-the-judge", family: "pairs", Board: TheJudgeBoard, rules: THE_JUDGE_RULES },
+  { id: "pairs-bread-basket", family: "pairs", Board: BreadBasketBoard, rules: BREAD_BASKET_RULES },
   { id: "cards-president", family: "cards", Board: PresidentBoard, rules: PRESIDENT_RULES },
   { id: "cards-collusion", family: "cards", Board: CollusionBoard, rules: COLLUSION_RULES },
   { id: "pennywise", family: "coins", Board: PennywiseBoard, rules: PENNYWISE_RULES },

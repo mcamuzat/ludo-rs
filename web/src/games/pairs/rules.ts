@@ -157,3 +157,12 @@ export const THE_JUDGE_RULES = [
   "Les recettes survivantes marquent la somme de leurs rangs. Le meilleur de la manche commence la suivante ; si tout le monde est éliminé, personne ne marque et le même joueur recommence.",
   "Partie en 50 points à 2 ou 3 joueurs, 40 à 4, 30 à 5 ou 6.",
 ];
+
+export const BREAD_BASKET_RULES = [
+  "Paquet propre au jeu : cinq exemplaires de chaque rang de 1 à 10 et cinq Oignons à −5. On reçoit 10, 9, 8, 7 ou 6 cartes de 2 à 6 joueurs ; une carte ouvre la file.",
+  "À ton tour : pose une carte au bout de la file, ou pioche une carte.",
+  "Sandwich : deux cartes égales avec, entre elles, des cartes toutes plus basses. Qui le complète le ramasse : les pains sont défaussés et ne valent rien, le milieu compte sa valeur (un Oignon −5).",
+  "Sandwich d'air : deux cartes égales côte à côte. On les défausse et on doit piocher.",
+  "La main s'arrête dès que la pioche est vide, ou après un dernier tour des autres quand un joueur n'a plus de cartes. On retire alors ses cartes en main (un Oignon compte −5).",
+  "Partie en 6 mains ou une donne par joueur, réglable dans le lobby. Le plus haut total gagne.",
+];

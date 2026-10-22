@@ -3,6 +3,9 @@ import type { GameConfig, GameMeta } from "../engine/types";
 /** Lobby labels by `<game id>.<key>`, and `<game id>.<key>.<value>` for choices. Missing: the key itself. */
 const LABELS: Record<string, string> = {
   "pairs-ghost-town.hands": "Mains",
+  "pairs-bread-basket.rounds": "Mains",
+  "pairs-bread-basket.rounds.Six": "6",
+  "pairs-bread-basket.rounds.PerPlayer": "Une donne par joueur",
   "cards-collusion.target": "Points à atteindre",
   "bantu.short": "Partie courte (pions 1 à 3)",
   "cards-president.rounds": "Manches",
