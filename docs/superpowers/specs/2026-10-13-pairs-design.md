@@ -976,3 +976,147 @@ plus la pénalité qu'elle ôte de la main, moins la meilleure garniture que
 la file laissée offre au suivant ; piocher coûte la pénalité moyenne d'une
 carte. Mesuré : Difficile contre Facile 0,995 à 2 joueurs, 0,931 à 4
 (200 parties).
+
+## 30. The Cave (plan 22)
+
+Fiche mensuelle Cheapass 2018 n° 4 (`pairs-the-cave`, 2–6 joueurs, deck
+Pairs). Source hors dépôt : `~/Téléchargements/pairs/4CAGTheCave.pdf`.
+Règles et points non tranchés : `games/pairs/RULES.md`. Aucune statistique
+affichée.
+
+### Règles retenues
+
+- **Donne** (à chaque manche, paquet complet remélangé) : 7, 6, 5, 5 ou 4
+  cartes pour 2 à 6 joueurs, puis 5 cartes face visible : la **grotte**. Le
+  joueur à gauche du donneur commence ; on joue dans le sens horaire.
+- **Tour** : on pose une carte de sa main. S'il y a dans la grotte des
+  cartes plus basses, elle capture toutes les cartes du rang le plus proche
+  en dessous ; sinon, toutes les cartes du rang le plus haut (même s'il est
+  égal au sien). La carte posée entre ensuite dans la grotte, que l'on
+  complète à 5 cartes depuis la pioche ; pioche vide : la grotte n'est plus
+  complétée et le jeu continue.
+- **Fin de manche** quand toutes les mains sont vides. Pour chaque rang, le
+  ou les joueurs qui en ont capturé le plus marquent 1 point par carte de ce
+  rang capturée ; les autres ne marquent rien pour ce rang.
+- **Partie** : une manche par joueur, la donne passe à gauche ; le plus
+  haut total gagne.
+
+### Choix du site
+
+- ❓ Le premier donneur est tiré au sort.
+- ❓ Grotte vide (pioche épuisée et grotte vidée par les captures) : la
+  carte posée y entre sans rien capturer.
+- ❓ Égalité en tête : victoire partagée.
+- Information cachée : les mains et la pioche. La grotte, les captures de
+  chacun et les scores sont publics.
+
+### IA
+
+Politique de simulation : poser la carte qui capture le plus de points
+probables (les cartes d'un rang où l'on mène ou peut mener la majorité),
+en évitant de laisser une grotte qui offre beaucoup au suivant ; un coup
+sur dix au hasard. Déterminisation : mains des autres et pioche
+redistribuées parmi les cartes non vues.
+
+## 31. Pickup (plan 22)
+
+Fiche mensuelle Cheapass 2018 n° 11 (`pairs-pickup`, 2–6 joueurs, deck
+Pairs). Source hors dépôt : `~/Téléchargements/pairs/11CAGPickup.pdf`.
+Aucune statistique affichée.
+
+### Règles retenues
+
+- **Donne** : 7, 6 ou 5 cartes pour 2, 3–4 ou 5–6 joueurs.
+- **Tour** : 5 cartes de la pioche forment la **réserve**, face visible.
+  Chacun choisit en secret une carte de sa main ; on révèle. Les cartes
+  agissent de la plus basse à la plus haute ; à égalité, le joueur le plus
+  proche à gauche de celui qui a agi en dernier (au premier coup d'un tour,
+  à gauche du dernier à avoir agi au tour précédent ; au tout premier, à
+  gauche du donneur).
+- **Agir** : le joueur **choisit** une carte de la réserve de rang
+  inférieur ou égal à la sienne et la met dans sa pile de score ; la carte
+  jouée est défaussée. Toutes les cartes de ce rang dans les piles des
+  **autres** joueurs et dans la réserve sont défaussées (« knock out »).
+  Rien de prenable (ou réserve vide) : la carte jouée va dans sa propre
+  pile (« stacking »), sans rien éliminer.
+- **Fin du tour** : la réserve restante est défaussée et une nouvelle est
+  donnée. La partie s'arrête quand les mains sont vides ; chaque carte de
+  sa pile vaut sa valeur.
+- **Option `length`** (décision de l'utilisateur) : `OneDeal` (une donne,
+  par défaut) ou `Target` (on redonne jusqu'à ce qu'un joueur atteigne
+  150, 100 ou 75 points à 2, 3–4 ou 5–6 joueurs ; la donne passe à gauche).
+
+### Choix du site
+
+- ❓ Le choix de la carte prise est un coup du joueur, une fois les cartes
+  révélées et à son rang d'action. Quand une seule carte est prenable (ou
+  plusieurs du même rang), le moteur la prend sans demander.
+- ❓ Pioche trop courte pour 5 cartes : la réserve prend ce qui reste.
+- ❓ En partie longue, la manche se termine au bout de sa donne ; la partie
+  s'arrête à la fin de la donne où quelqu'un atteint la cible, le plus haut
+  total gagne (égalité : victoire partagée). Garde-fou : 30 donnes.
+- Information cachée : les mains, les cartes choisies avant la révélation
+  (on ne sait pas non plus qui a déjà choisi), la pioche.
+
+### IA
+
+Choix secret : la carte qui rapporte le plus en estimant ce que les plus
+basses prendront avant elle ; prise : la plus forte carte prenable, en
+préférant un rang qui élimine des cartes chez le meneur. Déterminisation :
+les cartes choisies par les autres et non révélées sont oubliées, mains et
+pioche redistribuées.
+
+## 32. Market Day (plan 22)
+
+Fiche mensuelle Cheapass 2018 n° 6 (`pairs-market-day`, 2–8 joueurs, deck
+Pairs). Source hors dépôt : `~/Téléchargements/pairs/6CAGMarketDay.pdf`.
+Aucune statistique affichée.
+
+### Règles retenues
+
+- **Donne** : 6 cartes chacun ; à 2–3 joueurs, 10 cartes et chacun pose
+  deux cartes par tour (deux tours de table).
+- **Tour** : chacun pose une carte face visible, à tour de rôle. Premier
+  tour de la main : le joueur à gauche du donneur commence ; ensuite celui
+  qui a le plus marqué au tour précédent (égalité : le même meneur).
+- **Valeur** : chaque carte vaut son rang. Rang posé plusieurs fois : les
+  premiers sont gâchés, seul le dernier marque, sauf exceptions :
+  - **1 Bricoleur** : en fin de tour, son joueur peut l'échanger avec une
+    autre carte.
+  - **2 Chevalier** : avant le compte, tue la carte qui marque le plus ; il
+    ne tue pas les rangs 3 et moins. Un second Chevalier ne gâche pas le
+    premier, chacun tue une carte.
+  - **3 Royal** : jamais échangé, tué ni gâché ; il marque toujours.
+  - **7 Pluie** : si une seule Pluie est posée, elle gâche tout sauf les
+    Royaux (1 et 2 compris) et marque elle-même ; plusieurs Pluies sont des
+    7 ordinaires.
+  - **9 Bandit** : c'est le premier Bandit qui marque, les suivants sont
+    gâchés.
+- **Ordre de résolution** : retirer les cartes gâchées, puis Royaux, Pluie,
+  Chevaliers, Bricoleur.
+- **Partie** : la main finit quand toutes les cartes sont posées ; la partie
+  compte max(6, nombre de joueurs) mains, la donne passe à gauche ; le plus
+  haut total gagne.
+
+### Choix du site
+
+- ❓ Bricoleur (lecture validée par l'utilisateur) : son joueur peut
+  échanger son 1 avec une autre carte qui marque encore, sauf un Royal ;
+  chacun marque alors la carte reçue. C'est un coup du joueur, refus
+  compris (« garder »). Un Bricoleur gâché (doublon, Pluie) n'agit pas.
+- ❓ Chevaliers : chacun tue, l'un après l'autre, la carte de plus haut rang
+  parmi celles qui marquent encore, rang 4 au moins ; s'il n'y en a pas, il
+  ne tue rien.
+- ❓ À 2–3 joueurs, le meneur du tour joue sa première carte, puis tout le
+  tour de table, puis sa seconde, etc. ; « le plus marqué » compte les deux
+  cartes du joueur.
+- ❓ Premier donneur tiré au sort ; égalité en tête : victoire partagée.
+- Information cachée : les mains et les cartes non distribuées.
+
+### IA
+
+Politique de simulation : jouer la carte qui marque le plus compte tenu des
+cartes déjà posées dans le tour (doublons, Pluie seule, Chevaliers), en
+gardant les Royaux et la Pluie pour les tours où ils rapportent ;
+Bricoleur : échanger contre la plus forte carte permise. Déterminisation :
+mains des autres et cartes non distribuées redistribuées.
