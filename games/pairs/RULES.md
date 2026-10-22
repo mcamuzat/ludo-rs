@@ -856,3 +856,50 @@ l'utilisateur).
    elle marque sans que le Juge soit retourné.
 5. ❓ Garde-fou : la partie s'arrête après 40 manches, au classement du
    moment.
+
+## Bread Basket (`pairs-bread-basket`, 2 à 6 joueurs)
+
+Source : **[B]** *Bread Basket Rules* v3.11, Crab Fragment Labs (James
+Ernest), 29/10/2025. Elle remplace la fiche mensuelle *Lunch Rush* (Cheapass
+2018). Décision de l'utilisateur : la version 2025 entière, avec son paquet.
+
+### Matériel [B]
+- Un paquet propre au jeu de 55 cartes : cinq exemplaires de chaque rang de
+  1 à 10 et cinq Oignons, qui valent −5. L'Oignon est la carte la plus
+  basse.
+
+### Mise en place [B]
+- On mélange et on donne 10, 9, 8, 7 ou 6 cartes à chacun, pour 2, 3, 4, 5
+  ou 6 joueurs. Une carte de la pioche ouvre la file au centre.
+- Le joueur à gauche du donneur commence.
+
+### Tour [B]
+- On pose une carte de sa main au bout de la file, ou on pioche une carte.
+- **Sandwich** : une suite d'au moins trois cartes dont la première et la
+  dernière sont égales et toutes celles du milieu plus basses. Qui le
+  complète le ramasse, même sans le vouloir : les deux pains sont défaussés
+  et ne valent rien, les cartes du milieu restent face visible devant lui
+  et comptent leur valeur (un Oignon −5).
+- **Sandwich d'air** : deux cartes égales côte à côte (deux Oignons
+  compris). On les défausse et on doit piocher une carte.
+- Si la file est vide, la pioche y remet une carte.
+
+### Fin de la main [B]
+- Si la pioche est vide, la main s'arrête tout de suite.
+- Si un joueur n'a plus de cartes, chacun des autres joue encore un tour,
+  puis la main s'arrête.
+- Chacun ajoute les points ramassés et retire ses cartes restées en main
+  (un Oignon en main compte −5, soit 5 points de moins). Les scores peuvent
+  être négatifs.
+- La donne passe à gauche. La partie dure 6 mains, ou une donne par joueur
+  (option du lobby). Le plus haut total gagne.
+
+### Choix sur les points non tranchés
+1. ❓ Le premier donneur est tiré au sort.
+2. ❓ Après un sandwich d'air, on pioche avant de remettre une carte dans la
+   file. Si la pioche est vide à ce moment-là, la main s'arrête.
+3. ❓ Si un autre joueur vide sa main pendant le dernier tour de table, rien
+   ne change : la main s'arrête après le dernier joueur de ce tour.
+4. ❓ Égalité en tête en fin de partie : victoire partagée.
+5. La permission de défausser les cartes qui s'annulent (un Oignon contre
+   5 points) ne sert qu'à la table : le site fait le compte.
