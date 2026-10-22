@@ -32,7 +32,12 @@ export function TheCaveBoard({ view, legalActions, me, seatNames, submit }: Boar
           <Card key={k} rank={card} small />
         ))}
       </div>
-      <p className="hint">Capturé : {seat.captured.length} cartes</p>
+      <p className="hint">
+        Capturé :{" "}
+        {seat.captured.length === 0
+          ? "aucune carte"
+          : `${seat.captured.length} carte${seat.captured.length > 1 ? "s" : ""}`}
+      </p>
       <CardBack count={seat.handSize} label="en main" />
     </section>
   ));

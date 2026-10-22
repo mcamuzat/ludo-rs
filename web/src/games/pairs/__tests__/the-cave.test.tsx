@@ -71,6 +71,8 @@ describe("The Cave board", () => {
     expect(html).toContain("La grotte");
     expect(html).toContain("pioche");
     expect(html).toContain("Capturé : 3 cartes");
+    expect(html).toContain("Capturé : 1 carte<");
+    expect(html).toContain("Capturé : aucune carte");
     expect(html).not.toMatch(/\d\s?%</);
   });
 
