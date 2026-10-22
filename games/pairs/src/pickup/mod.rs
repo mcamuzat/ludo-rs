@@ -180,8 +180,11 @@ impl State {
         self.discard.clear();
         self.piles = vec![Vec::new(); n];
         self.dealer = dealer;
-        // [P] The first tie of the deal starts left of the dealer.
-        self.last_actor = dealer;
+        // [P] Only the game's first play starts left of the dealer; later
+        // deals keep whoever acted last.
+        if self.deal_no == 1 {
+            self.last_actor = dealer;
+        }
         self.events.push(Event::Dealt {
             deal: self.deal_no,
             dealer,

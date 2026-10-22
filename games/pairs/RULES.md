@@ -929,7 +929,9 @@ Source : **[C]** fiche mensuelle Cheapass 2018 n° 4, *The Cave*.
 
 ### Choix sur les points non tranchés
 1. ❓ Le premier donneur est tiré au sort.
-2. ❓ Une carte posée dans une grotte vide n'y capture rien.
+2. ❓ Une carte posée dans une grotte vide n'y capture rien. (Cas
+   théorique : la carte posée reste dans la grotte, qui n'est donc jamais
+   vide en cours de manche.)
 3. ❓ Égalité en tête : victoire partagée.
 
 ## Pickup (`pairs-pickup`, 2 à 6 joueurs)
@@ -966,7 +968,9 @@ Source : **[P]** fiche mensuelle Cheapass 2018 n° 11, *Pickup*.
 2. ❓ Pioche trop courte : la réserve prend ce qui reste.
 3. ❓ Partie longue : elle s'arrête à la fin de la donne où quelqu'un atteint
    la cible, le plus haut total gagne ; garde-fou de 30 donnes. La donne
-   passe à gauche.
+   passe à gauche. Le départage d'une nouvelle donne part toujours du dernier
+   à avoir agi (lecture littérale : seul le tout premier coup de la partie
+   part de la gauche du donneur).
 4. ❓ Le premier donneur est tiré au sort ; égalité en tête : victoire
    partagée.
 
@@ -998,8 +1002,7 @@ Source : **[M]** fiche mensuelle Cheapass 2018 n° 6, *Market Day*.
 
 ### Fin [M]
 - La main finit quand toutes les cartes sont posées. La partie compte six
-  mains, ou une par joueur s'ils sont plus de six ; la donne passe à
-  gauche. Le plus haut total gagne.
+  mains, ou une par joueur s'ils sont plus de six. Le plus haut total gagne.
 
 ### Choix sur les points non tranchés
 1. ❓ Bricoleur (lecture validée par l'utilisateur) : son joueur peut
@@ -1007,8 +1010,9 @@ Source : **[M]** fiche mensuelle Cheapass 2018 n° 6, *Market Day*.
    Royal ; chacun marque la carte reçue. Il peut aussi garder. Un Bricoleur
    gâché (doublon, Pluie) n'agit pas.
 2. ❓ Les Chevaliers tuent l'un après l'autre, dans l'ordre de pose, la
-   carte de plus haut rang (4 ou plus) qui marque encore ; à rang égal, la
-   dernière posée.
+   carte de plus haut rang (4 ou plus) qui marque encore. (Deux cartes d'un
+   même rang 4 ou plus ne peuvent pas marquer ensemble : pas d'égalité.)
 3. ❓ À 2–3 joueurs, le meneur pose sa première carte, puis tout le tour de
    table, puis sa seconde, etc. ; « le plus marqué » compte les deux cartes.
-4. ❓ Premier donneur tiré au sort ; égalité en tête : victoire partagée.
+4. ❓ Premier donneur tiré au sort, puis la donne passe à gauche (la fiche
+   ne le dit pas) ; égalité en tête : victoire partagée.

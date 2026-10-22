@@ -1004,8 +1004,8 @@ affichée.
 ### Choix du site
 
 - ❓ Le premier donneur est tiré au sort.
-- ❓ Grotte vide (pioche épuisée et grotte vidée par les captures) : la
-  carte posée y entre sans rien capturer.
+- ❓ Grotte vide : la carte posée y entre sans rien capturer. Cas
+  théorique, la carte posée restant toujours dans la grotte.
 - ❓ Égalité en tête : victoire partagée.
 - Information cachée : les mains et la pioche. La grotte, les captures de
   chacun et les scores sont publics.
@@ -1057,7 +1057,9 @@ Aucune statistique affichée.
 - ❓ Pioche trop courte pour 5 cartes : la réserve prend ce qui reste.
 - ❓ En partie longue, la manche se termine au bout de sa donne ; la partie
   s'arrête à la fin de la donne où quelqu'un atteint la cible, le plus haut
-  total gagne (égalité : victoire partagée). Garde-fou : 30 donnes.
+  total gagne (égalité : victoire partagée). Garde-fou : 30 donnes. Le
+  départage d'une nouvelle donne part du dernier à avoir agi ; seul le
+  premier coup de la partie part de la gauche du donneur.
 - Information cachée : les mains, les cartes choisies avant la révélation
   (on ne sait pas non plus qui a déjà choisi), la pioche.
 
@@ -1065,7 +1067,7 @@ Aucune statistique affichée.
 
 Choix secret : la carte qui rapporte le plus en estimant ce que les plus
 basses prendront avant elle ; prise : la plus forte carte prenable, en
-préférant un rang qui élimine des cartes chez le meneur. Déterminisation :
+comptant les cartes qu'elle élimine chez les autres. Déterminisation :
 les cartes choisies par les autres et non révélées sont oubliées, mains et
 pioche redistribuées. Réalisé : chaque carte est notée par sa meilleure prise (sa
 valeur plus celle des cartes qu'elle élimine chez les autres), ou sa propre
@@ -1102,8 +1104,7 @@ Aucune statistique affichée.
 - **Ordre de résolution** : retirer les cartes gâchées, puis Royaux, Pluie,
   Chevaliers, Bricoleur.
 - **Partie** : la main finit quand toutes les cartes sont posées ; la partie
-  compte max(6, nombre de joueurs) mains, la donne passe à gauche ; le plus
-  haut total gagne.
+  compte max(6, nombre de joueurs) mains ; le plus haut total gagne.
 
 ### Choix du site
 
@@ -1117,7 +1118,8 @@ Aucune statistique affichée.
 - ❓ À 2–3 joueurs, le meneur du tour joue sa première carte, puis tout le
   tour de table, puis sa seconde, etc. ; « le plus marqué » compte les deux
   cartes du joueur.
-- ❓ Premier donneur tiré au sort ; égalité en tête : victoire partagée.
+- ❓ Premier donneur tiré au sort, puis la donne passe à gauche (la fiche
+  ne le dit pas) ; égalité en tête : victoire partagée.
 - Information cachée : les mains et les cartes non distribuées.
 
 ### IA

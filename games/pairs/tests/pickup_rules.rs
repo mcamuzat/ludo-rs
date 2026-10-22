@@ -255,3 +255,18 @@ fn illegal_moves_are_refused() {
         assert_eq!(copy, s);
     }
 }
+
+#[test]
+fn a_new_deal_keeps_the_last_actor_for_ties() {
+    let mut s = table(&[&[5], &[6]], &[5, 6], &[]);
+    s.config = Config {
+        length: Length::Target,
+    };
+    choose(&mut s, 0, 5);
+    choose(&mut s, 1, 6);
+    // Seat 1 acted last in deal 1; only the game's first play starts left
+    // of the dealer.
+    assert_eq!(s.deal_no, 2);
+    assert_eq!(s.dealer, Seat(0));
+    assert_eq!(s.last_actor, Seat(1));
+}

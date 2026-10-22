@@ -88,7 +88,8 @@ pub fn resolve(trick: &[Rank]) -> Vec<Fate> {
         }
     }
     // [M] Each Knight kills the highest scoring card; never rank 3 or
-    // lower. ❓ One after the other, in play order.
+    // lower. ❓ One after the other, in play order (at most one card of a
+    // rank of 4 or more still scores, so there is never a tie).
     for k in 0..trick.len() {
         if v(k) != KNIGHT || fates[k] != Fate::Scored {
             continue;
