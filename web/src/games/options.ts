@@ -10,6 +10,7 @@ const LABELS: Record<string, string> = {
   "pairs-pickup.length.OneDeal": "Une donne",
   "pairs-pickup.length.Target": "Partie longue (150 / 100 / 75 points)",
   "cards-collusion.target": "Points à atteindre",
+  "cards-lamarckian.competitions": "Concours",
   "bantu.short": "Partie courte (pions 1 à 3)",
   "cards-president.rounds": "Manches",
   "cards-president.revolution": "Révolution",

@@ -3,9 +3,11 @@
 
 pub mod collusion;
 pub mod deck;
+pub mod lamarckian;
 pub mod president;
 
 pub use collusion::Collusion;
+pub use lamarckian::Lamarckian;
 pub use president::President;
 
 /// Ranks from scores (0: first); equal scores share a rank.

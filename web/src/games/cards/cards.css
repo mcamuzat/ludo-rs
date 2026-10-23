@@ -21,3 +21,10 @@
 .collusion-n { min-width: 30px; padding: 3px 6px; font-size: 0.85rem; }
 .collusion-deal { margin: 0 auto; border-collapse: collapse; font-size: 0.9rem; }
 .collusion-deal th, .collusion-deal td { padding: 2px 8px; text-align: center; }
+.lamarckian-pool, .lamarckian-hand, .lamarckian-known { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+.lamarckian-pool { min-height: 76px; align-items: center; }
+.lamarckian-hand { padding-top: 10px; }
+.lamarckian-known { max-width: 220px; margin: 4px auto; }
+.lamarckian-mark { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.lamarckian-best { margin: 6px 0 0; font-weight: 600; }
+.lamarckian-showdown-cards { display: flex; gap: 2px; }

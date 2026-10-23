@@ -1,5 +1,7 @@
 import { CollusionBoard } from "./cards/collusion/Board";
 import { COLLUSION_RULES } from "./cards/collusion/rules";
+import { LamarckianBoard } from "./cards/lamarckian/Board";
+import { LAMARCKIAN_RULES } from "./cards/lamarckian/rules";
 import { BantuBoard } from "./bantu/Board";
 import { BANTU_RULES } from "./bantu/rules";
 import { BlackPotBoard } from "./black-pot/Board";
@@ -134,6 +136,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "volltreffer", family: "modern", Board: VolltrefferBoard, rules: VOLLTREFFER_RULES },
   { id: "black-vienna", family: "modern", Board: BlackViennaBoard, rules: BLACK_VIENNA_RULES },
   { id: "cryptide", family: "modern", Board: CryptideBoard, rules: CRYPTIDE_RULES },
+  { id: "cards-lamarckian", family: "modern", Board: LamarckianBoard, rules: LAMARCKIAN_RULES },
 ];
 
 export function gameUi(id: string): GameUi | undefined {

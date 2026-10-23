@@ -32,3 +32,17 @@ fn collusion_conforms() {
     check::<Collusion>(&CollusionConfig::default(), 4, 10, 21);
     check::<Collusion>(&CollusionConfig { target: 50 }, 4, 10, 22);
 }
+
+#[test]
+fn lamarckian_conforms_at_every_table_size() {
+    use cards::lamarckian::{Config as LamarckianConfig, Lamarckian};
+    for players in 2..=6u8 {
+        check::<Lamarckian>(
+            &LamarckianConfig::default(),
+            players,
+            8,
+            30 + u64::from(players),
+        );
+    }
+    check::<Lamarckian>(&LamarckianConfig { competitions: 1 }, 3, 10, 41);
+}

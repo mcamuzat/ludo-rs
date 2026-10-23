@@ -8,6 +8,13 @@ Sources :
   consulté le 2026-10-15.
 - **[C]** David Parlett, « Collusion »,
   https://www.parlettgames.uk/oricards/collude.html, consultée le 2026-10-16.
+- **[L]** James Ernest et Dave Howell, « Lamarckian Poker », *The Cheapass
+  Games Poker Suite* (Crab Fragment Labs, 2011, 2022), p. 10 ; « Seven-Handed
+  Poker », p. 12, pour « une carte d'appoint vaut mieux que rien ».
+- **[S]** *Stamp Showdown*, la reprise de Lamarckian Poker : comptes rendus
+  de cardgamer.com (« Become a Master Philatelist in Stamp Showdown ») et de
+  tabletopping.games (2026-01-26), consultés le 2026-10-23 ; la règle
+  elle-même n'a pas été consultée.
 
 Un point que les sources ne tranchent pas est marqué ❓ ; ceux du Président
 ont été validés par l'utilisateur le 2026-10-15 (spec 4, §3).
@@ -117,3 +124,46 @@ changement de places, échanges négociés, parties à 3 joueurs ou à plus de 7
   cartes en main), « Je ne sais pas encore » ou « Qui vise N ? » (0 à 13). On
   ne parle pas quand on n'a qu'une carte jouable. Les phrases s'effacent à la
   donne suivante.
+
+## Lamarckian Poker (`cards-lamarckian`, 2 à 6 joueurs)
+
+Règle de [L] avec les trois changements de [S].
+
+- **Paquet** [S] : on retire de petites cartes selon le nombre de joueurs, de
+  sorte que le paquet dure sept tours. ❓1 On retire les deux jusqu'aux
+  (7 − joueurs) : rien à 6, les deux à 5, … les deux à cinq à 2 ; le paquet
+  fait alors 4 × joueurs + 28 cartes, exactement les mains de départ et sept
+  réserves.
+- **Concours** [S] : quatre concours de sept tours, chacun suivi d'un
+  abattage ; les points s'additionnent. Option : 1 à 4 concours.
+- **Donne** [L] : chacun reçoit 4 cartes ; le paquet est remélangé à chaque
+  concours.
+- **Tour** [L] : 4 cartes face visible forment la réserve. Chacun pose une
+  carte de sa main face cachée (sa « marque ») ; quand tous ont choisi, on les
+  révèle. Personne ne sait qui a déjà choisi.
+- **Ordre** [L][S] : les marques jouent de la plus forte à la plus faible, as
+  fort ; à valeur égale, pique, cœur, carreau, trèfle.
+- **Prise** [L] : une marque prend toutes les cartes de la réserve de sa
+  valeur ou de sa couleur, puis tombe dans la réserve (les suivantes peuvent
+  la prendre).
+- **Rien à prendre** [S] : la marque prend la carte de la réserve de son
+  choix. ❓4 Ce choix est obligatoire (une carte de plus ne nuit jamais : pas
+  de limite de main, on garde les cinq meilleures) ; s'il n'y a qu'une carte,
+  elle est prise sans demander. La réserve n'est jamais vide à ce moment.
+- **Fin du tour** [L] : ce qui reste dans la réserve est défaussé.
+- Une main ne rétrécit donc jamais : la règle d'extinction de [L] ne
+  s'applique plus.
+- **Cartes vues** : les cartes prises dans la réserve sont connues de tous ;
+  le site les montre devant chaque joueur. Les cartes de départ restent
+  cachées.
+- **Abattage** [S] : chacun montre sa meilleure main de poker (cinq cartes au
+  plus, ordre de [L] ; l'as compte aussi bas dans A-2-3-4-5). Une main de
+  moins de cinq cartes joue ce qu'elle a. La meilleure main marque autant de
+  points qu'il y a de joueurs, la suivante un de moins, et ainsi de suite.
+  ❓2 [S] dit à la fois « jusqu'à zéro pour le dernier » et, en exemple à 4
+  joueurs, « 4, 3, 2, 1 » : on suit l'exemple (seuls les écarts comptent).
+  ❓3 Des mains égales (les couleurs ne départagent pas) partagent la
+  meilleure des places qu'elles occupent.
+- **Fin** [S] : après le dernier concours, le plus de points gagne ; ❓5 les
+  ex æquo partagent leur rang.
+
