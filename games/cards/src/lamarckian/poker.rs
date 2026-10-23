@@ -24,7 +24,7 @@ pub enum Category {
 /// first (the groups, then the kickers, high to low; the ace last in a
 /// five-high straight). Hands compare by category, then rank by rank:
 /// "a kicker is better than nothing" ([L] p. 12).
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PokerHand {
     pub category: Category,
     pub cards: Vec<Card>,
@@ -38,6 +38,15 @@ impl PokerHand {
         )
     }
 }
+
+/// Equal when they rank the same: suits never break a tie.
+impl PartialEq for PokerHand {
+    fn eq(&self, other: &Self) -> bool {
+        self.key() == other.key()
+    }
+}
+
+impl Eq for PokerHand {}
 
 impl PartialOrd for PokerHand {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {

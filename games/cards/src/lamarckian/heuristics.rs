@@ -69,11 +69,26 @@ impl Heuristics for Lamarckian {
             .expect("a legal action")
     }
 
-    /// Once the competition searched has ended, the scores decide: later
-    /// competitions are dealt afresh and the search cannot see them.
+    /// Once the competition searched has ended, its showdown and the
+    /// standings decide, half each: later competitions are dealt afresh and
+    /// the search cannot see them, and the standings alone often cannot
+    /// move (a lead too large for one showdown).
     fn evaluate(root: &State, sim: &State) -> Option<Vec<f64>> {
-        (sim.competition > root.competition || sim.phase == Phase::Over)
-            .then(|| Outcome::Ranked(crate::standings(&sim.scores)).rewards())
+        if sim.competition == root.competition && sim.phase != Phase::Over {
+            return None;
+        }
+        let standings = Outcome::Ranked(crate::standings(&sim.scores)).rewards();
+        let Some(lines) = &sim.last_showdown else {
+            return Some(standings);
+        };
+        let showdown = Outcome::Ranked(lines.iter().map(|l| l.place).collect()).rewards();
+        Some(
+            standings
+                .iter()
+                .zip(&showdown)
+                .map(|(a, b)| (a + b) / 2.0)
+                .collect(),
+        )
     }
 }
 
@@ -113,6 +128,34 @@ mod tests {
         s.phase = Phase::Pick;
         s.picking = Some((Seat(0), c("Jc")));
         assert_eq!(usual(&s, 0), Action::Pick { card: c("Ks") });
+    }
+
+    #[test]
+    fn the_last_showdown_counts_even_when_the_standings_cannot_move() {
+        // Seat 0 leads by far; seat 1 just won the showdown.
+        let root = Lamarckian::new(&Config::default(), 2, 1);
+        let mut sim = Lamarckian::new(&Config::default(), 2, 1);
+        sim.phase = Phase::Over;
+        sim.scores = vec![9, 6];
+        let mut won = table(&["Ks Kh", "2c 3d"], "", "");
+        won.turn_no = crate::lamarckian::TURNS;
+        sim.last_showdown = Some(vec![
+            crate::lamarckian::ShowdownLine {
+                hand: crate::lamarckian::best_hand(&won.hands[1]).unwrap(),
+                place: 1,
+                points: 1,
+                score: 9,
+            },
+            crate::lamarckian::ShowdownLine {
+                hand: crate::lamarckian::best_hand(&won.hands[0]).unwrap(),
+                place: 0,
+                points: 2,
+                score: 6,
+            },
+        ]);
+        let rewards = Lamarckian::evaluate(&root, &sim).unwrap();
+        assert_eq!(rewards, vec![0.5, 0.5]);
+        assert_eq!(Lamarckian::evaluate(&root, &root), None);
     }
 
     #[test]

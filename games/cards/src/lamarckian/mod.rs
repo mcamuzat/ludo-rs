@@ -279,7 +279,8 @@ impl State {
                 [] => self.pool.push(mark),
                 &[only] => self.pick(seat, mark, only),
                 _ => {
-                    // [S] Any single card: the player's choice.
+                    // [S] Any single card: the player's choice. ❓4 Taking one is
+                    // compulsory (an extra card never hurts).
                     self.picking = Some((seat, mark));
                     self.phase = Phase::Pick;
                     return;
@@ -489,7 +490,7 @@ impl Game for Lamarckian {
         View::of(s, viewer)
     }
 
-    /// [S] The most points after the last competition; ❓ equal totals
+    /// [S] The most points after the last competition; ❓5 equal totals
     /// share a rank.
     fn outcome(s: &State) -> Option<Outcome> {
         (s.phase == Phase::Over).then(|| Outcome::Ranked(crate::standings(&s.scores)))
