@@ -28,3 +28,20 @@
 .lamarckian-mark { display: flex; align-items: center; justify-content: center; gap: 6px; }
 .lamarckian-best { margin: 6px 0 0; font-weight: 600; }
 .lamarckian-showdown-cards { display: flex; gap: 2px; }
+.hattrick-card { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 58px; padding: 0; border: 2px solid #fff; border-radius: 6px; color: #fff; font: 800 1.2rem/1 var(--f-display); box-shadow: 0 1px 2px rgb(0 0 0 / 30%); }
+.hattrick-card.red, .hattrick-chip.red { background: #b3261e; }
+.hattrick-card.blue, .hattrick-chip.blue { background: #2563a8; }
+.hattrick-card.green, .hattrick-chip.green { background: #2e7d4f; }
+.hattrick-card.small { width: 28px; height: 40px; font-size: 0.85rem; border-width: 1px; }
+.hattrick-card.dimmed { opacity: 0.45; }
+.hattrick-card.playable { cursor: pointer; transition: transform 0.12s; }
+.hattrick-card.playable:hover { transform: translateY(-4px); }
+.hattrick-card.pass { border-style: dashed; }
+.hattrick-hand { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; padding-top: 10px; }
+.hattrick-piles { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; align-items: flex-start; min-height: 76px; }
+.hattrick-pile p { margin: 0 0 2px; text-align: center; }
+.hattrick-pile-cards { display: flex; gap: 6px; justify-content: center; }
+.hattrick-pile-cards figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.hattrick-won { display: flex; gap: 3px; justify-content: center; margin: 2px 0; }
+.hattrick-chip { min-width: 20px; padding: 1px 5px; border-radius: 9px; color: #fff; font-size: 0.8rem; font-weight: 700; text-align: center; }
+.hattrick-chip.passed { background: #555; }

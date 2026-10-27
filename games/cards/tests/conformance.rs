@@ -46,3 +46,16 @@ fn lamarckian_conforms_at_every_table_size() {
     }
     check::<Lamarckian>(&LamarckianConfig { competitions: 1 }, 3, 10, 41);
 }
+
+#[test]
+fn hattrick_conforms_at_every_table_size() {
+    use cards::hattrick::{Config as HattrickConfig, Hattrick};
+    for players in 4..=6u8 {
+        check::<Hattrick>(
+            &HattrickConfig::default(),
+            players,
+            6,
+            50 + u64::from(players),
+        );
+    }
+}

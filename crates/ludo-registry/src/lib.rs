@@ -31,6 +31,7 @@ static PAIRS_MARKET_DAY: GameEntry<pairs::MarketDay> = GameEntry::new();
 static CARDS_PRESIDENT: GameEntry<cards::President> = GameEntry::new();
 static CARDS_COLLUSION: GameEntry<cards::Collusion> = GameEntry::new();
 static CARDS_LAMARCKIAN: GameEntry<cards::Lamarckian> = GameEntry::new();
+static CARDS_HATTRICK: GameEntry<cards::Hattrick> = GameEntry::new();
 static PENNYWISE: GameEntry<pennywise::Pennywise> = GameEntry::new();
 static BANTU: GameEntry<bantu::Bantu> = GameEntry::new();
 static MONAD: GameEntry<monad::Monad> = GameEntry::new();
@@ -70,6 +71,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &CARDS_PRESIDENT,
     &CARDS_COLLUSION,
     &CARDS_LAMARCKIAN,
+    &CARDS_HATTRICK,
     &PENNYWISE,
     &BANTU,
     &MONAD,

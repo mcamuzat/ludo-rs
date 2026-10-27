@@ -120,20 +120,21 @@ pub fn pack_54() -> Vec<Card> {
 /// `cards` shuffled from `seed`. ChaCha, not `SmallRng`: the latter is a
 /// different generator on wasm32 and on 64-bit targets, and a log recorded
 /// in the browser must replay natively.
-pub fn shuffled(mut cards: Vec<Card>, seed: u64) -> Vec<Card> {
+/// Generic over the card type: other games with their own pack use it too.
+pub fn shuffled<T>(mut cards: Vec<T>, seed: u64) -> Vec<T> {
     cards.shuffle(&mut ChaCha8Rng::seed_from_u64(seed));
     cards
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Deal {
-    pub hands: Vec<Vec<Card>>,
+pub struct Deal<T = Card> {
+    pub hands: Vec<Vec<T>>,
     /// The cards left over, shown to everyone and kept out of the round.
-    pub set_aside: Vec<Card>,
+    pub set_aside: Vec<T>,
 }
 
 /// Shuffles and deals the same number of cards to each of `players`.
-pub fn deal_evenly(cards: Vec<Card>, players: u8, seed: u64) -> Deal {
+pub fn deal_evenly<T: Clone>(cards: Vec<T>, players: u8, seed: u64) -> Deal<T> {
     let mut cards = shuffled(cards, seed);
     let n = usize::from(players);
     let set_aside = cards.split_off(cards.len() - cards.len() % n);

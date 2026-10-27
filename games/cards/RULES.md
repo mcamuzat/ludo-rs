@@ -15,6 +15,9 @@ Sources :
   de cardgamer.com (« Become a Master Philatelist in Stamp Showdown ») et de
   tabletopping.games (2026-01-26), consultés le 2026-10-23 ; la règle
   elle-même n'a pas été consultée.
+- **[H]** « Hattrick », règle parue dans *Jeux en boîte, la revue des jeux de
+  société*, mise en ligne par l'Escale à jeux (`hattr_rg.pdf`), consultée le
+  2026-10-27.
 
 Un point que les sources ne tranchent pas est marqué ❓ ; ceux du Président
 ont été validés par l'utilisateur le 2026-10-15 (spec 4, §3).
@@ -167,3 +170,41 @@ Règle de [L] avec les trois changements de [S].
 - **Fin** [S] : après le dernier concours, le plus de points gagne ; ❓5 les
   ex æquo partagent leur rang.
 
+## Hattrick (`cards-hattrick`, 4 à 6 joueurs)
+
+- **Matériel** [H] : 60 cartes, de 1 à 20 en trois couleurs. [H] ne nomme
+  pas les couleurs ; son exemple parle de rouges, bleues et vertes, que le
+  site reprend.
+- **But** [H] : réunir le plus de cartes d'une couleur et éviter les deux
+  autres.
+- **Donne** [H] : 15 cartes à 4 joueurs, 12 à 5, 10 à 6 (tout le paquet). Le
+  joueur à gauche du donneur commence ; la donne passe à gauche à chaque
+  manche. ❓ Le siège 0 donne la première manche.
+- **Tour** [H] : le premier joueur pose la carte de son choix, puis chacun à
+  son tour dans le sens horaire pose une carte de la même couleur ou d'une
+  autre. Une carte d'une deuxième couleur ouvre une deuxième pile ; une
+  troisième couleur est interdite. Le tour finit quand tous ont joué (ou
+  passé) une fois.
+- **Passer** [H] : seulement quand deux piles sont ouvertes, et au choix du
+  joueur (« ne peut pas ou ne veut pas »). Il montre à tous une carte de la
+  troisième couleur et la pose face cachée devant lui. Le site garde la carte
+  montrée visible dans le tour en cours et le dernier tour.
+- **Prise** [H] : la plus forte carte de chaque pile la remporte ; avec deux
+  piles, deux gagnants. Les cartes gagnées restent en vue devant leur
+  gagnant, une pile par couleur : le site montre leur nombre par couleur.
+- **Tour suivant** [H] : le joueur de la carte la plus forte du tour commence
+  le suivant ; si les deux piles ont la même plus forte carte, la 2e, puis la
+  3e carte la plus forte de chaque pile départage. ❓ Une pile qui n'a plus
+  de carte à comparer perd ; deux piles identiques donnent la main à la pile
+  ouverte en premier.
+- **Dernière carte** [H] : la dernière carte de chaque joueur n'est pas jouée
+  et ne compte pas.
+- **Points** [H] : la couleur dont on a le plus de cartes compte +1 par
+  carte, les deux autres −1 par carte, chaque carte posée en passant −2,
+  quelle que soit sa couleur (exemple de [H] : 9 rouges, 2 bleues, 4 vertes
+  et une carte cachée font 9 − 2 − 4 − 2 = 1). Si deux couleurs sont à
+  égalité en tête, le résultat est le même quelle que soit celle qui compte.
+- **Fin** [H] : après deux fois plus de manches que de joueurs ; le plus haut
+  total gagne, les ex æquo partagent leur rang.
+- **Variante non retenue** [H] : jouer jusqu'à un total de points fixé. Les
+  scores pouvant baisser, une partie pourrait ne jamais finir.
