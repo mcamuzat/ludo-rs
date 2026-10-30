@@ -40,6 +40,7 @@ static BLACK_VIENNA: GameEntry<black_vienna::BlackVienna> = GameEntry::new();
 static CRYPTIDE: GameEntry<cryptide::Cryptide> = GameEntry::new();
 static BLACK_POT: GameEntry<black_pot::BlackPot> = GameEntry::new();
 static MANOEVER: GameEntry<manoever::Manoever> = GameEntry::new();
+static SIBERIAN_DICE: GameEntry<siberian_dice::SiberianDice> = GameEntry::new();
 
 pub static GAMES: &[&dyn AnyGame] = &[
     &YAVALATH,
@@ -80,6 +81,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &CRYPTIDE,
     &BLACK_POT,
     &MANOEVER,
+    &SIBERIAN_DICE,
 ];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {
@@ -93,6 +95,11 @@ mod tests {
     use serde_json::Value;
 
     use super::*;
+
+    #[test]
+    fn siberian_dice_is_for_two() {
+        assert_eq!(find("siberian-dice").unwrap().player_counts(), vec![2]);
+    }
 
     #[test]
     fn black_pot_offers_two_or_four_players() {

@@ -294,6 +294,7 @@ dependencies = [
  "pennywise",
  "riichi",
  "serde_json",
+ "siberian-dice",
  "volltreffer",
  "yavalath",
 ]
