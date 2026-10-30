@@ -208,3 +208,35 @@ Règle de [L] avec les trois changements de [S].
   total gagne, les ex æquo partagent leur rang.
 - **Variante non retenue** [H] : jouer jusqu'à un total de points fixé. Les
   scores pouvant baisser, une partie pourrait ne jamais finir.
+
+## David & Goliath (`cards-david-goliath`, 3 à 6 joueurs)
+
+Sources : **[R]** deux traductions anglaises concordantes de la règle de
+Reinhard Staupe, fournies par l'utilisateur (le jeu est introuvable).
+
+- **Matériel** [R] : 90 cartes, de 1 à 18 en cinq couleurs, rouge, jaune,
+  vert, bleu et violet.
+- **Paquet** [R] : à 3 joueurs on garde les valeurs 1 à 9, à 4 joueurs 1 à
+  12, à 5 joueurs 1 à 15, et à 6 joueurs tout le paquet. Chacun reçoit
+  toujours 15 cartes.
+- **Donne** [R] : le joueur à gauche du donneur commence. ❓ Le siège 0
+  donne la première manche, puis la donne passe à gauche à chaque manche.
+- **Pli** [R] : le premier joueur pose la carte de son choix. Les autres
+  jouent ensuite dans le sens horaire. On doit **fournir** la couleur
+  demandée si on le peut, et sinon on joue ce qu'on veut.
+- **Prise** [R] : la plus haute et la plus basse carte se comparent par leur
+  valeur, quelle que soit leur couleur. En cas d'égalité, la dernière jouée
+  l'emporte. Le joueur de la plus basse carte prend la plus haute. Celui de
+  la plus haute prend toutes les autres et commence le pli suivant.
+  ❓ Si toutes les cartes ont la même valeur, la dernière jouée est à la
+  fois la plus haute et la plus basse : son joueur prend tout.
+- **Cartes gagnées** [R] : elles restent visibles devant leur joueur. Un
+  joueur qui n'a pas fourni une couleur est connu pour ne plus en avoir
+  jusqu'à la fin de la manche, et l'IA en tient compte.
+- **Points** [R] : on compte chaque couleur à part. Une ou deux cartes
+  rapportent leur valeur, et trois cartes ou plus rapportent 1 point
+  chacune. Exemple de [R] : rouge 4, 10, 11 (3), jaune 8 (8), vert 5, 9
+  (14), bleu 2, 3, 6, 10, 12 (5) et violet 10, 12 (22) font 52 points.
+- **Fin** [R] : une manche dure 15 plis, et la partie compte autant de
+  manches que de joueurs. Le plus haut total gagne, et les ex æquo
+  partagent leur rang.

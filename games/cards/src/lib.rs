@@ -1,13 +1,15 @@
 //! Card games, most of them played with a French-suited pack (`deck.rs`);
-//! Hattrick has its own. Rules and their sources: RULES.md.
+//! Hattrick and David & Goliath have their own. Rules and their sources: RULES.md.
 
 pub mod collusion;
+pub mod david_goliath;
 pub mod deck;
 pub mod hattrick;
 pub mod lamarckian;
 pub mod president;
 
 pub use collusion::Collusion;
+pub use david_goliath::DavidGoliath;
 pub use hattrick::Hattrick;
 pub use lamarckian::Lamarckian;
 pub use president::President;

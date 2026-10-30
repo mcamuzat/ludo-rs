@@ -32,6 +32,7 @@ static CARDS_PRESIDENT: GameEntry<cards::President> = GameEntry::new();
 static CARDS_COLLUSION: GameEntry<cards::Collusion> = GameEntry::new();
 static CARDS_LAMARCKIAN: GameEntry<cards::Lamarckian> = GameEntry::new();
 static CARDS_HATTRICK: GameEntry<cards::Hattrick> = GameEntry::new();
+static CARDS_DAVID_GOLIATH: GameEntry<cards::DavidGoliath> = GameEntry::new();
 static PENNYWISE: GameEntry<pennywise::Pennywise> = GameEntry::new();
 static BANTU: GameEntry<bantu::Bantu> = GameEntry::new();
 static MONAD: GameEntry<monad::Monad> = GameEntry::new();
@@ -73,6 +74,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &CARDS_COLLUSION,
     &CARDS_LAMARCKIAN,
     &CARDS_HATTRICK,
+    &CARDS_DAVID_GOLIATH,
     &PENNYWISE,
     &BANTU,
     &MONAD,
@@ -95,6 +97,14 @@ mod tests {
     use serde_json::Value;
 
     use super::*;
+
+    #[test]
+    fn david_goliath_is_for_three_to_six() {
+        assert_eq!(
+            find("cards-david-goliath").unwrap().player_counts(),
+            vec![3, 4, 5, 6]
+        );
+    }
 
     #[test]
     fn siberian_dice_is_for_two() {

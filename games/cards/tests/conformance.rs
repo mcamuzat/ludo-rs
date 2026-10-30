@@ -59,3 +59,16 @@ fn hattrick_conforms_at_every_table_size() {
         );
     }
 }
+
+#[test]
+fn david_goliath_conforms_at_every_table_size() {
+    use cards::david_goliath::{Config as DavidGoliathConfig, DavidGoliath};
+    for players in 3..=6u8 {
+        check::<DavidGoliath>(
+            &DavidGoliathConfig::default(),
+            players,
+            4,
+            60 + u64::from(players),
+        );
+    }
+}
