@@ -1,5 +1,7 @@
 import { CollusionBoard } from "./cards/collusion/Board";
 import { COLLUSION_RULES } from "./cards/collusion/rules";
+import { DavidGoliathBoard } from "./cards/david-goliath/Board";
+import { DAVID_GOLIATH_RULES } from "./cards/david-goliath/rules";
 import { HattrickBoard } from "./cards/hattrick/Board";
 import { HATTRICK_RULES } from "./cards/hattrick/rules";
 import { LamarckianBoard } from "./cards/lamarckian/Board";
@@ -143,6 +145,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "cryptide", family: "modern", Board: CryptideBoard, rules: CRYPTIDE_RULES },
   { id: "cards-lamarckian", family: "modern", Board: LamarckianBoard, rules: LAMARCKIAN_RULES },
   { id: "cards-hattrick", family: "modern", Board: HattrickBoard, rules: HATTRICK_RULES },
+  { id: "cards-david-goliath", family: "modern", Board: DavidGoliathBoard, rules: DAVID_GOLIATH_RULES },
 ];
 
 export function gameUi(id: string): GameUi | undefined {
