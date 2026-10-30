@@ -126,10 +126,10 @@ fn timeout_picks_a_board_die_when_the_reserve_is_empty() {
         Some(Action::Pick(Source::Cell(at(11))))
     );
     rolled(&mut s, Source::Cell(at(11)), 4);
-    assert_eq!(
+    assert!(matches!(
         SiberianDice::timeout_action(&s, Seat(0)),
-        Some(Action::Place(0))
-    );
+        Some(Action::Place(_))
+    ));
 }
 
 #[test]
@@ -229,7 +229,7 @@ fn the_rolls_of_a_seed_are_pinned() {
             panic!()
         };
         rolls.push(value);
-        // Spread out so that no die is ever perfect by chance of placement.
+        // Rolls do not depend on where the dice go.
         let free = (0..cells().len() as u8)
             .rev()
             .find(|&c| s.board[usize::from(c)].is_none())

@@ -2,7 +2,7 @@
 .sd-board { width: min(100%, 560px); height: auto; border-radius: 14px; }
 .sd-hex { fill: #0f2f57; stroke: #e9b25c; stroke-width: 1.5; }
 .sd-cell.playable, .sd-cell.pickable { cursor: pointer; }
-.sd-cell.playable .sd-hex { fill: #1d4f8c; stroke: var(--brass); stroke-width: 3; }
+.sd-cell.playable .sd-hex, .sd-cell.pickable .sd-hex { fill: #1d4f8c; stroke: var(--brass); stroke-width: 3; }
 .sd-cell.playable:hover .sd-hex, .sd-cell.pickable:hover .sd-die { filter: brightness(1.15); }
 .sd-cell.last .sd-hex { stroke: #f3e4c4; stroke-width: 3; stroke-dasharray: 5 3; }
 .sd-die { stroke: #10141c; stroke-width: 1.5; }

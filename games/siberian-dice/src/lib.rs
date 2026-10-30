@@ -295,10 +295,17 @@ impl Game for SiberianDice {
         })
     }
 
-    /// The reserve first, else the first die on the board; the first
-    /// vacant cell.
+    /// The reserve first, else the first die on the board; then the cell
+    /// that best improves the lead in perfect dice (the first on a tie).
     fn timeout_action(s: &State, seat: Seat) -> Option<Action> {
-        Self::legal_actions(s, seat).into_iter().next()
+        let legal = Self::legal_actions(s, seat);
+        match s.step {
+            Step::Choose => legal.into_iter().next(),
+            Step::Place { .. } => legal.into_iter().rev().max_by_key(|a| match *a {
+                Action::Place(to) => gain(s, seat, to),
+                Action::Pick(_) => i32::MIN,
+            }),
+        }
     }
 }
 

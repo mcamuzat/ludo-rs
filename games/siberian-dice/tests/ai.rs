@@ -69,3 +69,16 @@ fn every_rollout_action_is_legal() {
         SiberianDice::apply(&mut s, seat, &a).unwrap();
     }
 }
+
+#[test]
+fn timeout_places_on_the_best_cell() {
+    let mut s = position(&FIVE_BLUE, 0);
+    rolled(&mut s, Source::Reserve, 1);
+    let action = SiberianDice::timeout_action(&s, Seat(0)).unwrap();
+    let Action::Place(to) = action else {
+        panic!("{action:?}")
+    };
+    assert_eq!(gain(&s, Seat(0), to), 2);
+    SiberianDice::apply(&mut s, Seat(0), &action).unwrap();
+    assert_eq!(s.end, Some(End::Won { seat: 0 }));
+}
