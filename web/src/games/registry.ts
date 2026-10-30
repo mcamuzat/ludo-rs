@@ -75,6 +75,8 @@ import { CryptideBoard } from "./cryptide/Board";
 import { CRYPTIDE_RULES } from "./cryptide/rules";
 import { VolltrefferBoard } from "./volltreffer/Board";
 import { VOLLTREFFER_RULES } from "./volltreffer/rules";
+import { SiberianDiceBoard } from "./siberian-dice/Board";
+import { SIBERIAN_DICE_RULES } from "./siberian-dice/rules";
 import { YavalathBoard } from "./yavalath/Board";
 
 /** What every game board receives. It displays and submits; it computes nothing. */
@@ -106,6 +108,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "bantu", family: "board", Board: BantuBoard, rules: BANTU_RULES },
   { id: "black-pot", family: "board", Board: BlackPotBoard, rules: BLACK_POT_RULES },
   { id: "manoever", family: "board", Board: ManoeverBoard, rules: MANOEVER_RULES },
+  { id: "siberian-dice", family: "board", Board: SiberianDiceBoard, rules: SIBERIAN_DICE_RULES },
   { id: "riichi", family: "tiles", Board: RiichiBoard, hidden: true },
   { id: "pairs-continuous", family: "pairs", Board: ContinuousBoard, rules: CONTINUOUS_RULES },
   { id: "pairs-auberge", family: "pairs", Board: AubergeBoard, rules: AUBERGE_RULES },
