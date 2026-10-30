@@ -179,11 +179,14 @@ impl State {
     }
 
     /// A fresh round from the round's own stream of the seed, so that a log
-    /// replays identically. [R] The player at the dealer's left leads.
+    /// replays identically. ❓ [R] names only a starting player: the player
+    /// at the dealer's left leads.
     fn start_round(&mut self) {
         let stream = self.seed ^ u64::from(self.round + 1).wrapping_mul(0x9E37_79B9_7F4A_7C15);
         self.hands = deal_evenly(pack(self.players), self.players, stream).hands;
         self.trick.clear();
+        // The new round is not led by the last trick's taker.
+        self.last_trick = None;
         self.won = vec![Vec::new(); usize::from(self.players)];
         self.void = vec![[false; 5]; usize::from(self.players)];
         self.turn = Some(self.next(self.dealer));

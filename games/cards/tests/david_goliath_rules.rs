@@ -147,6 +147,8 @@ fn the_round_scores_the_won_cards() {
     assert_eq!(s.scores, vec![22, 6, 9]);
     assert_eq!(s.round, 1);
     assert!(s.won.iter().all(|w| w.is_empty()));
+    // The new round is led from the dealer's left, not by the last taker.
+    assert_eq!(s.last_trick, None);
 }
 
 #[test]
@@ -160,6 +162,7 @@ fn determinization_respects_known_voids() {
     }
     let observer = Seat(0);
     let view = DavidGoliath::view(&s, Viewer::Seat(observer));
+    let mut changed = false;
     for seed in 0..30 {
         let d = DavidGoliath::determinize(&s, observer, &mut SmallRng::seed_from_u64(seed));
         assert_eq!(d.hands[0], s.hands[0]);
@@ -173,5 +176,7 @@ fn determinization_respects_known_voids() {
                 );
             }
         }
+        changed |= d.hands[1..] != s.hands[1..];
     }
+    assert!(changed, "the other hands are actually redealt");
 }

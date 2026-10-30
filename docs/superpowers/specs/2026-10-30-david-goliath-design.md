@@ -36,8 +36,9 @@ viennent pas des règles sont marquées *(choix du site)* ici et ❓ dans
 - **Paquet selon les joueurs** [R] : à 3, les valeurs 1 à 9 (45 cartes) ; à
   4, de 1 à 12 ; à 5, de 1 à 15 ; à 6, tout le paquet. Cela fait toujours
   15 cartes par joueur, soit des valeurs de 1 à 3 × le nombre de joueurs.
-- **Donne** [R] : le joueur à gauche du donneur commence. ❓ Le siège 0
-  donne la première manche, et la donne passe à gauche à chaque manche
+- **Donne** ❓ : [R] ne parle que d'un « premier joueur ». Le joueur à
+  gauche du donneur commence. Le siège 0 donne la première manche, puis
+  la donne passe à gauche à chaque manche
   *(choix du site, comme Hattrick)*.
 - **Pli** [R] : le premier joueur pose la carte de son choix. Les autres
   jouent ensuite à tour de rôle, dans le sens horaire. Il faut **fournir**

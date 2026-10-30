@@ -219,8 +219,9 @@ Reinhard Staupe, fournies par l'utilisateur (le jeu est introuvable).
 - **Paquet** [R] : à 3 joueurs on garde les valeurs 1 à 9, à 4 joueurs 1 à
   12, à 5 joueurs 1 à 15, et à 6 joueurs tout le paquet. Chacun reçoit
   toujours 15 cartes.
-- **Donne** [R] : le joueur à gauche du donneur commence. ❓ Le siège 0
-  donne la première manche, puis la donne passe à gauche à chaque manche.
+- **Donne** ❓ : [R] parle seulement d'un « premier joueur ». Le site fait
+  commencer le joueur à gauche du donneur. Le siège 0 donne la première
+  manche, puis la donne passe à gauche à chaque manche.
 - **Pli** [R] : le premier joueur pose la carte de son choix. Les autres
   jouent ensuite dans le sens horaire. On doit **fournir** la couleur
   demandée si on le peut, et sinon on joue ce qu'on veut.
