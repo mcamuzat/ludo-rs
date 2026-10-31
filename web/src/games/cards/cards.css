@@ -60,3 +60,31 @@
 .dg-trick figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .dg-won { display: flex; flex-direction: column; gap: 2px; align-items: center; margin: 2px 0; }
 .dg-won-row { display: flex; gap: 2px; }
+
+/* Cobras: cream cards, the value in brown, 1 to 3 cobras in the suit's colour (as printed). */
+.cb-card { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 42px; height: 60px; padding: 0; border: 1px solid #c8b99a; border-radius: 6px; background: #fbf6ec; color: #7a5a3f; font: 800 1.15rem/1 var(--f-display); box-shadow: 0 1px 2px rgb(0 0 0 / 30%); }
+.cb-card.red .cb-snakes { color: #d9534f; }
+.cb-card.green .cb-snakes { color: #6f9474; }
+.cb-card.blue .cb-snakes { color: #4f93d1; }
+.cb-card.yellow .cb-snakes { color: #e3a91c; }
+.cb-card.red { border-color: #d9534f; }
+.cb-card.green { border-color: #6f9474; }
+.cb-card.blue { border-color: #4f93d1; }
+.cb-card.yellow { border-color: #e3a91c; }
+.cb-snakes { display: flex; gap: 1px; }
+.cb-snake { width: 9px; height: 13px; }
+.cb-card.small { width: 26px; height: 36px; font-size: 0.75rem; gap: 1px; vertical-align: middle; }
+.cb-card.small .cb-snake { width: 5px; height: 8px; }
+.cb-card.dimmed { opacity: 0.45; }
+.cb-card.playable { cursor: pointer; transition: transform 0.12s; }
+.cb-card.playable:hover { transform: translateY(-4px); }
+.cb-card.king { background: #2b2b2b; border-color: #111; color: #f1e8d4; font-size: 0.6rem; text-align: center; line-height: 1.15; }
+.cb-king-share { font-weight: 600; opacity: 0.85; }
+.cb-hand { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; padding-top: 10px; }
+.cb-chosen .cb-card { outline: 3px solid var(--brass, #c9a227); outline-offset: 1px; }
+.cb-trick { display: flex; gap: 8px; justify-content: center; min-height: 78px; }
+.cb-trick figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.cb-status { display: flex; gap: 14px; justify-content: center; margin: 0 0 6px; font-weight: 600; }
+.cb-basket { margin: 2px 0; }
+.cb-seed { display: flex; align-items: center; gap: 4px; justify-content: center; }
+.cb-kings { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; padding-top: 8px; }
