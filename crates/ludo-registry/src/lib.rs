@@ -33,6 +33,7 @@ static CARDS_COLLUSION: GameEntry<cards::Collusion> = GameEntry::new();
 static CARDS_LAMARCKIAN: GameEntry<cards::Lamarckian> = GameEntry::new();
 static CARDS_HATTRICK: GameEntry<cards::Hattrick> = GameEntry::new();
 static CARDS_DAVID_GOLIATH: GameEntry<cards::DavidGoliath> = GameEntry::new();
+static CARDS_COBRAS: GameEntry<cards::Cobras> = GameEntry::new();
 static PENNYWISE: GameEntry<pennywise::Pennywise> = GameEntry::new();
 static BANTU: GameEntry<bantu::Bantu> = GameEntry::new();
 static MONAD: GameEntry<monad::Monad> = GameEntry::new();
@@ -75,6 +76,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &CARDS_LAMARCKIAN,
     &CARDS_HATTRICK,
     &CARDS_DAVID_GOLIATH,
+    &CARDS_COBRAS,
     &PENNYWISE,
     &BANTU,
     &MONAD,
@@ -103,6 +105,14 @@ mod tests {
         assert_eq!(
             find("cards-david-goliath").unwrap().player_counts(),
             vec![3, 4, 5, 6]
+        );
+    }
+
+    #[test]
+    fn cobras_is_for_two_to_five() {
+        assert_eq!(
+            find("cards-cobras").unwrap().player_counts(),
+            vec![2, 3, 4, 5]
         );
     }
 

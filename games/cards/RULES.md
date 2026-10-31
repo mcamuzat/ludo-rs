@@ -19,6 +19,10 @@ Sources :
   société*, mise en ligne par l'Escale à jeux (`hattr_rg.pdf`), consultée le
   2026-10-27.
 
+- **[K]** Chris et Suzanne Zinsli, *Cobras Rules v3* (Cardboard Edison,
+  2017), pages 1 à 9, et son print-and-play (copies de l'utilisateur, hors
+  dépôt), consultés le 2026-10-31.
+
 Un point que les sources ne tranchent pas est marqué ❓ ; ceux du Président
 ont été validés par l'utilisateur le 2026-10-15 (spec 4, §3).
 
@@ -241,3 +245,68 @@ Reinhard Staupe, fournies par l'utilisateur (le jeu est introuvable).
 - **Fin** [R] : une manche dure 15 plis, et la partie compte autant de
   manches que de joueurs. Le plus haut total gagne, et les ex æquo
   partagent leur rang.
+
+## Cobras (`cards-cobras`, 2 à 5 joueurs)
+
+Spec : `docs/superpowers/specs/2026-10-31-cobras-design.md`. Le mode solo
+de [K] n'est pas repris.
+
+### Matériel
+
+- [K] 52 cartes, de 1 à 13 en rouge, vert, bleu et jaune. De 1 à 4 :
+  1 cobra ; de 5 à 9 : 2 ; de 10 à 13 : 3 (les triples). Un Cobra Royal et
+  un panier par joueur.
+- ❓ Les jetons de cobra sont illimités ([K] en fournit 42 sans prévoir
+  qu'ils manquent).
+- [K] Barème du panier : 1 → 1, 2 → 3, 3 → 5, 4 → 8, 5 → 11, 6 → 15,
+  7 → 21, 8 → 15, 9 → 8, 10 et plus → 3 ; un panier vide ne rapporte rien.
+
+### Manche
+
+- [K] Les 52 cartes sont distribuées également ; une reste écartée face
+  cachée à 3 joueurs, deux à 5. À 2 joueurs, on donne comme à 3 et la
+  troisième pile est celle du fictif.
+- [K] Chacun choisit en secret une carte de sa main pour amorcer son
+  panier ; on les révèle ensemble. Les triples révélés comptent dans la
+  ligne. ❓ Pendant ce choix, personne ne sait qui a déjà choisi.
+- [K] Le premier joueur de la première manche est tiré au hasard ; ensuite,
+  c'est celui qui a le moins de points. ❓ Entre ex-aequo, le premier dans
+  le sens horaire après celui qui a commencé la manche précédente.
+- [K] Il faut fournir la couleur demandée si on le peut. La plus haute
+  carte de la couleur demandée gagne le pli ; son joueur rend **tout** son
+  panier contre les points du barème et commence le pli suivant.
+- [K] Les cobras des cartes du pli et ceux du centre sont partagés le plus
+  également possible entre les joueurs qui n'ont pas gagné ; le reste de la
+  division reste au centre.
+- [K] Cobra Royal : une fois par manche, à son tour, à la place d'une carte
+  (même quand on pourrait fournir). On annonce qu'on partage la victoire
+  (on rend son panier) ou la défaite (on prend sa part). Il ne compte aucun
+  cobra. S'il ouvre le pli, la carte suivante fixe la couleur demandée.
+- [K] Si personne ne gagne avec une carte, celui qui a ouvert le pli ouvre
+  le suivant. ❓ Ceux qui ont annoncé la victoire rendent quand même leur
+  panier. S'il n'y a aucun perdant, tous les cobras restent au centre.
+- [K] La manche s'arrête quand la ligne compte 10 triples après un pli.
+  Chacun perd 1 point par cobra resté dans son panier ; le centre est vidé
+  et les Cobras Royaux reviennent. ❓ Elle s'arrête aussi si une main est
+  vide après un pli (le joueur qui a joué son Cobra Royal a une carte de
+  plus que les autres).
+
+### Fin de partie
+
+- [K] Après la manche où un joueur atteint 100 points (75 à 5 joueurs). Le
+  plus haut total gagne ; les ex-aequo partagent le rang. Pas de limite de
+  durée.
+
+### À 2 joueurs
+
+- [K] Le fictif est assis à gauche du donneur ; ❓ le siège 0 donne la
+  première manche, puis la donne alterne. Il joue la carte du dessus de sa
+  pile, n'amorce pas de panier et n'a pas de Cobra Royal.
+- [K] Option : pile cachée (« haute surprise ») ou retournée après l'amorce
+  des paniers (« haute stratégie », carte du dessus visible). ❓ Retournée
+  par défaut.
+- [K] Quand il suit, sa carte compte comme de la couleur demandée et perd
+  une égalité de valeur contre une vraie carte de la couleur. Quand il ouvre,
+  sa carte fixe la couleur.
+- [K] Il prend sa part des cobras (perdue), peut gagner un pli sans marquer
+  et ouvre alors le suivant. Il ne commence jamais une manche.

@@ -72,3 +72,20 @@ fn david_goliath_conforms_at_every_table_size() {
         );
     }
 }
+
+#[test]
+fn cobras_conforms_at_every_table_size() {
+    use cards::cobras::{Cobras, Config as CobrasConfig, DummyPile};
+    for players in 2..=5u8 {
+        check::<Cobras>(
+            &CobrasConfig::default(),
+            players,
+            3,
+            70 + u64::from(players),
+        );
+    }
+    let hidden = CobrasConfig {
+        dummy: DummyPile::Hidden,
+    };
+    check::<Cobras>(&hidden, 2, 3, 79);
+}
