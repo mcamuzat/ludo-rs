@@ -13,6 +13,7 @@ black-pot.workspace = true
 manoever.workspace = true
 siberian-dice.workspace = true
 black-hole.workspace = true
+corporation.workspace = true
 riichi.workspace = true
 pairs.workspace = true
 cards.workspace = true

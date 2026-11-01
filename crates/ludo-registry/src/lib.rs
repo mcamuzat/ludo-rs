@@ -44,6 +44,7 @@ static BLACK_POT: GameEntry<black_pot::BlackPot> = GameEntry::new();
 static MANOEVER: GameEntry<manoever::Manoever> = GameEntry::new();
 static SIBERIAN_DICE: GameEntry<siberian_dice::SiberianDice> = GameEntry::new();
 static BLACK_HOLE: GameEntry<black_hole::BlackHole> = GameEntry::new();
+static CORPORATION: GameEntry<corporation::Corporation> = GameEntry::new();
 
 pub static GAMES: &[&dyn AnyGame] = &[
     &YAVALATH,
@@ -88,6 +89,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &MANOEVER,
     &SIBERIAN_DICE,
     &BLACK_HOLE,
+    &CORPORATION,
 ];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {
@@ -116,6 +118,11 @@ mod tests {
             find("cards-cobras").unwrap().player_counts(),
             vec![2, 3, 4, 5]
         );
+    }
+
+    #[test]
+    fn corporation_is_for_two_to_four() {
+        assert_eq!(find("corporation").unwrap().player_counts(), vec![2, 3, 4]);
     }
 
     #[test]

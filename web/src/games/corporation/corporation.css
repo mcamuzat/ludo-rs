@@ -1,0 +1,25 @@
+.corporation { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.corp-board { width: min(100%, 560px); height: auto; border-radius: 18px; padding: 8px; }
+.corp-Red { fill: #d4302b; background: #d4302b; }
+.corp-Blue { fill: #1f4fd1; background: #1f4fd1; }
+.corp-Green { fill: #2e9d4a; background: #2e9d4a; }
+.corp-Yellow { fill: #e3b51e; background: #e3b51e; }
+.corp-office { fill-opacity: 0.6; stroke: color-mix(in srgb, #fff 40%, transparent); stroke-width: 1; }
+.corp-boardroom { fill: color-mix(in srgb, var(--brass) 30%, transparent); stroke: var(--brass); stroke-width: 2; }
+.corp-label { fill: var(--table-muted); font: 600 11px var(--f-display); text-anchor: end; pointer-events: none; }
+.corp-man { stroke: #fff; stroke-width: 2; }
+.corp-man.eligible { stroke: var(--brass); stroke-width: 4; }
+.corp-room.playable { cursor: pointer; }
+.corp-room.playable rect { stroke: var(--brass); stroke-width: 3; }
+.corp-room.playable:hover rect { fill-opacity: 0.85; }
+.corp-table { fill: color-mix(in srgb, #e8b48a 45%, transparent); stroke: color-mix(in srgb, #fff 40%, transparent); }
+.corp-counter { stroke: #fff; stroke-width: 2; }
+.corp-free { fill: color-mix(in srgb, #fff 12%, transparent); stroke: color-mix(in srgb, #fff 55%, transparent); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.corp-circle.playable { cursor: pointer; }
+.corp-circle.playable circle { stroke: var(--brass); stroke-width: 3; }
+.corp-circle.selected circle { stroke: #fff; stroke-width: 5; }
+.corp-number { fill: var(--table-muted); font: 700 13px var(--f-display); dominant-baseline: middle; pointer-events: none; }
+.corporation .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.corp-picks { display: flex; gap: 8px; justify-content: center; }
+.corp-pick { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff; color: #fff; font: 800 1rem var(--f-display); padding: 0; text-shadow: 0 1px 2px #0008; }
+.corp-pick.selected { outline: 3px solid var(--brass); outline-offset: 2px; }

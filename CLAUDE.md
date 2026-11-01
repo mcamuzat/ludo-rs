@@ -47,6 +47,7 @@ ludo-rs : plateforme de jeux traditionnels. Moteur Rust (`crates/ludo-core`, `ga
 - `cargo run --release -p ludo-cli -- arena manoever 200 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.985 mesuré ; 0.912 à 4 joueurs sur 40 parties ; ~11 s par partie à 2 joueurs, 35 min pour 200). Plateau : `scripts/manoever-board.py <règle.pdf> <dossier>` régénère `games/manoever/src/board_data.rs` depuis le PDF (hors dépôt) et une image de contrôle, puis `UPDATE_BOARD_JSON=1 cargo test -p manoever` met à jour `web/src/games/manoever/board.json`.
 - `cargo run --release -p ludo-cli -- arena siberian-dice 200 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (1.000 mesuré ; Moyen contre Facile 1.000 et Difficile contre Moyen 0.817 sur 60 parties ; ~4 min pour 200 parties sur 12 cœurs). 2 joueurs seulement, règle de base sans variantes.
 - `cargo run --release -p ludo-cli -- arena black-hole 200 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.915 mesuré ; 0.948 avec `--config '{"order":"Free"}'`, 0.897 avec `'{"order":"Random"}'`).
+- `cargo run --release -p ludo-cli -- arena corporation 200 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.995 mesuré ; 0.989 à 4 joueurs sur 60 parties ; 1.000 avec `--config '{"table":"Random"}'` sur 60 ; ~5 min pour 200 parties à 2).
 - `cargo run --release -p ludo-cli -- play yavalath 2 medium` : partie en terminal.
 - Web : `./scripts/build-wasm.sh` (ou `dev`), puis `cd web && pnpm dev` / `pnpm test` / `pnpm build`.
 
