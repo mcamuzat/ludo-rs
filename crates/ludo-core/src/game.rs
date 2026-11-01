@@ -177,6 +177,14 @@ pub trait Game: 'static {
         Self::pending(s)
     }
 
+    /// Several humans may share one screen (hot seat): no seat ever sees
+    /// something another cannot. True when nothing is hidden; a game whose
+    /// hidden data is hidden from everyone alike (dice to come, a shuffled
+    /// pool) says so too. Checked by conformance.
+    fn shared_screen() -> bool {
+        !Self::meta().hidden_info
+    }
+
     /// The settings the lobby offers. Default: none.
     fn options() -> Vec<GameOption> {
         Vec::new()

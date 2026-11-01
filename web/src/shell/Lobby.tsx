@@ -32,7 +32,7 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
   const options: { value: SeatChoice; label: string }[] = [
     ...LEVELS.map((level) => ({ value: level as SeatChoice, label: aiName(level) })),
     // Hot-seat only without hidden information: everyone sees the same screen.
-    ...(game.hiddenInfo ? [] : [{ value: "local" as SeatChoice, label: "Humain (même écran)" }]),
+    ...(!game.sharedScreen ? [] : [{ value: "local" as SeatChoice, label: "Humain (même écran)" }]),
     ...(onHost ? [{ value: "open" as SeatChoice, label: "Invité (en ligne)" }] : []),
   ];
 

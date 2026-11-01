@@ -8,7 +8,7 @@ const meta = (playerCounts: number[]): GameMeta => ({
   minPlayers: playerCounts[0],
   maxPlayers: playerCounts[playerCounts.length - 1],
   playerCounts,
-  hiddenInfo: false,
+  hiddenInfo: false, sharedScreen: true,
   clock: false,
   options: [],
 });

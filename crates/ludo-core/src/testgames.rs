@@ -507,6 +507,54 @@ impl Determinize for Leaky {
     }
 }
 
+/// HighCard claiming hot seat although each seat sees its own card.
+pub struct FalseHotSeat;
+
+impl Game for FalseHotSeat {
+    type State = HighCardState;
+    type Action = Choice;
+    type View = HighCardView;
+    type Config = ();
+
+    fn meta() -> GameMeta {
+        GameMeta {
+            id: "false-hot-seat",
+            ..HighCard::meta()
+        }
+    }
+    fn shared_screen() -> bool {
+        true
+    }
+    fn new(config: &(), players: u8, seed: u64) -> HighCardState {
+        HighCard::new(config, players, seed)
+    }
+    fn pending(s: &HighCardState) -> Pending {
+        HighCard::pending(s)
+    }
+    fn legal_actions(s: &HighCardState, seat: Seat) -> Vec<Choice> {
+        HighCard::legal_actions(s, seat)
+    }
+    fn apply(s: &mut HighCardState, seat: Seat, a: &Choice) -> Result<(), Illegal> {
+        HighCard::apply(s, seat, a)
+    }
+    fn view(s: &HighCardState, viewer: Viewer) -> HighCardView {
+        HighCard::view(s, viewer)
+    }
+    fn outcome(s: &HighCardState) -> Option<Outcome> {
+        HighCard::outcome(s)
+    }
+}
+
+impl Determinize for FalseHotSeat {
+    fn determinize<R: Rng + ?Sized>(
+        s: &HighCardState,
+        observer: Seat,
+        rng: &mut R,
+    ) -> HighCardState {
+        HighCard::determinize(s, observer, rng)
+    }
+}
+
 /// Nim whose AI is steered: it takes 3 from a pile of 10 without searching,
 /// and its random moves always take 1.
 pub struct SteeredNim;

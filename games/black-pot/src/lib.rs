@@ -452,6 +452,11 @@ impl Game for BlackPot {
         }
     }
 
+    /// Hot seat: Only the rolls to come are hidden, from every player alike.
+    fn shared_screen() -> bool {
+        true
+    }
+
     fn check_config(_config: &Config, players: u8) -> Result<(), Illegal> {
         if players == 3 {
             return Err(Illegal::new("Black-Pot se joue à 2 ou à 4."));

@@ -129,6 +129,9 @@ pub struct GameInfo {
     /// refuse some, as Black-Pot refuses 3).
     #[serde(rename = "playerCounts")]
     pub player_counts: Vec<u8>,
+    /// Hot seat is possible (`Game::shared_screen`).
+    #[serde(rename = "sharedScreen")]
+    pub shared_screen: bool,
 }
 
 pub trait AnyGame: Sync {
@@ -136,12 +139,14 @@ pub trait AnyGame: Sync {
     fn options(&self) -> Vec<GameOption>;
     /// The table sizes `check_config` accepts with the default options.
     fn player_counts(&self) -> Vec<u8>;
+    fn shared_screen(&self) -> bool;
 
     fn info(&self) -> GameInfo {
         GameInfo {
             meta: self.meta(),
             options: self.options(),
             player_counts: self.player_counts(),
+            shared_screen: self.shared_screen(),
         }
     }
     /// `config` = `Value::Null` for the game's default options.
@@ -185,6 +190,10 @@ impl<G: Game + Determinize + Heuristics> AnyGame for GameEntry<G> {
 
     fn options(&self) -> Vec<GameOption> {
         G::options()
+    }
+
+    fn shared_screen(&self) -> bool {
+        G::shared_screen()
     }
 
     fn player_counts(&self) -> Vec<u8> {

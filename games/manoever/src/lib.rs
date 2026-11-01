@@ -243,6 +243,11 @@ impl Game for Manoever {
         }
     }
 
+    /// Hot seat: Only the setup rolls to come are hidden, from every player alike.
+    fn shared_screen() -> bool {
+        true
+    }
+
     fn pending(s: &State) -> Pending {
         s.turn.map_or_else(Pending::none, Pending::one)
     }

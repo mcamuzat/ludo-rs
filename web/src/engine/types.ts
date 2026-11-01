@@ -25,6 +25,8 @@ export interface GameMeta {
   maxPlayers: number;
   /** The table sizes the game accepts (Black-Pot: 2 or 4). */
   playerCounts: number[];
+  /** Several humans may share one screen (hot seat). */
+  sharedScreen: boolean;
   hiddenInfo: boolean;
   clock: boolean;
   options: GameOption[];

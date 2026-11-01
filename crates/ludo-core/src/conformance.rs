@@ -222,6 +222,21 @@ fn check_hidden<G: Game + Determinize>(
             );
         }
     }
+    // Hot seat: what one seat cannot see is hidden from the others too.
+    if G::shared_screen() {
+        for observer in (0..players).map(Seat) {
+            let d = G::determinize(s, observer, rng);
+            for other in (0..players).map(Seat).filter(|&x| x != observer) {
+                assert_eq!(
+                    json(&G::view(&d, Viewer::Seat(other))),
+                    json(&G::view(s, Viewer::Seat(other))),
+                    "partie {g}, coup {step} : `shared_screen`, mais le siège {} voit ce que le siège {} ne voit pas",
+                    other.0,
+                    observer.0
+                );
+            }
+        }
+    }
     let spectator = json(&G::view(s, Viewer::Spectator));
     let d = G::determinize(s, Seat(0), rng);
     assert_eq!(
@@ -294,5 +309,11 @@ mod tests {
     #[should_panic(expected = "dépend de données cachées")]
     fn a_leaking_view_is_caught() {
         check::<Leaky>(&(), 3, 20, 3);
+    }
+
+    #[test]
+    #[should_panic(expected = "`shared_screen`")]
+    fn a_false_hot_seat_is_caught() {
+        check::<crate::testgames::FalseHotSeat>(&(), 3, 20, 4);
     }
 }

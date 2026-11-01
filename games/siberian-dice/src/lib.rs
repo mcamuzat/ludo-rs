@@ -190,6 +190,11 @@ impl Game for SiberianDice {
         }
     }
 
+    /// Hot seat: Only the rolls to come are hidden, from both players alike.
+    fn shared_screen() -> bool {
+        true
+    }
+
     fn check_config(_config: &Config, players: u8) -> Result<(), Illegal> {
         if players != 2 {
             return Err(Illegal::new("Siberian Dice se joue à 2."));
