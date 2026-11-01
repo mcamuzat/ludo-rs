@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/ludo-core", "crates/ludo-registry", "crates/ludo-cli", "crates/ludo-wasm", "games/yavalath", "games/riichi", "games/pairs", "games/cards", "games/pennywise", "games/bantu", "games/monad", "games/volltreffer", "games/black-vienna", "games/cryptide", "games/black-pot", "games/manoever", "games/siberian-dice"]
+members = ["crates/ludo-core", "crates/ludo-registry", "crates/ludo-cli", "crates/ludo-wasm", "games/yavalath", "games/riichi", "games/pairs", "games/cards", "games/pennywise", "games/bantu", "games/monad", "games/volltreffer", "games/black-vienna", "games/cryptide", "games/black-pot", "games/manoever", "games/siberian-dice", "games/black-hole"]
 resolver = "2"
 
 [workspace.package]
@@ -25,6 +25,7 @@ black-vienna = { path = "games/black-vienna" }
 cryptide = { path = "games/cryptide" }
 black-pot = { path = "games/black-pot" }
 siberian-dice = { path = "games/siberian-dice" }
+black-hole = { path = "games/black-hole" }
 manoever = { path = "games/manoever" }
 ludo-registry = { path = "crates/ludo-registry" }
 
