@@ -2,6 +2,14 @@ use serde::Serialize;
 
 use crate::{Color, Point, TwixtAction, TwixtState};
 
+/// How the game ended.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
+pub enum Finish {
+    Won(Color),
+    /// Nobody can join their borders any more.
+    Draw,
+}
+
 /// Everything is public in TwixT: the same view for everyone.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -14,7 +22,7 @@ pub struct TwixtView {
     pub moves: Vec<TwixtAction>,
     /// The peg the last move put (after a swap: the reflected peg).
     pub last: Option<Point>,
-    pub result: Option<Option<Color>>,
+    pub result: Option<Finish>,
     /// The winner's group joining its two borders.
     pub chain: Option<Vec<Point>>,
 }
@@ -37,7 +45,7 @@ impl TwixtView {
             can_swap: s.result.is_none() && s.moves.len() == 1,
             moves: s.moves.clone(),
             last,
-            result: s.result,
+            result: s.result.map(|r| r.map_or(Finish::Draw, Finish::Won)),
             chain: s.result.flatten().and_then(|_| s.board.winning_chain()),
         }
     }

@@ -82,6 +82,8 @@ import { VOLLTREFFER_RULES } from "./volltreffer/rules";
 import { SiberianDiceBoard } from "./siberian-dice/Board";
 import { BlackHoleBoard } from "./black-hole/Board";
 import { BLACK_HOLE_RULES } from "./black-hole/rules";
+import { TwixtBoard } from "./twixt/Board";
+import { TWIXT_RULES } from "./twixt/rules";
 import { CorporationBoard } from "./corporation/Board";
 import { CORPORATION_RULES } from "./corporation/rules";
 import { SIBERIAN_DICE_RULES } from "./siberian-dice/rules";
@@ -118,6 +120,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "manoever", family: "board", Board: ManoeverBoard, rules: MANOEVER_RULES },
   { id: "siberian-dice", family: "board", Board: SiberianDiceBoard, rules: SIBERIAN_DICE_RULES },
   { id: "black-hole", family: "board", Board: BlackHoleBoard, rules: BLACK_HOLE_RULES },
+  { id: "twixt", family: "board", Board: TwixtBoard, rules: TWIXT_RULES },
   { id: "corporation", family: "board", Board: CorporationBoard, rules: CORPORATION_RULES },
   { id: "riichi", family: "tiles", Board: RiichiBoard, hidden: true },
   { id: "pairs-continuous", family: "pairs", Board: ContinuousBoard, rules: CONTINUOUS_RULES },

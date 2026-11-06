@@ -1,0 +1,21 @@
+.twixt { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.tw-board { width: min(100%, 640px); height: auto; border-radius: 18px; padding: 6px; }
+.tw-coord text { fill: color-mix(in srgb, #fff 55%, transparent); font: 600 8px var(--f-display); text-anchor: middle; dominant-baseline: middle; }
+.tw-hole { fill: color-mix(in srgb, #000 55%, transparent); }
+.tw-target { fill: transparent; }
+.tw-cell.playable { cursor: pointer; }
+.tw-cell.playable:hover .tw-target { fill: color-mix(in srgb, var(--brass) 35%, transparent); }
+.tw-border { stroke-width: 2.5; stroke-linecap: round; }
+.tw-border.tw-red { stroke: #d4302b; }
+.tw-border.tw-black { stroke: #111; }
+.tw-link { stroke-width: 4; stroke-linecap: round; }
+.tw-link.tw-red { stroke: #d4302b; }
+.tw-link.tw-black { stroke: #111; }
+.tw-peg { stroke: #fff; stroke-width: 1.5; }
+.tw-peg.tw-red, .twixt .swatch.tw-red { fill: #d4302b; background: #d4302b; }
+.tw-peg.tw-black, .twixt .swatch.tw-black { fill: #111; background: #111; }
+.tw-peg.tw-chain { stroke: var(--brass); stroke-width: 3; }
+.tw-ghost { opacity: 0.5; pointer-events: none; }
+.tw-last { fill: none; stroke: var(--brass); stroke-width: 2; pointer-events: none; }
+.tw-heat { fill: #3fbf5f; pointer-events: none; }
+.twixt .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; border: 1px solid #fff; }

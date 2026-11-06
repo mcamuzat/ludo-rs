@@ -13,7 +13,7 @@ mod view;
 
 pub use board::{all_points, replay, Board, Color, Point, TwixtAction, SIZE};
 pub use heuristics::best_policy_move;
-pub use view::TwixtView;
+pub use view::{Finish, TwixtView};
 
 use ludo_core::{Determinize, Game, GameMeta, Illegal, Outcome, Pending, Seat, Viewer};
 use rand::Rng;

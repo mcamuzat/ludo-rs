@@ -107,7 +107,7 @@ fn a_chain_between_borders_wins() {
     assert_eq!(Twixt::outcome(&s), Some(Outcome::Ranked(vec![0, 1])));
     assert!(Twixt::pending(&s).is_empty());
     let v = Twixt::view(&s, Viewer::Spectator);
-    assert_eq!(v.result, Some(Some(Color::Red)));
+    assert_eq!(v.result, Some(twixt::Finish::Won(Color::Red)));
     let chain = v.chain.expect("winning chain");
     assert!(chain.contains(&p(5, 0)) && chain.contains(&p(4, 23)));
 }
@@ -185,4 +185,15 @@ fn state_round_trips_through_json() {
     let back: TwixtState = serde_json::from_str(&serde_json::to_string(&s).unwrap()).unwrap();
     assert_eq!(back.board.link_list(), s.board.link_list());
     assert_eq!(back.moves, s.moves);
+}
+
+#[test]
+fn the_view_tells_a_draw_from_a_game_in_progress() {
+    let s = play(&[(5, 5)]);
+    let v = serde_json::to_value(Twixt::view(&s, Viewer::Spectator)).unwrap();
+    assert_eq!(v["result"], serde_json::Value::Null);
+    let mut drawn = s.clone();
+    drawn.result = Some(None);
+    let v = serde_json::to_value(Twixt::view(&drawn, Viewer::Spectator)).unwrap();
+    assert_eq!(v["result"], serde_json::json!("Draw"));
 }
