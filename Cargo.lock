@@ -717,6 +717,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "twixt"
+version = "0.1.0"
+dependencies = [
+ "ludo-core",
+ "rand 0.8.8",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "typenum"
 version = "1.20.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
