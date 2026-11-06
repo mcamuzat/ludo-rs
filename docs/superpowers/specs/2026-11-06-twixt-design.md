@@ -94,6 +94,13 @@ Le coach se sert de la même évaluation que Difficile (valeur et politique, plu
 - Navigateur (playwright-core sur `pnpm preview`) : une partie contre Difficile, le coach, la revue.
 - Mesure du temps d'une évaluation dans le navigateur, notée dans la spec.
 
-## 7. Laissé au builder
+## 7. Mesures (2026-11-06)
+
+- Réseau réel : 48 canaux, 20 blocs, ~2,6 millions de paramètres (~1,3 milliard de multiplications par évaluation). Poids en float16 : 5 Mo, écart à PyTorch ≤ 3,5e-2 sur les logits.
+- Une évaluation : 113 ms en natif, **129 ms dans Chromium** (WASM SIMD, crate `twixt` en `opt-level = 3`). Difficile : ~75 simulations en 10 s ; un conseil du coach ~0,9 s ; la revue ~4 évaluations par coup. Pas besoin de plusieurs workers (§4.1).
+- Notes : la perte d'un coup est mesurée **contre le meilleur des trois coups préférés du réseau**, tous évalués sur la position d'après le coup. La comparaison avant/après de la première version comptait l'avantage du trait comme une perte (courbe en dents de scie, « Tes chances : 19 % » puis « 30 % » après le meilleur coup). « Tes chances » est la valeur du meilleur coup.
+- Arène : Difficile/Facile 1.000 (24 parties), Moyen/Facile 1.000 (40), Difficile/Moyen 0.833 (12). Facile tire dans la politique aplatie (température 2) : à température 1 il valait Moyen (0.500).
+
+## 8. Laissé au builder
 
 Format des poids et façon de les charger, seuils des notes, budget exact de Difficile, détails du dessin, moyen technique de l'annulation.

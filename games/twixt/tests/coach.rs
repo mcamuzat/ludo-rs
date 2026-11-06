@@ -1,4 +1,4 @@
-use twixt::coach::{advise, grade, red_win_at, review, Grade};
+use twixt::coach::{advise, grade, review, review_point, Grade, ReviewPoint};
 use twixt::net::net;
 use twixt::{Point, TwixtAction};
 
@@ -25,6 +25,8 @@ fn advice_on_the_empty_board() {
     // Red may play every hole but the 48 of Black's border columns.
     assert_eq!(a.heat.len(), 24 * 22);
     assert!(a.best.windows(2).all(|w| w[0].win >= w[1].win));
+    // Your chances: with the best of these moves, measured like them.
+    assert_eq!(a.win, a.best[0].win);
 }
 
 #[test]
@@ -39,30 +41,42 @@ fn advice_after_a_swap() {
     assert_eq!(a.last.expect("the swap is graded").ply, 1);
 }
 
+fn pt(red_win: f32, best: Option<f32>) -> ReviewPoint {
+    ReviewPoint { red_win, best }
+}
+
 #[test]
-fn a_blunder_is_graded() {
+fn a_move_is_graded_against_the_best_alternative() {
     let moves = [place(5, 5), place(15, 15), place(6, 7), place(15, 19)];
-    // Red's win: steady, then Red's second move throws it away.
-    let curve = [0.5, 0.5, 0.48, 0.1, 0.12];
-    let r = review(&moves, &curve).unwrap();
+    // Red's best at ply 0 keeps 0.6, it played into 0.45: −0.15. Black's
+    // best at ply 1 is 0.55 and it got 1 − 0.45. Red's second move gives
+    // away 0.5 − 0.1; Black's last one 0.93 − 0.9.
+    let points = [
+        pt(0.5, Some(0.6)),
+        pt(0.45, Some(0.55)),
+        pt(0.45, Some(0.5)),
+        pt(0.1, Some(0.93)),
+        pt(0.1, None),
+    ];
+    let r = review(&moves, &points).unwrap();
     assert_eq!(
         r.grades,
         vec![
             None,
-            Some(Grade::Best),
+            Some(Grade::Mistake),
             Some(Grade::Best),
             Some(Grade::Blunder),
             Some(Grade::Good)
         ]
     );
-    assert_eq!(r.key, vec![3]);
+    assert_eq!(r.key, vec![1, 3]);
 }
 
 #[test]
 fn review_rejects_a_short_curve() {
     let moves = [place(5, 5), place(15, 15)];
-    assert!(review(&moves, &[0.5, 0.5]).is_err());
-    assert!(review(&[place(0, 0)], &[0.5, 0.5]).is_err());
+    assert!(review(&moves, &[pt(0.5, Some(0.5)), pt(0.5, Some(0.5))]).is_err());
+    assert!(review(&[place(0, 0)], &[pt(0.5, Some(0.5)), pt(0.5, None)]).is_err());
 }
 
 #[test]
@@ -74,8 +88,9 @@ fn red_win_at_a_finished_game_is_the_result() {
     }
     moves.push(place(4, 23));
     let n = net().unwrap();
-    assert_eq!(red_win_at(n, &moves, moves.len()).unwrap(), 1.0);
-    let before = red_win_at(n, &moves, moves.len() - 1).unwrap();
-    assert!(before > 0.5, "Red wins in one: {before}");
-    assert!(red_win_at(n, &moves, moves.len() + 1).is_err());
+    assert_eq!(review_point(n, &moves, moves.len()).unwrap(), pt(1.0, None));
+    let before = review_point(n, &moves, moves.len() - 1).unwrap();
+    // Red to move wins at once: its best move is worth 1.
+    assert_eq!(before.best, Some(1.0));
+    assert!(review_point(n, &moves, moves.len() + 1).is_err());
 }

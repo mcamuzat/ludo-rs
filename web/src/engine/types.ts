@@ -90,8 +90,8 @@ export interface AiRequest {
 /** TwixT's coach, answered by an AI worker (it holds the network). */
 export type CoachRequest =
   | { kind: "twixtAdvise"; moves: unknown[] }
-  | { kind: "twixtRedWinAt"; moves: unknown[]; ply: number }
-  | { kind: "twixtReview"; moves: unknown[]; curve: number[] }
+  | { kind: "twixtReviewPoint"; moves: unknown[]; ply: number }
+  | { kind: "twixtReview"; moves: unknown[]; points: unknown[] }
   | { kind: "twixtPosition"; moves: unknown[] };
 
 export type AiWorkerRequest = ({ kind: "move" } & AiRequest) | CoachRequest;

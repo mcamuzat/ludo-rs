@@ -74,6 +74,14 @@ describe("TwixT coach", () => {
     expect(html).toContain("G8 — 70 %");
     expect(html).toContain("E8 — 66 %");
     expect(html).toContain("H7 — 60 %");
+    const best = renderToStaticMarkup(
+      <CoachPanel advice={{ ...ADVICE, last: { ply: 0, loss: 0.004, grade: "Best" } }} heat={false} onHeat={() => {}} onHover={() => {}} />,
+    );
+    expect(best).toContain("Ton dernier coup : Meilleur (aucune perte)");
+    const good = renderToStaticMarkup(
+      <CoachPanel advice={{ ...ADVICE, last: { ply: 0, loss: 0.012, grade: "Good" } }} heat={false} onHeat={() => {}} onHover={() => {}} />,
+    );
+    expect(good).toContain("Ton dernier coup : Bon (−1 point)");
   });
 
   it("draws a ghost peg and the heat map on the board", () => {
@@ -94,9 +102,14 @@ describe("TwixT review", () => {
 
   it("evaluates every position, reporting progress, then asks for the grades", async () => {
     const review: Review = { grades: [null, "Best", "Blunder"], key: [2] };
+    const points = [
+      { redWin: 0.5, best: 0.6 },
+      { redWin: 0.55, best: 0.5 },
+      { redWin: 0.2, best: null },
+    ];
     const client = {
       advise: vi.fn(),
-      redWinAt: vi.fn(async (_moves: unknown[], ply: number) => [0.5, 0.55, 0.2][ply]),
+      reviewPoint: vi.fn(async (_moves: unknown[], ply: number) => points[ply]),
       review: vi.fn(async () => review),
       position: vi.fn(),
     } as unknown as CoachLike;
@@ -104,7 +117,7 @@ describe("TwixT review", () => {
     const result = await computeReview(client, MOVES, progress);
     expect(result).toEqual({ curve: [0.5, 0.55, 0.2], review });
     expect(progress).toHaveBeenLastCalledWith(3, 3);
-    expect(client.review).toHaveBeenCalledWith(MOVES, [0.5, 0.55, 0.2]);
+    expect(client.review).toHaveBeenCalledWith(MOVES, points);
   });
 
   it("draws the curve, the grades and the key moments", () => {

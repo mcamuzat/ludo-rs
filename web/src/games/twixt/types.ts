@@ -43,6 +43,13 @@ export interface Advice {
   last: LastMove | null;
 }
 
+export interface ReviewPoint {
+  /** Red's win probability after this many moves. */
+  redWin: number;
+  /** The side to move's best win among the network's favourite holes. */
+  best: number | null;
+}
+
 export interface Review {
   grades: (Grade | null)[];
   key: number[];

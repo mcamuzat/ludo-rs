@@ -3,7 +3,7 @@ import init, {
   twixtAdvise,
   twixtInstallNet,
   twixtPosition,
-  twixtRedWinAt,
+  twixtReviewPoint,
   twixtReview,
 } from "../wasm/ludo.js";
 import { serve } from "./rpc";
@@ -21,11 +21,11 @@ serve<AiWorkerRequest>(init(), async (req) => {
     case "twixtAdvise":
       await twixtNet.ensure();
       return JSON.parse(twixtAdvise(JSON.stringify(req.moves)));
-    case "twixtRedWinAt":
+    case "twixtReviewPoint":
       await twixtNet.ensure();
-      return twixtRedWinAt(JSON.stringify(req.moves), req.ply);
+      return JSON.parse(twixtReviewPoint(JSON.stringify(req.moves), req.ply));
     case "twixtReview":
-      return JSON.parse(twixtReview(JSON.stringify(req.moves), JSON.stringify(req.curve)));
+      return JSON.parse(twixtReview(JSON.stringify(req.moves), JSON.stringify(req.points)));
     case "twixtPosition":
       return JSON.parse(twixtPosition(JSON.stringify(req.moves)));
   }

@@ -197,3 +197,36 @@ fn the_view_tells_a_draw_from_a_game_in_progress() {
     let v = serde_json::to_value(Twixt::view(&drawn, Viewer::Spectator)).unwrap();
     assert_eq!(v["result"], serde_json::json!("Draw"));
 }
+
+fn crosses(a: (Point, Point), b: (Point, Point)) -> bool {
+    let c = |o: Point, p: Point, q: Point| {
+        (i32::from(p.x) - i32::from(o.x)) * (i32::from(q.y) - i32::from(o.y))
+            - (i32::from(p.y) - i32::from(o.y)) * (i32::from(q.x) - i32::from(o.x))
+    };
+    c(b.0, b.1, a.0) * c(b.0, b.1, a.1) < 0 && c(a.0, a.1, b.0) * c(a.0, a.1, b.1) < 0
+}
+
+/// Random games: a link never crosses a link of the other colour.
+#[test]
+fn no_link_crosses_an_opposing_link() {
+    for seed in 0..30u64 {
+        let mut rng = rand::rngs::StdRng::seed_from_u64(seed);
+        let mut s = Twixt::new(&Config::default(), 2, 0);
+        while let Some(&seat) = Twixt::pending(&s).0.first() {
+            let a = Twixt::legal_actions(&s, seat)
+                .choose(&mut rng)
+                .unwrap()
+                .clone();
+            Twixt::apply(&mut s, seat, &a).unwrap();
+        }
+        let links = s.board.link_list();
+        for &(c1, a1, b1) in &links {
+            for &(c2, a2, b2) in &links {
+                assert!(
+                    c1 == c2 || !crosses((a1, b1), (a2, b2)),
+                    "seed {seed}: {c1:?} {a1:?}-{b1:?} crosses {c2:?} {a2:?}-{b2:?}"
+                );
+            }
+        }
+    }
+}

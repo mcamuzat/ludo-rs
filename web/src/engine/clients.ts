@@ -82,12 +82,12 @@ export class CoachClient {
     return this.rpc.call<T>({ kind: "twixtAdvise", moves });
   }
 
-  redWinAt(moves: unknown[], ply: number) {
-    return this.rpc.call<number>({ kind: "twixtRedWinAt", moves, ply });
+  reviewPoint<T>(moves: unknown[], ply: number) {
+    return this.rpc.call<T>({ kind: "twixtReviewPoint", moves, ply });
   }
 
-  review<T>(moves: unknown[], curve: number[]) {
-    return this.rpc.call<T>({ kind: "twixtReview", moves, curve });
+  review<T>(moves: unknown[], points: unknown[]) {
+    return this.rpc.call<T>({ kind: "twixtReview", moves, points });
   }
 
   position<T>(moves: unknown[]) {

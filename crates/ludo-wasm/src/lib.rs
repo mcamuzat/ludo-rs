@@ -216,18 +216,20 @@ pub fn twixt_advise(moves: &str) -> Result<String, JsError> {
     Ok(text(&advice))
 }
 
-/// Red's win probability after the first `ply` moves.
-#[wasm_bindgen(js_name = twixtRedWinAt)]
-pub fn twixt_red_win_at(moves: &str, ply: u32) -> Result<f32, JsError> {
-    twixt::coach::red_win_at(twixt_net()?, &twixt_moves(moves)?, ply as usize).map_err(illegal)
+/// The review's numbers for the position after the first `ply` moves (JSON).
+#[wasm_bindgen(js_name = twixtReviewPoint)]
+pub fn twixt_review_point(moves: &str, ply: u32) -> Result<String, JsError> {
+    let point = twixt::coach::review_point(twixt_net()?, &twixt_moves(moves)?, ply as usize)
+        .map_err(illegal)?;
+    Ok(text(&point))
 }
 
-/// The review of a game from its curve of `twixtRedWinAt` values (JSON).
+/// The review of a game from its `twixtReviewPoint` values (JSON).
 #[wasm_bindgen(js_name = twixtReview)]
-pub fn twixt_review(moves: &str, curve: &str) -> Result<String, JsError> {
-    let curve: Vec<f32> =
-        serde_json::from_str(curve).map_err(|e| JsError::new(&format!("Courbe invalide : {e}")))?;
-    let review = twixt::coach::review(&twixt_moves(moves)?, &curve).map_err(illegal)?;
+pub fn twixt_review(moves: &str, points: &str) -> Result<String, JsError> {
+    let points: Vec<twixt::coach::ReviewPoint> = serde_json::from_str(points)
+        .map_err(|e| JsError::new(&format!("Courbe invalide : {e}")))?;
+    let review = twixt::coach::review(&twixt_moves(moves)?, &points).map_err(illegal)?;
     Ok(text(&review))
 }
 

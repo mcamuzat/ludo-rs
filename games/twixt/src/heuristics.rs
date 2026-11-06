@@ -13,6 +13,10 @@ use crate::net::{net, Net};
 use crate::swap::{first_move, swap_wanted};
 use crate::{Twixt, TwixtAction, TwixtState};
 
+/// Easy draws from the policy flattened by this temperature: at 1 it plays
+/// the favourite move almost always and is as strong as Medium.
+const EASY_TEMPERATURE: f32 = 2.0;
+
 /// Medium's move: the policy's favourite hole.
 pub fn best_policy_move(net: &Net, s: &TwixtState) -> Option<TwixtAction> {
     policy(net, &s.board)
@@ -55,7 +59,7 @@ impl Heuristics for Twixt {
             Level::Easy => {
                 let moves = policy(net, &s.board);
                 moves
-                    .choose_weighted(&mut rng, |&(_, prob)| prob)
+                    .choose_weighted(&mut rng, |&(_, prob)| prob.powf(1.0 / EASY_TEMPERATURE))
                     .ok()
                     .map(|&(p, _)| TwixtAction::Place(p))
             }
