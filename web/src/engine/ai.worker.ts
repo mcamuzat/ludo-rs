@@ -1,7 +1,32 @@
-import init, { aiMove } from "../wasm/ludo.js";
+import init, {
+  aiMove,
+  twixtAdvise,
+  twixtInstallNet,
+  twixtPosition,
+  twixtRedWinAt,
+  twixtReview,
+} from "../wasm/ludo.js";
 import { serve } from "./rpc";
-import type { AiRequest } from "./types";
+import { fetchTwixtNet, TwixtNetLoader } from "./twixtNet";
+import type { AiWorkerRequest } from "./types";
 
-serve<AiRequest>(init(), (req) =>
-  JSON.parse(aiMove(req.gameId, JSON.stringify(req.state), req.seat, req.level, req.seed)),
-);
+const twixtNet = new TwixtNetLoader(fetchTwixtNet, twixtInstallNet);
+
+serve<AiWorkerRequest>(init(), async (req) => {
+  switch (req.kind) {
+    case "move":
+      // TwixT's AI is its network: never let it play without it.
+      if (req.gameId === "twixt") await twixtNet.ensure();
+      return JSON.parse(aiMove(req.gameId, JSON.stringify(req.state), req.seat, req.level, req.seed));
+    case "twixtAdvise":
+      await twixtNet.ensure();
+      return JSON.parse(twixtAdvise(JSON.stringify(req.moves)));
+    case "twixtRedWinAt":
+      await twixtNet.ensure();
+      return twixtRedWinAt(JSON.stringify(req.moves), req.ply);
+    case "twixtReview":
+      return JSON.parse(twixtReview(JSON.stringify(req.moves), JSON.stringify(req.curve)));
+    case "twixtPosition":
+      return JSON.parse(twixtPosition(JSON.stringify(req.moves)));
+  }
+});

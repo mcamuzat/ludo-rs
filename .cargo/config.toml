@@ -1,0 +1,4 @@
+# WASM SIMD (128-bit): TwixT's network runs about twice as fast with it.
+# Every current browser supports it.
+[target.wasm32-unknown-unknown]
+rustflags = ["-C", "target-feature=+simd128"]

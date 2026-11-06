@@ -21,7 +21,7 @@ wasm-bindgen --target web --out-dir "$OUT" --out-name ludo \
 
 if [ "$PROFILE" = "wasm-release" ] && command -v wasm-opt >/dev/null; then
   wasm-opt -Oz --enable-bulk-memory --enable-nontrapping-float-to-int \
-    --enable-sign-ext --enable-mutable-globals --enable-reference-types --enable-multivalue \
+    --enable-sign-ext --enable-simd --enable-mutable-globals --enable-reference-types --enable-multivalue \
     "$OUT/ludo_bg.wasm" -o "$OUT/ludo_bg.wasm"
 fi
 

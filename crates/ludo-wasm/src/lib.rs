@@ -177,3 +177,57 @@ pub fn cryptide_riddle(mode: &str, players: u8, seed: u32) -> Result<String, JsE
         .ok_or_else(|| JsError::new("Aucune énigme trouvée pour cette graine."))?;
     Ok(text(&riddle))
 }
+
+// TwixT's network and coach (games/twixt). The weights are fetched by the
+// worker and installed once; every coach function takes the game's moves.
+
+fn twixt_moves(moves: &str) -> Result<Vec<twixt::TwixtAction>, JsError> {
+    serde_json::from_str(moves).map_err(|e| JsError::new(&format!("Coups invalides : {e}")))
+}
+
+fn twixt_net() -> Result<&'static twixt::net::Net, JsError> {
+    twixt::net::net().ok_or_else(|| JsError::new("Poids de TwixT non chargés."))
+}
+
+fn illegal(e: ludo_core::Illegal) -> JsError {
+    JsError::new(&e.to_string())
+}
+
+#[wasm_bindgen(js_name = twixtInstallNet)]
+pub fn twixt_install_net(bytes: &[u8]) -> Result<(), JsError> {
+    twixt::net::install(bytes).map_err(|e| JsError::new(&format!("Poids de TwixT invalides : {e}")))
+}
+
+#[wasm_bindgen(js_name = twixtNetReady)]
+pub fn twixt_net_ready() -> bool {
+    twixt::net::net().is_some()
+}
+
+/// The coach's advice for the side to move after `moves` (JSON).
+#[wasm_bindgen(js_name = twixtAdvise)]
+pub fn twixt_advise(moves: &str) -> Result<String, JsError> {
+    let advice = twixt::coach::advise(twixt_net()?, &twixt_moves(moves)?).map_err(illegal)?;
+    Ok(text(&advice))
+}
+
+/// Red's win probability after the first `ply` moves.
+#[wasm_bindgen(js_name = twixtRedWinAt)]
+pub fn twixt_red_win_at(moves: &str, ply: u32) -> Result<f32, JsError> {
+    twixt::coach::red_win_at(twixt_net()?, &twixt_moves(moves)?, ply as usize).map_err(illegal)
+}
+
+/// The review of a game from its curve of `twixtRedWinAt` values (JSON).
+#[wasm_bindgen(js_name = twixtReview)]
+pub fn twixt_review(moves: &str, curve: &str) -> Result<String, JsError> {
+    let curve: Vec<f32> =
+        serde_json::from_str(curve).map_err(|e| JsError::new(&format!("Courbe invalide : {e}")))?;
+    let review = twixt::coach::review(&twixt_moves(moves)?, &curve).map_err(illegal)?;
+    Ok(text(&review))
+}
+
+/// The view of the position after `moves` (for the review's board).
+#[wasm_bindgen(js_name = twixtPosition)]
+pub fn twixt_position(moves: &str) -> Result<String, JsError> {
+    let s = twixt::TwixtState::from_moves(&twixt_moves(moves)?).map_err(illegal)?;
+    Ok(text(&twixt::TwixtView::of(&s)))
+}

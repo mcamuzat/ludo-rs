@@ -42,3 +42,7 @@ lto = true
 codegen-units = 1
 panic = "abort"
 strip = true
+
+# TwixT's network: size-optimised code is several times slower.
+[profile.wasm-release.package.twixt]
+opt-level = 3

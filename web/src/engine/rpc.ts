@@ -38,7 +38,7 @@ export function serve<Req>(ready: Promise<unknown>, handle: (req: Req) => unknow
     const { id, req } = event.data;
     let res: RpcResponse;
     try {
-      res = { id, ok: true, value: handle(req) };
+      res = { id, ok: true, value: await handle(req) };
     } catch (e) {
       res = { id, ok: false, error: e instanceof Error ? e.message : String(e) };
     }

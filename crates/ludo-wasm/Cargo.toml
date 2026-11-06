@@ -12,6 +12,7 @@ crate-type = ["cdylib", "rlib"]
 ludo-core.workspace = true
 ludo-registry.workspace = true
 cryptide.workspace = true
+twixt.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 # Must match the installed wasm-bindgen CLI exactly (`wasm-bindgen --version`).

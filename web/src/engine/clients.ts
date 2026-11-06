@@ -1,5 +1,5 @@
 import { WorkerRpc } from "./rpc";
-import type { AiRequest, EngineRequest, GameMeta, Seat, Snapshot } from "./types";
+import type { AiRequest, AiWorkerRequest, EngineRequest, GameMeta, Seat, Snapshot } from "./types";
 
 export class EngineClient {
   private rpc = new WorkerRpc<EngineRequest>(
@@ -50,11 +50,43 @@ export class EngineClient {
   }
 }
 
+function aiWorker() {
+  return new WorkerRpc<AiWorkerRequest>(new Worker(new URL("./ai.worker.ts", import.meta.url), { type: "module" }));
+}
+
 export class AiClient {
-  private rpc = new WorkerRpc<AiRequest>(new Worker(new URL("./ai.worker.ts", import.meta.url), { type: "module" }));
+  private rpc = aiWorker();
 
   move(req: AiRequest) {
-    return this.rpc.call<unknown>(req);
+    return this.rpc.call<unknown>({ kind: "move", ...req });
+  }
+
+  dispose() {
+    this.rpc.dispose();
+  }
+}
+
+/**
+ * TwixT's coach: its own AI worker, so a question never waits behind the
+ * AI's move. Answers are the engine's JSON (games/twixt/src/coach.rs).
+ */
+export class CoachClient {
+  private rpc = aiWorker();
+
+  advise<T>(moves: unknown[]) {
+    return this.rpc.call<T>({ kind: "twixtAdvise", moves });
+  }
+
+  redWinAt(moves: unknown[], ply: number) {
+    return this.rpc.call<number>({ kind: "twixtRedWinAt", moves, ply });
+  }
+
+  review<T>(moves: unknown[], curve: number[]) {
+    return this.rpc.call<T>({ kind: "twixtReview", moves, curve });
+  }
+
+  position<T>(moves: unknown[]) {
+    return this.rpc.call<T>({ kind: "twixtPosition", moves });
   }
 
   dispose() {

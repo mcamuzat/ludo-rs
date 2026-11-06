@@ -86,6 +86,15 @@ export interface AiRequest {
   seed: number;
 }
 
+/** TwixT's coach, answered by an AI worker (it holds the network). */
+export type CoachRequest =
+  | { kind: "twixtAdvise"; moves: unknown[] }
+  | { kind: "twixtRedWinAt"; moves: unknown[]; ply: number }
+  | { kind: "twixtReview"; moves: unknown[]; curve: number[] }
+  | { kind: "twixtPosition"; moves: unknown[] };
+
+export type AiWorkerRequest = ({ kind: "move" } & AiRequest) | CoachRequest;
+
 export function updateFor(s: Snapshot, viewer: Seat | null, clocks: SeatClockView[] = []): Update {
   const seen = s.views.find((v) => v.viewer === viewer);
   if (!seen) throw new Error(`Pas de vue pour ${viewer === null ? "le spectateur" : `le siège ${viewer}`}.`);
