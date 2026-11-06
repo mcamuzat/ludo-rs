@@ -3,6 +3,8 @@
 //! and sources: RULES.md ([LG] the rules, [TB] twixtbot).
 
 pub mod board;
+pub mod encode;
+pub mod net;
 mod view;
 
 pub use board::{all_points, replay, Board, Color, Point, TwixtAction, SIZE};
