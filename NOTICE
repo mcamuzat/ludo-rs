@@ -14,3 +14,13 @@ d'après le « Pairs Companion Book » ; ni ses textes ni les illustrations des
 éditions du jeu ne sont inclus.
 La règle de « L'Auberge des Pirates » est reformulée d'après l'édition
 Origames (2017) de Pairs.
+
+TwixT est un jeu d'Alex Randolph. Le réseau de neurones de games/twixt
+(web/public/twixt/net-f16.bin) est dérivé, par scripts/twixt-export.py, de
+model/torch.pt de twixtbot-ui (https://github.com/stevens68/twixtbot-ui,
+Copyright (c) 2021 stevens68, licence MIT), lui-même converti du réseau
+entraîné par twixtbot (https://github.com/BonyJordan/twixtbot,
+Copyright (c) 2019 Jordan Lampe, licence MIT). Le codage des entrées, la
+recherche et le modèle de swap de games/twixt sont portés de ces deux
+projets. Texte de la licence MIT : voir LICENSE ; les avis de copyright
+ci-dessus s'y appliquent.
