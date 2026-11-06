@@ -87,6 +87,9 @@ impl TwixtState {
         {
             // Site's choice, as [TB]: nobody can connect any more.
             self.result = Some(None);
+        } else if !all_points().any(|p| self.board.legal(p)) {
+            // Site's choice: the side to move has no hole left.
+            self.result = Some(None);
         }
         Ok(())
     }

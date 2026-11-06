@@ -248,4 +248,20 @@ describe("Table", () => {
     await expect(table.takeBack(0)).rejects.toThrow("Aucun coup à reprendre.");
     table.dispose();
   });
+
+  it("reports an AI failure after its fallback move, so the next snapshot does not hide it", async () => {
+    const engine = new FakeEngine();
+    const calls: string[] = [];
+    const table = new Table(
+      "g",
+      [{ kind: "ai", level: "Easy", name: "IA" }, remote("B")],
+      { onSnapshot: () => calls.push("snapshot"), onError: (m: string) => calls.push(`error ${m}`) },
+      { engine, ai: new FakeAi(async () => Promise.reject(new Error("Poids absents"))), now: Date.now },
+    );
+    await table.start(1);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(engine.applied).toEqual([[0, "t"]]);
+    expect(calls.at(-1)).toBe("error IA : Poids absents");
+    table.dispose();
+  });
 });

@@ -94,3 +94,30 @@ fn red_win_at_a_finished_game_is_the_result() {
     assert_eq!(before.best, Some(1.0));
     assert!(review_point(n, &moves, moves.len() + 1).is_err());
 }
+
+#[test]
+fn the_swap_is_a_candidate_for_black() {
+    let a = advise(net().unwrap(), &[place(11, 11)]).unwrap();
+    assert!(
+        a.best.iter().any(|c| c.action == TwixtAction::Swap),
+        "{:?}",
+        a.best
+    );
+    let a = advise(net().unwrap(), &[place(11, 11), place(5, 5)]).unwrap();
+    assert!(a.best.iter().all(|c| c.action != TwixtAction::Swap));
+}
+
+#[test]
+fn a_first_move_counts_the_swap() {
+    // After Red's first peg, Black may swap: Red is worth no more than that.
+    let n = net().unwrap();
+    for first in [place(11, 11), place(1, 0), place(6, 3)] {
+        let after = review_point(n, std::slice::from_ref(&first), 1)
+            .unwrap()
+            .red_win;
+        let swapped = review_point(n, &[first.clone(), TwixtAction::Swap], 2)
+            .unwrap()
+            .red_win;
+        assert!(after <= swapped + 1e-6, "{first:?}: {after} > {swapped}");
+    }
+}

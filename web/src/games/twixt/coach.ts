@@ -1,7 +1,7 @@
 // Display helpers for TwixT's coach. Every number comes from the engine
 // (games/twixt/src/coach.rs); this file only sequences the calls and formats.
 
-import type { Grade, Review, ReviewPoint, TwixtAction } from "./types";
+import type { Advice, Grade, Review, ReviewPoint, TwixtAction } from "./types";
 
 /** What the board needs from `CoachClient` (a fake in tests). */
 export interface CoachLike {
@@ -9,6 +9,16 @@ export interface CoachLike {
   reviewPoint<T>(moves: unknown[], ply: number): Promise<T>;
   review<T>(moves: unknown[], points: unknown[]): Promise<T>;
   position<T>(moves: unknown[]): Promise<T>;
+}
+
+/** Identifies a position by its moves (a take back can reach the same count). */
+export function positionKey(moves: TwixtAction[]): string {
+  return JSON.stringify(moves);
+}
+
+/** The advice stored for `moves`, if it was asked for exactly that position. */
+export function adviceFor(stored: { key: string; advice: Advice } | null, moves: TwixtAction[]): Advice | null {
+  return stored !== null && stored.key === positionKey(moves) ? stored.advice : null;
 }
 
 export const GRADE_NAMES: Record<Grade, string> = {

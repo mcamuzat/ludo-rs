@@ -26,7 +26,8 @@ export interface TwixtView {
 export type Grade = "Best" | "Good" | "Inaccuracy" | "Mistake" | "Blunder";
 
 export interface Candidate {
-  at: Point;
+  /** A hole, or the swap on Black's first move. */
+  action: TwixtAction;
   win: number;
 }
 

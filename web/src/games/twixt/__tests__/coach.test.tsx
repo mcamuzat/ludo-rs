@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { TwixtBoard, TwixtSvg } from "../Board";
 import { CoachPanel } from "../Coach";
 import { ReviewPanel } from "../Review";
-import { computeReview, type CoachLike } from "../coach";
+import { adviceFor, computeReview, positionKey, type CoachLike } from "../coach";
 import type { Advice, Review, TwixtAction, TwixtView } from "../types";
 
 const NAMES = ["Ana", "Hugo (IA)"];
@@ -26,9 +26,9 @@ const VIEW: TwixtView = {
 const ADVICE: Advice = {
   win: 0.62,
   best: [
-    { at: { x: 6, y: 7 }, win: 0.7 },
-    { at: { x: 4, y: 7 }, win: 0.66 },
-    { at: { x: 7, y: 6 }, win: 0.6 },
+    { action: { Place: { x: 6, y: 7 } }, win: 0.7 },
+    { action: { Place: { x: 4, y: 7 } }, win: 0.66 },
+    { action: "Swap", win: 0.6 },
   ],
   heat: [
     [{ x: 6, y: 7 }, 0.5],
@@ -73,7 +73,7 @@ describe("TwixT coach", () => {
     expect(html).toContain("Ton dernier coup : Erreur (−12 points)");
     expect(html).toContain("G8 — 70 %");
     expect(html).toContain("E8 — 66 %");
-    expect(html).toContain("H7 — 60 %");
+    expect(html).toContain("Swap — 60 %");
     const best = renderToStaticMarkup(
       <CoachPanel advice={{ ...ADVICE, last: { ply: 0, loss: 0.004, grade: "Best" } }} heat={false} onHeat={() => {}} onHover={() => {}} />,
     );
@@ -82,6 +82,14 @@ describe("TwixT coach", () => {
       <CoachPanel advice={{ ...ADVICE, last: { ply: 0, loss: 0.012, grade: "Good" } }} heat={false} onHeat={() => {}} onHover={() => {}} />,
     );
     expect(good).toContain("Ton dernier coup : Bon (−1 point)");
+  });
+
+  it("never shows advice asked for another position with as many moves", () => {
+    const stored = { key: positionKey(MOVES), advice: ADVICE };
+    expect(adviceFor(stored, MOVES)).toBe(ADVICE);
+    const other: TwixtAction[] = [{ Place: { x: 5, y: 5 } }, { Place: { x: 16, y: 15 } }];
+    expect(adviceFor(stored, other)).toBeNull();
+    expect(adviceFor(null, MOVES)).toBeNull();
   });
 
   it("draws a ghost peg and the heat map on the board", () => {

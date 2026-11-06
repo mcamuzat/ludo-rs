@@ -230,3 +230,31 @@ fn no_link_crosses_an_opposing_link() {
         }
     }
 }
+
+/// A side with no hole left cannot move: the game ends (a draw) rather
+/// than waiting for a move that does not exist.
+#[test]
+fn a_side_without_a_hole_ends_the_game() {
+    let mut board = twixt::Board::new();
+    for x in 1..23usize {
+        for y in 0..24usize {
+            let c = if y == 0 || y == 23 {
+                Color::Red
+            } else {
+                Color::Black
+            };
+            board.pegs[c.index()][x][y] = true;
+        }
+    }
+    board.turn = Color::Black;
+    // A history that is past the swap (the board is built by hand).
+    let mut s = TwixtState {
+        board,
+        moves: vec![place(1, 0), place(1, 1)],
+        result: None,
+    };
+    s.play(&place(0, 5)).unwrap();
+    assert!(Twixt::legal_actions(&s, Seat(0)).is_empty());
+    assert_eq!(s.result, Some(None));
+    assert!(Twixt::pending(&s).is_empty());
+}

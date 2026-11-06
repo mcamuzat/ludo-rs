@@ -42,7 +42,8 @@ const KEY_MOMENTS: usize = 3;
 #[derive(Clone, Debug, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Candidate {
-    pub at: Point,
+    /// A hole, or the swap on Black's first move.
+    pub action: TwixtAction,
     /// The mover's win probability after playing it.
     pub win: f32,
 }
@@ -61,7 +62,8 @@ pub struct LastMove {
 pub struct Advice {
     /// The side to move's win probability with the best of `best`.
     pub win: f32,
-    /// The policy's three favourite holes, best first by `win`.
+    /// The policy's three favourite holes (and the swap on Black's first
+    /// move), best first by `win`.
     pub best: Vec<Candidate>,
     /// The policy's probability of every legal hole.
     pub heat: Vec<(Point, f32)>,
@@ -89,19 +91,31 @@ fn mover(ply: usize) -> Color {
     }
 }
 
-/// `c`'s win probability in `s`: the result if the game is over.
+/// The side to move's win probability by the network alone.
+fn net_win(net: &Net, s: &TwixtState) -> f32 {
+    win_probability(&net.eval(&encode(&s.board)).value)
+}
+
+/// `c`'s win probability in `s`: the result if the game is over. On
+/// Black's first move the network does not know the swap: Black is worth
+/// the better of playing on and swapping.
 fn win_for(net: &Net, s: &TwixtState, c: Color) -> f32 {
-    match s.result {
-        Some(Some(w)) => f32::from(u8::from(w == c)),
-        Some(None) => 0.5,
-        None => {
-            let p = win_probability(&net.eval(&encode(&s.board)).value);
-            if s.board.turn == c {
-                p
-            } else {
-                1.0 - p
-            }
+    let to_move = match s.result {
+        Some(Some(w)) => return f32::from(u8::from(w == c)),
+        Some(None) => return 0.5,
+        None if s.moves.len() == 1 => {
+            let mut swapped = s.clone();
+            swapped
+                .play(&TwixtAction::Swap)
+                .expect("the swap is legal at ply 1");
+            net_win(net, s).max(1.0 - net_win(net, &swapped))
         }
+        None => net_win(net, s),
+    };
+    if s.board.turn == c {
+        to_move
+    } else {
+        1.0 - to_move
     }
 }
 
@@ -110,18 +124,21 @@ fn state(moves: &[TwixtAction]) -> Result<TwixtState, Illegal> {
 }
 
 /// `me`'s win after each of the policy's three favourite holes in `s`
-/// (`me` to move), best first.
+/// (`me` to move), and after the swap when it is legal, best first.
 fn top_children(net: &Net, s: &TwixtState, ranked: &[(Point, f32)]) -> Vec<Candidate> {
     let me = s.board.turn;
+    let swap = (s.moves.len() == 1).then_some(TwixtAction::Swap);
     let mut best: Vec<Candidate> = ranked
         .iter()
         .take(3)
-        .map(|&(at, _)| {
+        .map(|&(at, _)| TwixtAction::Place(at))
+        .chain(swap)
+        .map(|action| {
             let mut child = s.clone();
-            child.play(&TwixtAction::Place(at)).expect("a legal hole");
+            child.play(&action).expect("a legal move");
             Candidate {
-                at,
                 win: win_for(net, &child, me),
+                action,
             }
         })
         .collect();

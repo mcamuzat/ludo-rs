@@ -25,4 +25,5 @@ Sources :
 
 - [LG] Gagne qui relie ses deux bordures par une chaîne de liens.
 - ❓ Nulle dès qu'aucun des deux ne peut plus relier ses bordures (choix du site, comme [TB] `_is_a_draw`) : un chemin reste possible tant qu'une suite de pas de cavalier par des trous libres ou à soi, sans croiser de lien adverse, joint les deux bordures.
+- ❓ Nulle aussi si le joueur au trait n'a plus aucun trou permis (choix du site : cas extrême où l'un a rempli tous ses trous et l'autre peut encore relier ; la règle ne prévoit pas de passer).
 - Pas de limite de durée : la partie finit toujours.

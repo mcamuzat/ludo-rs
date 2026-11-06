@@ -3,7 +3,7 @@ import { CoachClient } from "../../engine/clients";
 import type { BoardProps } from "../registry";
 import { CoachPanel } from "./Coach";
 import { ReviewPanel } from "./Review";
-import { computeReview, type CoachLike } from "./coach";
+import { adviceFor, computeReview, positionKey, type CoachLike } from "./coach";
 import type { Advice, Candidate, Color, Point, Review, TwixtAction, TwixtView } from "./types";
 import "./twixt.css";
 
@@ -141,19 +141,22 @@ export function TwixtBoard({ view, legalActions, me, seatNames, submit, assist }
   const client = useCoachClient(assist !== undefined);
 
   // The coach: asked for one position at a time, dropped when it changes.
-  const [advice, setAdvice] = useState<{ moves: number; advice: Advice } | null>(null);
+  const [advice, setAdvice] = useState<{ key: string; advice: Advice } | null>(null);
   const [asking, setAsking] = useState(false);
   const [heat, setHeat] = useState(false);
   const [hover, setHover] = useState<Candidate | null>(null);
   const [coachError, setCoachError] = useState<string | null>(null);
-  const shown = advice?.moves === v.moves.length ? advice.advice : null;
+  const shown = adviceFor(advice, v.moves);
   const ask = () => {
-    const at = v.moves.length;
+    const at = positionKey(v.moves);
     setCoachError(null);
     setAsking(true);
     client()
       .advise<Advice>(v.moves)
-      .then((a) => setAdvice({ moves: at, advice: a }))
+      .then((a) => {
+        setHover(null);
+        setAdvice({ key: at, advice: a });
+      })
       .catch((e: unknown) => setCoachError(e instanceof Error ? e.message : String(e)))
       .finally(() => setAsking(false));
   };
@@ -205,7 +208,7 @@ export function TwixtBoard({ view, legalActions, me, seatNames, submit, assist }
         view={selected !== null && past ? past : v}
         playable={playable}
         onHole={playable.length > 0 ? (p) => submit({ Place: p } satisfies TwixtAction) : undefined}
-        ghost={shown && hover && myTurn ? { at: hover.at, color: v.turn } : null}
+        ghost={shown && hover && myTurn && hover.action !== "Swap" ? { at: hover.action.Place, color: v.turn } : null}
         heat={shown && heat && myTurn ? shown.heat : null}
       />
       <p className="status">{statusText(v, seatNames)}</p>

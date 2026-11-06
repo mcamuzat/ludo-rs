@@ -269,8 +269,9 @@ export class Table {
         }
         if (attempt < 2) continue;
         this.thinking.delete(seat);
-        this.hooks.onError(`${this.seats[seat].name} : ${errorMessage(e)}`);
         await this.playFallback(seat);
+        // After the fallback's snapshot, which would otherwise clear it.
+        this.hooks.onError(`${this.seats[seat].name} : ${errorMessage(e)}`);
         return;
       }
     }

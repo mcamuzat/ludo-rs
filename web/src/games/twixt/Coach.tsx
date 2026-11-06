@@ -1,6 +1,8 @@
 import { holeName } from "./Board";
 import { GRADE_NAMES, lossText, percent } from "./coach";
-import type { Advice, Candidate } from "./types";
+import type { Advice, Candidate, TwixtAction } from "./types";
+
+const actionName = (a: TwixtAction) => (a === "Swap" ? "Swap" : holeName(a.Place));
 
 interface Props {
   advice: Advice;
@@ -25,9 +27,9 @@ export function CoachPanel({ advice, heat, onHeat, onHover }: Props) {
       <p className="hint">Les coups préférés du réseau, avec tes chances après :</p>
       <ol className="tw-candidates">
         {advice.best.map((c) => (
-          <li key={holeName(c.at)}>
+          <li key={actionName(c.action)}>
             <button type="button" className="ghost" onMouseEnter={() => onHover(c)} onMouseLeave={() => onHover(null)} onFocus={() => onHover(c)} onBlur={() => onHover(null)}>
-              {`${holeName(c.at)} — ${percent(c.win)}`}
+              {`${actionName(c.action)} — ${percent(c.win)}`}
             </button>
           </li>
         ))}
