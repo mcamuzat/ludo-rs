@@ -3,11 +3,16 @@
 //! and sources: RULES.md ([LG] the rules, [TB] twixtbot).
 
 pub mod board;
+pub mod coach;
 pub mod encode;
+mod heuristics;
+pub mod mcts;
 pub mod net;
+pub mod swap;
 mod view;
 
 pub use board::{all_points, replay, Board, Color, Point, TwixtAction, SIZE};
+pub use heuristics::best_policy_move;
 pub use view::TwixtView;
 
 use ludo_core::{Determinize, Game, GameMeta, Illegal, Outcome, Pending, Seat, Viewer};
