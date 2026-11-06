@@ -97,6 +97,16 @@ export interface BoardProps {
   me: Seat | null;
   seatNames: string[];
   submit(action: unknown): void;
+  /** Only in a game played on this device (against the AI or same screen). */
+  assist?: LocalAssist;
+}
+
+/** What a local game offers its board. */
+export interface LocalAssist {
+  /** An AI sits at the table. */
+  vsAi: boolean;
+  /** Takes back the local player's last move (and the replies after it). */
+  takeBack(): void;
 }
 
 /** How the home screen groups and illustrates a game. */

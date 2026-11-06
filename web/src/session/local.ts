@@ -1,5 +1,6 @@
 import { randomSeed } from "../engine/clients";
 import type { GameConfig, Seat, Snapshot } from "../engine/types";
+import type { LocalAssist } from "../games/registry";
 import { errorMessage } from "./names";
 import { Session } from "./session";
 import { Table, type TableSeat } from "./table";
@@ -42,6 +43,17 @@ export class LocalSession extends Session {
 
   submit(seat: Seat, action: unknown) {
     this.table.submit(seat, action).catch((e) => this.set({ notice: errorMessage(e) }));
+  }
+
+  assist(): LocalAssist {
+    return {
+      vsAi: this.seats.some((s) => s.kind === "ai"),
+      takeBack: () => {
+        const me = this.getState().me;
+        if (me === null) return;
+        this.table.takeBack(me).catch((e) => this.set({ notice: errorMessage(e) }));
+      },
+    };
   }
 
   restart() {

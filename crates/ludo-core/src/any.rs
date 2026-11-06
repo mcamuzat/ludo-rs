@@ -58,6 +58,8 @@ pub trait AnyMatch {
     fn log_json(&self) -> Value;
     fn visible_pending(&self, viewer: Viewer) -> Vec<Seat>;
     fn timeout_action_json(&self, seat: Seat) -> Option<Value>;
+    /// See `Match::take_back`.
+    fn take_back(&mut self, seat: Seat) -> Result<(), LudoError>;
 }
 
 impl<G: Game> AnyMatch for Match<G> {
@@ -100,6 +102,10 @@ impl<G: Game> AnyMatch for Match<G> {
 
     fn visible_pending(&self, viewer: Viewer) -> Vec<Seat> {
         G::visible_pending(self.state(), viewer).0
+    }
+
+    fn take_back(&mut self, seat: Seat) -> Result<(), LudoError> {
+        Ok(Match::take_back(self, seat)?)
     }
 
     fn timeout_action_json(&self, seat: Seat) -> Option<Value> {

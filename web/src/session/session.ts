@@ -1,4 +1,5 @@
 import type { GameConfig, Seat, Update } from "../engine/types";
+import type { LocalAssist } from "../games/registry";
 import { errorMessage } from "./names";
 
 export type SeatKind = "local" | "ai" | "remote" | "open";
@@ -55,6 +56,10 @@ export abstract class Session {
   private listeners = new Set<() => void>();
 
   abstract submit(seat: Seat, action: unknown): void;
+  /** Help for a game played on this device; none online. */
+  assist(): LocalAssist | null {
+    return null;
+  }
   restart(): void {}
   dispose(): void {}
 

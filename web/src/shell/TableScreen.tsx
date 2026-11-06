@@ -63,6 +63,7 @@ function Playing({ session, state, meta }: { session: Session; state: SessionSta
           submit={(action) => {
             if (state.me !== null) session.submit(state.me, action);
           }}
+          assist={session.assist() ?? undefined}
         />
       )}
       {update?.outcome && (

@@ -48,6 +48,9 @@ serve<EngineRequest>(init(), (req) => {
       return JSON.parse(wasm.exportState(current()));
     case "exportLog":
       return JSON.parse(wasm.exportLog(current()));
+    case "takeBack":
+      wasm.takeBack(current(), req.seat);
+      return null;
     case "timeoutAction":
       return JSON.parse(wasm.timeoutAction(current(), req.seat));
     case "cryptideRiddle":

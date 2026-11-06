@@ -39,6 +39,13 @@ class FakeEngine implements EngineLike {
   async timeoutAction(seat: Seat) {
     return seat === this.current ? "t" : null;
   }
+  async takeBack(seat: Seat) {
+    const at = this.applied.map(([s]) => s).lastIndexOf(seat);
+    if (at < 0) throw new Error("Aucun coup à reprendre.");
+    this.applied.length = at;
+    this.rev++;
+    this.current = seat;
+  }
   dispose() {}
 }
 
@@ -210,6 +217,35 @@ describe("Table", () => {
       [0, "b"],
     ]);
     expect(table.update(0)!.rev).not.toBe(mine.rev);
+    table.dispose();
+  });
+
+  it("takes back a move while the AI thinks, and drops the AI's stale answer", async () => {
+    const engine = new FakeEngine();
+    let answer: (a: unknown) => void = () => {};
+    const ai = new FakeAi(() => new Promise((resolve) => (answer = resolve)));
+    const table = new Table("g", [{ kind: "local", name: "A" }, { kind: "ai", level: "Easy", name: "IA" }], hooks(), {
+      engine,
+      ai,
+      now: Date.now,
+    });
+    await table.start(1);
+    await table.submit(0, "a");
+    await vi.advanceTimersByTimeAsync(10);
+    await table.takeBack(0);
+    expect(engine.applied).toEqual([]);
+    expect(table.snapshot?.pending).toEqual([0]);
+    answer("b");
+    await vi.advanceTimersByTimeAsync(AI_MIN_DELAY_MS + 10);
+    expect(engine.applied).toEqual([]);
+    table.dispose();
+  });
+
+  it("reports the engine's refusal to take back at the start", async () => {
+    const engine = new FakeEngine();
+    const table = new Table("g", [{ kind: "local", name: "A" }, remote("B")], hooks(), { engine, ai: new FakeAi(async () => "x"), now: Date.now });
+    await table.start(1);
+    await expect(table.takeBack(0)).rejects.toThrow("Aucun coup à reprendre.");
     table.dispose();
   });
 });

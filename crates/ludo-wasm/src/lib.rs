@@ -101,6 +101,12 @@ pub fn apply(handle: u32, seat: u8, action: &str) -> Result<(), JsError> {
     with_match(handle, |m| m.apply_json(Seat(seat), action).map_err(err))
 }
 
+/// Rewinds to just before `seat`'s last action.
+#[wasm_bindgen(js_name = takeBack)]
+pub fn take_back(handle: u32, seat: u8) -> Result<(), JsError> {
+    with_match(handle, |m| m.take_back(Seat(seat)).map_err(err))
+}
+
 #[wasm_bindgen]
 pub fn view(handle: u32, seat: Option<u8>) -> Result<String, JsError> {
     let viewer = seat.map_or(Viewer::Spectator, |s| Viewer::Seat(Seat(s)));

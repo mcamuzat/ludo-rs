@@ -82,6 +82,21 @@ impl<G: Game> Match<G> {
         Ok(())
     }
 
+    /// Rewinds to just before `seat`'s last action, dropping everything
+    /// after it, by replaying the log. Illegal when `seat` has not played.
+    pub fn take_back(&mut self, seat: Seat) -> Result<(), Illegal> {
+        let at = self
+            .log
+            .actions
+            .iter()
+            .rposition(|(s, _)| *s == seat)
+            .ok_or_else(|| Illegal::new("Aucun coup à reprendre."))?;
+        let mut log = self.log.clone();
+        log.actions.truncate(at);
+        *self = Self::from_log(log)?;
+        Ok(())
+    }
+
     pub fn state(&self) -> &G::State {
         &self.state
     }
@@ -118,6 +133,25 @@ mod tests {
         let m = played();
         assert_eq!(m.rev(), 2);
         assert_eq!(replay::<Nim>(m.log()).unwrap(), *m.state());
+    }
+
+    #[test]
+    fn take_back_rewinds_to_before_the_seats_last_action() {
+        let mut m = played();
+        m.take_back(Seat(0)).unwrap();
+        assert_eq!(m.rev(), 0);
+        assert_eq!(*m.state(), Nim::new(&NimConfig { pile: 5 }, 2, 42));
+        let mut m = played();
+        m.take_back(Seat(1)).unwrap();
+        assert_eq!(m.rev(), 1);
+        assert_eq!(replay::<Nim>(m.log()).unwrap(), *m.state());
+    }
+
+    #[test]
+    fn take_back_without_a_move_is_illegal() {
+        let mut m = Match::<Nim>::new(NimConfig { pile: 5 }, 2, 42).unwrap();
+        assert!(m.take_back(Seat(0)).is_err());
+        assert_eq!(m.rev(), 0);
     }
 
     #[test]

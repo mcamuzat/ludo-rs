@@ -25,6 +25,8 @@ export interface EngineLike {
   exportState(): Promise<unknown>;
   exportLog(): Promise<unknown>;
   timeoutAction(seat: Seat): Promise<unknown | null>;
+  /** Rewinds to just before `seat`'s last action. */
+  takeBack(seat: Seat): Promise<unknown>;
   dispose(): void;
 }
 
@@ -111,6 +113,17 @@ export class Table {
       if (rev !== undefined && isStale(rev, this.revFor(seat))) throw new StaleActionError();
       await this.engine.apply(seat, action);
       this.clocks?.finish(seat, this.now());
+      await this.refresh();
+    });
+  }
+
+  /**
+   * Rewinds to just before `seat`'s last action (a local game against the
+   * AI). Revisions move on, so an answer the AI was computing is stale.
+   */
+  takeBack(seat: Seat): Promise<void> {
+    return this.serial(async () => {
+      await this.engine.takeBack(seat);
       await this.refresh();
     });
   }

@@ -76,6 +76,7 @@ export type EngineRequest =
   | { kind: "exportState" }
   | { kind: "exportLog" }
   | { kind: "timeoutAction"; seat: Seat }
+  | { kind: "takeBack"; seat: Seat }
   | { kind: "cryptideRiddle"; mode: string; players: number; seed: number };
 
 export interface AiRequest {
