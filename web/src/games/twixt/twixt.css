@@ -19,3 +19,16 @@
 .tw-last { fill: none; stroke: var(--brass); stroke-width: 2; pointer-events: none; }
 .tw-heat { fill: #3fbf5f; pointer-events: none; }
 .twixt .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; border: 1px solid #fff; }
+.tw-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.tw-coach, .tw-review { width: min(100%, 640px); }
+.tw-candidates { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 4px 0; }
+.tw-curve { width: 100%; height: auto; }
+.tw-half { stroke: color-mix(in srgb, currentColor 30%, transparent); stroke-dasharray: 4 4; }
+.tw-curve-line { fill: none; stroke: #d4302b; stroke-width: 2; }
+.tw-point { fill: currentColor; cursor: pointer; }
+.tw-point.selected { stroke: var(--brass); stroke-width: 2; }
+.tw-grade-Best, .tw-grade-Good { color: #3fa35a; fill: #3fa35a; }
+.tw-grade-Inaccuracy { color: #c9a227; fill: #c9a227; }
+.tw-grade-Mistake { color: #e07b1f; fill: #e07b1f; }
+.tw-grade-Blunder { color: #d4302b; fill: #d4302b; }
+.tw-key { list-style: none; padding: 0; margin: 4px 0; display: flex; flex-direction: column; gap: 4px; }

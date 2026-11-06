@@ -1,5 +1,10 @@
+import { useEffect, useRef, useState } from "react";
+import { CoachClient } from "../../engine/clients";
 import type { BoardProps } from "../registry";
-import type { Color, Point, TwixtAction, TwixtView } from "./types";
+import { CoachPanel } from "./Coach";
+import { ReviewPanel } from "./Review";
+import { computeReview, type CoachLike } from "./coach";
+import type { Advice, Candidate, Color, Point, Review, TwixtAction, TwixtView } from "./types";
 import "./twixt.css";
 
 const SIZE = 24;
@@ -126,12 +131,66 @@ export function TwixtSvg({ view, playable = [], onHole, ghost, heat }: SvgProps)
   );
 }
 
-export function TwixtBoard({ view, legalActions, me, seatNames, submit }: BoardProps) {
+export function TwixtBoard({ view, legalActions, me, seatNames, submit, assist }: BoardProps) {
   const v = view as TwixtView;
   const legal = legalActions as TwixtAction[];
   const myTurn = me !== null && !v.result && seatOf(v.turn) === me && legal.length > 0;
-  const playable = myTurn ? legal.flatMap((a) => (a === "Swap" ? [] : [a.Place])) : [];
   const canSwap = myTurn && legal.includes("Swap");
+  const coachOn = assist?.vsAi === true && !v.result;
+  const reviewOn = assist !== undefined && v.result !== null;
+  const client = useCoachClient(assist !== undefined);
+
+  // The coach: asked for one position at a time, dropped when it changes.
+  const [advice, setAdvice] = useState<{ moves: number; advice: Advice } | null>(null);
+  const [asking, setAsking] = useState(false);
+  const [heat, setHeat] = useState(false);
+  const [hover, setHover] = useState<Candidate | null>(null);
+  const [coachError, setCoachError] = useState<string | null>(null);
+  const shown = advice?.moves === v.moves.length ? advice.advice : null;
+  const ask = () => {
+    const at = v.moves.length;
+    setCoachError(null);
+    setAsking(true);
+    client()
+      .advise<Advice>(v.moves)
+      .then((a) => setAdvice({ moves: at, advice: a }))
+      .catch((e: unknown) => setCoachError(e instanceof Error ? e.message : String(e)))
+      .finally(() => setAsking(false));
+  };
+
+  // The review, once the game is over.
+  const [progress, setProgress] = useState<[number, number] | null>(null);
+  const [reviewed, setReviewed] = useState<{ curve: number[]; review: Review } | null>(null);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [past, setPast] = useState<TwixtView | null>(null);
+  const startReview = () => {
+    setCoachError(null);
+    setProgress([0, v.moves.length + 1]);
+    computeReview(client(), v.moves, (done, total) => setProgress([done, total]))
+      .then(setReviewed)
+      .catch((e: unknown) => setCoachError(e instanceof Error ? e.message : String(e)))
+      .finally(() => setProgress(null));
+  };
+  const select = (ply: number | null) => {
+    setSelected(ply);
+    setPast(null);
+    if (ply !== null) {
+      client()
+        .position<TwixtView>(v.moves.slice(0, ply))
+        .then(setPast)
+        .catch(() => setPast(null));
+    }
+  };
+  // A new game (revanche) clears the review.
+  useEffect(() => {
+    if (!v.result) {
+      setReviewed(null);
+      setSelected(null);
+      setPast(null);
+    }
+  }, [v.result]);
+
+  const playable = myTurn && selected === null ? legal.flatMap((a) => (a === "Swap" ? [] : [a.Place])) : [];
   return (
     <div className="twixt">
       <ul className="legend">
@@ -142,13 +201,63 @@ export function TwixtBoard({ view, legalActions, me, seatNames, submit }: BoardP
           </li>
         ))}
       </ul>
-      <TwixtSvg view={v} playable={playable} onHole={myTurn ? (p) => submit({ Place: p } satisfies TwixtAction) : undefined} />
+      <TwixtSvg
+        view={selected !== null && past ? past : v}
+        playable={playable}
+        onHole={playable.length > 0 ? (p) => submit({ Place: p } satisfies TwixtAction) : undefined}
+        ghost={shown && hover && myTurn ? { at: hover.at, color: v.turn } : null}
+        heat={shown && heat && myTurn ? shown.heat : null}
+      />
       <p className="status">{statusText(v, seatNames)}</p>
-      {canSwap && (
-        <button type="button" className="primary" onClick={() => submit("Swap" satisfies TwixtAction)}>
-          Prendre son pion (swap)
-        </button>
+      <div className="tw-actions">
+        {canSwap && (
+          <button type="button" className="primary" onClick={() => submit("Swap" satisfies TwixtAction)}>
+            Prendre son pion (swap)
+          </button>
+        )}
+        {coachOn && (
+          <button type="button" className="ghost" disabled={!myTurn || asking} onClick={ask}>
+            {asking ? "Coach : réflexion…" : "Coach"}
+          </button>
+        )}
+        {coachOn && assist && (
+          <button type="button" className="ghost" disabled={v.moves.length === 0} onClick={() => assist.takeBack()}>
+            Annuler et réessayer
+          </button>
+        )}
+        {reviewOn && !reviewed && (
+          <button type="button" className="primary" disabled={progress !== null} onClick={startReview}>
+            Revue de la partie
+          </button>
+        )}
+      </div>
+      {coachError && <p className="error">{coachError}</p>}
+      {coachOn && myTurn && shown && <CoachPanel advice={shown} heat={heat} onHeat={setHeat} onHover={setHover} />}
+      {progress && (
+        <p className="hint">
+          {`Le réseau relit la partie : ${progress[0]} / ${progress[1]}`} <progress value={progress[0]} max={progress[1]} />
+        </p>
+      )}
+      {reviewOn && reviewed && (
+        <ReviewPanel curve={reviewed.curve} review={reviewed.review} names={seatNames} selected={selected} onSelect={select} />
       )}
     </div>
   );
+}
+
+/** The coach's worker, started on first use and stopped with the board. */
+function useCoachClient(enabled: boolean): () => CoachLike {
+  const ref = useRef<CoachClient | null>(null);
+  useEffect(
+    () => () => {
+      ref.current?.dispose();
+      ref.current = null;
+    },
+    [],
+  );
+  return () => {
+    if (!enabled) throw new Error("Pas de coach ici.");
+    ref.current ??= new CoachClient();
+    return ref.current;
+  };
 }
