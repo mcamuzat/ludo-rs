@@ -112,6 +112,9 @@ pub fn choose<G: Game + Determinize + Heuristics>(
     if legal.len() == 1 {
         return Ok(legal[0].clone());
     }
+    if let Some(action) = G::own_search(state, seat, search, now_ms) {
+        return Ok(action);
+    }
     if let Some(action) = G::policy_action(state, seat, search.level, &mut rng) {
         return Ok(action);
     }
@@ -398,6 +401,24 @@ mod tests {
             choose::<SteeredNim>(&s, Seat(0), &search, &no_clock).unwrap(),
             3
         );
+    }
+
+    #[test]
+    fn own_search_comes_before_everything() {
+        use crate::testgames::OwnNim;
+        let s = OwnNim::new(&NimConfig { pile: 10 }, 2, 0);
+        for level in [Level::Easy, Level::Medium, Level::Hard] {
+            let search = Search {
+                budget: Some(Budget::Iterations(10)),
+                blunder: 1.0,
+                seed: 4,
+                level,
+            };
+            assert_eq!(
+                choose::<OwnNim>(&s, Seat(0), &search, &no_clock).unwrap(),
+                1
+            );
+        }
     }
 
     #[test]

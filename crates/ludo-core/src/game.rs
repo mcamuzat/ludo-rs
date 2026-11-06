@@ -229,6 +229,18 @@ pub trait Heuristics: Game {
         Self::legal_actions(s, seat)
     }
 
+    /// The game's own search (a network-guided MCTS, say), played instead
+    /// of policy, script, blunder and generic search. Receives the level's
+    /// budget and the clock. Default: none.
+    fn own_search(
+        _s: &Self::State,
+        _seat: Seat,
+        _search: &crate::ai::Search,
+        _now_ms: &dyn Fn() -> f64,
+    ) -> Option<Self::Action> {
+        None
+    }
+
     /// A legal action the AI plays for `seat` at `level`, before any
     /// script, blunder or search: for games whose levels differ by policy
     /// rather than by search budget. Depends only on what `seat` can see.

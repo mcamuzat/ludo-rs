@@ -627,6 +627,82 @@ impl Heuristics for SteeredNim {
     }
 }
 
+/// Nim whose own search always takes 1, while its policy would take 2.
+pub struct OwnNim;
+
+impl Game for OwnNim {
+    type State = NimState;
+    type Action = u8;
+    type View = NimState;
+    type Config = NimConfig;
+
+    fn meta() -> GameMeta {
+        GameMeta {
+            id: "own-nim",
+            name: "Own Nim",
+            ..Nim::meta()
+        }
+    }
+
+    fn new(config: &NimConfig, players: u8, seed: u64) -> NimState {
+        Nim::new(config, players, seed)
+    }
+
+    fn pending(s: &NimState) -> Pending {
+        Nim::pending(s)
+    }
+
+    fn legal_actions(s: &NimState, seat: Seat) -> Vec<u8> {
+        Nim::legal_actions(s, seat)
+    }
+
+    fn apply(s: &mut NimState, seat: Seat, take: &u8) -> Result<(), Illegal> {
+        Nim::apply(s, seat, take)
+    }
+
+    fn view(s: &NimState, viewer: Viewer) -> NimState {
+        Nim::view(s, viewer)
+    }
+
+    fn outcome(s: &NimState) -> Option<Outcome> {
+        Nim::outcome(s)
+    }
+}
+
+impl Determinize for OwnNim {
+    fn determinize<R: Rng + ?Sized>(s: &NimState, _observer: Seat, _rng: &mut R) -> NimState {
+        s.clone()
+    }
+}
+
+impl Heuristics for OwnNim {
+    fn rollout_action<R: Rng + ?Sized>(s: &NimState, seat: Seat, rng: &mut R) -> u8 {
+        Nim::rollout_action(s, seat, rng)
+    }
+
+    fn own_search(
+        _s: &NimState,
+        _seat: Seat,
+        _search: &crate::ai::Search,
+        _now_ms: &dyn Fn() -> f64,
+    ) -> Option<u8> {
+        Some(1)
+    }
+
+    fn policy_action<R: Rng + ?Sized>(
+        _s: &NimState,
+        _seat: Seat,
+        _level: crate::ai::Level,
+        _rng: &mut R,
+    ) -> Option<u8> {
+        Some(2)
+    }
+
+    fn random_actions(_s: &NimState, _seat: Seat) -> Vec<u8> {
+        vec![3]
+    }
+}
+
 #[cfg(test)]
 mod nim_tests {
     use super::*;
