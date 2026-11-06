@@ -33,7 +33,7 @@ fn fixture() -> Fixture {
 fn weights() -> Vec<u8> {
     std::fs::read(concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/../../web/public/twixt/net-f16.bin"
+        "/../../web/src/engine/twixt-net-f16.bin"
     ))
     .unwrap()
 }

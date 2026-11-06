@@ -424,13 +424,13 @@ pub fn install(bytes: &[u8]) -> Result<(), String> {
 }
 
 /// The process-wide network. Natively it is read on first use from
-/// `web/public/twixt/net-f16.bin`; in the browser, `None` until `install`.
+/// `web/src/engine/twixt-net-f16.bin`; in the browser, `None` until `install`.
 pub fn net() -> Option<&'static Net> {
     #[cfg(not(target_arch = "wasm32"))]
     if NET.get().is_none() {
         let path = concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/../../web/public/twixt/net-f16.bin"
+            "/../../web/src/engine/twixt-net-f16.bin"
         );
         if let Ok(bytes) = std::fs::read(path) {
             let _ = install(&bytes);

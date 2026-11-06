@@ -5,7 +5,7 @@
 
 Reads <clone>/model/torch.pt (twixtbot-ui, MIT, converted from twixtbot,
 MIT), folds every BatchNorm into the preceding layer and writes:
-  web/public/twixt/net-f16.bin        the weights, float16 (format below)
+  web/src/engine/twixt-net-f16.bin        the weights, float16 (format below)
   games/twixt/tests/fixtures/net-ref.json
                                       reference positions: twixtbot's encoded
                                       inputs and the outputs of the folded
@@ -157,7 +157,7 @@ def main():
     half = [x.astype("<f2") for x in tensors]
     rounded = [x.astype(np.float32) for x in half]
 
-    out = root / "web" / "public" / "twixt" / "net-f16.bin"
+    out = root / "web" / "src" / "engine" / "twixt-net-f16.bin"
     out.parent.mkdir(parents=True, exist_ok=True)
     with open(out, "wb") as f:
         f.write(b"TWXN")

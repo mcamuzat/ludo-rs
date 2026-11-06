@@ -23,9 +23,12 @@ export class TwixtNetLoader {
   }
 }
 
-/** The weights file, served from `public/twixt/`. */
+/**
+ * The weights file. Vite emits it as a separate asset (never inlined: it is
+ * far above the inlining limit) at a URL right from any worker.
+ */
 export async function fetchTwixtNet(): Promise<Uint8Array> {
-  const res = await fetch(`${import.meta.env.BASE_URL}twixt/net-f16.bin`);
+  const res = await fetch(new URL("./twixt-net-f16.bin", import.meta.url));
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return new Uint8Array(await res.arrayBuffer());
 }
