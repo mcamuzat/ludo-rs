@@ -1,4 +1,5 @@
 import type { Seat, SeatClockView } from "../engine/types";
+import { t } from "../i18n";
 
 export interface ClockSettings {
   /** Time for each decision. */
@@ -7,11 +8,22 @@ export interface ClockSettings {
   bankMs: number;
 }
 
-export const CLOCK_PRESETS: { id: string; label: string; settings: ClockSettings | null }[] = [
+export interface ClockPreset {
+  id: string;
+  /** Shown as is in every language; "none" is named by `clockPresetLabel`. */
+  label: string;
+  settings: ClockSettings | null;
+}
+
+export const CLOCK_PRESETS: ClockPreset[] = [
   { id: "5+20", label: "5 + 20 s", settings: { baseMs: 5_000, bankMs: 20_000 } },
   { id: "10+40", label: "10 + 40 s", settings: { baseMs: 10_000, bankMs: 40_000 } },
-  { id: "none", label: "Aucun", settings: null },
+  { id: "none", label: "", settings: null },
 ];
+
+export function clockPresetLabel(preset: ClockPreset): string {
+  return preset.settings === null ? t().lobby.noClock : preset.label;
+}
 
 /** Per-seat decision clocks (Mahjong Soul style). Pure: time is passed in. */
 export class Clocks {

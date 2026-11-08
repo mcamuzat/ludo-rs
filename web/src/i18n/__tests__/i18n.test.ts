@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { detectLang, gameName, getLang, readStoredLang, setLang, t } from "../index";
 import { en } from "../en";
+import { fr } from "../fr";
 
 afterEach(() => setLang("fr"));
 
@@ -50,5 +51,9 @@ describe("language", () => {
       "riichi",
       "tigre-euphrate",
     ]);
+  });
+
+  it("labels every game option in English too", () => {
+    expect(Object.keys(en.options).sort()).toEqual(Object.keys(fr.options).sort());
   });
 });

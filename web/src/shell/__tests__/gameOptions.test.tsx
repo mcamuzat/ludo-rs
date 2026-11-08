@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import { setLang } from "../../i18n";
 import type { GameMeta } from "../../engine/types";
 import { defaultConfig, optionSummary } from "../../games/options";
 import { GameOptions } from "../GameOptions";
@@ -58,5 +59,22 @@ describe("game options", () => {
   it("renders_nothing_without_options", () => {
     expect(renderToStaticMarkup(<GameOptions meta={{ ...GHOST, options: [] }} config={null} onChange={() => {}} />)).toBe("");
     expect(renderToStaticMarkup(<GameOptions meta={GHOST} config={null} />)).toBe("");
+  });
+});
+
+describe("game options in English", () => {
+  afterEach(() => setLang("fr"));
+
+  it("summarizes with English labels", () => {
+    setLang("en");
+    const tigris: GameMeta = {
+      ...GHOST,
+      id: "tigre-euphrate",
+      options: [{ key: "reinforcements", kind: { type: "choice", values: ["English", "Free"], default: "English" } }],
+    };
+    expect(optionSummary(tigris, { reinforcements: "English" })).toEqual([
+      "Reinforcements in conflicts: Only useful ones (English variant)",
+    ]);
+    expect(optionSummary(MIXED, { fast: true, mode: "On" })).toEqual(["fast: yes", "mode: On"]);
   });
 });

@@ -1,10 +1,9 @@
 import type { Level } from "../engine/types";
-
-export const LEVEL_LABELS: Record<Level, string> = { Easy: "facile", Medium: "moyenne", Hard: "difficile" };
+import { t } from "../i18n";
 
 /** The level, as offered in the lobby menus. */
 export function aiName(level: Level): string {
-  return `IA ${LEVEL_LABELS[level]}`;
+  return t().aiLevels[level];
 }
 
 /** One first name per seat, so the AIs at a table can be told apart. */

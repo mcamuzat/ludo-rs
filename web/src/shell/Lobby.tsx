@@ -1,12 +1,13 @@
 import { useState } from "react";
 import type { GameConfig, GameMeta, Level } from "../engine/types";
 import { aiName, aiSeatName } from "../session/names";
-import { CLOCK_PRESETS, type ClockSettings } from "../session/clock";
+import { CLOCK_PRESETS, clockPresetLabel, type ClockSettings } from "../session/clock";
+import { gameName, useT } from "../i18n";
 import type { TableSeat } from "../session/table";
 import { defaultConfig } from "../games/options";
 import { gameUi } from "../games/registry";
 import { GameOptions } from "./GameOptions";
-import { playersLabel } from "./players";
+import { playersCount } from "./players";
 import { RulesReminder } from "./RulesReminder";
 
 /** What the host picks for each seat after their own. */
@@ -28,18 +29,19 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
   const [clockId, setClockId] = useState(CLOCK_PRESETS[0].id);
   const [config, setConfig] = useState(() => defaultConfig(game));
   const others = choices.slice(0, players - 1);
+  const t = useT();
 
   const options: { value: SeatChoice; label: string }[] = [
     ...LEVELS.map((level) => ({ value: level as SeatChoice, label: aiName(level) })),
     // Hot-seat only without hidden information: everyone sees the same screen.
-    ...(!game.sharedScreen ? [] : [{ value: "local" as SeatChoice, label: "Humain (même écran)" }]),
-    ...(onHost ? [{ value: "open" as SeatChoice, label: "Invité (en ligne)" }] : []),
+    ...(!game.sharedScreen ? [] : [{ value: "local" as SeatChoice, label: t.lobby.sameScreen }]),
+    ...(onHost ? [{ value: "open" as SeatChoice, label: t.lobby.guest }] : []),
   ];
 
   const localSeats = (): TableSeat[] => [
-    { kind: "local", name: "Toi" },
+    { kind: "local", name: t.lobby.you },
     ...others.map((c, i): TableSeat =>
-      c === "local" || c === "open" ? { kind: "local", name: `Joueur ${i + 2}` } : { kind: "ai", level: c, name: aiSeatName(i + 1) },
+      c === "local" || c === "open" ? { kind: "local", name: t.lobby.player(i + 2) } : { kind: "ai", level: c, name: aiSeatName(i + 1) },
     ),
   ];
 
@@ -50,20 +52,18 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
     <main>
       <div className="topbar">
         <button className="ghost" onClick={onBack}>
-          ← Menu
+          {t.lobby.back}
         </button>
-        <h2>{game.name}</h2>
-        <span className="pill">
-          {playersLabel(game)} joueurs
-        </span>
+        <h2>{gameName(game)}</h2>
+        <span className="pill">{playersCount(game)}</span>
       </div>
       <RulesReminder rules={gameUi(game.id)?.rules} open />
       <div className="lobby">
         <section className="panel">
           <div className="panel-head">
-            <h3>Sièges</h3>
+            <h3>{t.lobby.seats}</h3>
             <div className="row">
-              <label htmlFor="players">Joueurs</label>
+              <label htmlFor="players">{t.lobby.players}</label>
               <select id="players" value={players} onChange={(e) => setPlayers(Number(e.target.value))}>
                 {game.playerCounts.map((n) => (
                   <option key={n} value={n}>
@@ -74,10 +74,10 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
             </div>
           </div>
           <ol className="seats">
-            <li>Toi</li>
+            <li>{t.lobby.you}</li>
             {others.map((c, i) => (
               <li key={i}>
-                <select value={c} aria-label={`Siège ${i + 2}`} onChange={(e) => choose(i, e.target.value as SeatChoice)}>
+                <select value={c} aria-label={t.lobby.seat(i + 2)} onChange={(e) => choose(i, e.target.value as SeatChoice)}>
                   {options.map((o) => (
                     <option key={o.value} value={o.value}>
                       {o.label}
@@ -90,19 +90,19 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
         </section>
         {config && (
           <section className="panel">
-            <h3>Options</h3>
+            <h3>{t.lobby.options}</h3>
             <GameOptions meta={game} config={config} onChange={setConfig} />
           </section>
         )}
         <section className="panel">
-          <h3>Lancer</h3>
+          <h3>{t.lobby.start}</h3>
           {onHost && game.clock && (
             <div className="field">
-              <label htmlFor="clock">Chrono en ligne</label>
+              <label htmlFor="clock">{t.lobby.clock}</label>
               <select id="clock" value={clockId} onChange={(e) => setClockId(e.target.value)}>
                 {CLOCK_PRESETS.map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.label}
+                    {clockPresetLabel(p)}
                   </option>
                 ))}
               </select>
@@ -110,7 +110,7 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
           )}
           <div className="row">
             <button className="primary" disabled={others.includes("open")} onClick={() => onLocal(localSeats(), config)}>
-              Jouer sur cet appareil
+              {t.lobby.playHere}
             </button>
             {onHost && (
               <button
@@ -123,11 +123,11 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
                   )
                 }
               >
-                Héberger en ligne
+                {t.lobby.host}
               </button>
             )}
           </div>
-          {onHost && <p className="hint">En ligne, tu reçois un code à donner aux autres joueurs.</p>}
+          {onHost && <p className="hint">{t.lobby.hostHint}</p>}
         </section>
       </div>
     </main>
