@@ -46,6 +46,7 @@ static SIBERIAN_DICE: GameEntry<siberian_dice::SiberianDice> = GameEntry::new();
 static BLACK_HOLE: GameEntry<black_hole::BlackHole> = GameEntry::new();
 static CORPORATION: GameEntry<corporation::Corporation> = GameEntry::new();
 static TWIXT: GameEntry<twixt::Twixt> = GameEntry::new();
+static TIGRE_EUPHRATE: GameEntry<tigre_euphrate::TigreEuphrate> = GameEntry::new();
 
 pub static GAMES: &[&dyn AnyGame] = &[
     &YAVALATH,
@@ -92,6 +93,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &BLACK_HOLE,
     &CORPORATION,
     &TWIXT,
+    &TIGRE_EUPHRATE,
 ];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {
@@ -119,6 +121,14 @@ mod tests {
         assert_eq!(
             find("cards-cobras").unwrap().player_counts(),
             vec![2, 3, 4, 5]
+        );
+    }
+
+    #[test]
+    fn tigre_euphrate_is_for_two_to_four() {
+        assert_eq!(
+            find("tigre-euphrate").unwrap().player_counts(),
+            vec![2, 3, 4]
         );
     }
 

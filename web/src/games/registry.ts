@@ -85,6 +85,8 @@ import { BLACK_HOLE_RULES } from "./black-hole/rules";
 import { TwixtBoard } from "./twixt/Board";
 import { TWIXT_RULES } from "./twixt/rules";
 import { CorporationBoard } from "./corporation/Board";
+import { TigreEuphrateBoard } from "./tigre-euphrate/Board";
+import { TIGRE_EUPHRATE_RULES } from "./tigre-euphrate/rules";
 import { CORPORATION_RULES } from "./corporation/rules";
 import { SIBERIAN_DICE_RULES } from "./siberian-dice/rules";
 import { YavalathBoard } from "./yavalath/Board";
@@ -132,6 +134,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "black-hole", family: "board", Board: BlackHoleBoard, rules: BLACK_HOLE_RULES },
   { id: "twixt", family: "board", Board: TwixtBoard, rules: TWIXT_RULES },
   { id: "corporation", family: "board", Board: CorporationBoard, rules: CORPORATION_RULES },
+  { id: "tigre-euphrate", family: "board", Board: TigreEuphrateBoard, rules: TIGRE_EUPHRATE_RULES },
   { id: "riichi", family: "tiles", Board: RiichiBoard, hidden: true },
   { id: "pairs-continuous", family: "pairs", Board: ContinuousBoard, rules: CONTINUOUS_RULES },
   { id: "pairs-auberge", family: "pairs", Board: AubergeBoard, rules: AUBERGE_RULES },

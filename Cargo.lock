@@ -319,6 +319,7 @@ dependencies = [
  "riichi",
  "serde_json",
  "siberian-dice",
+ "tigre-euphrate",
  "twixt",
  "volltreffer",
  "yavalath",
@@ -716,6 +717,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 3.0.6",
+]
+
+[[package]]
+name = "tigre-euphrate"
+version = "0.1.0"
+dependencies = [
+ "ludo-core",
+ "rand 0.8.8",
+ "rand_chacha",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

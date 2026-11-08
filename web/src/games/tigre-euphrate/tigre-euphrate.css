@@ -1,0 +1,49 @@
+.tigre-euphrate { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+.te-board { width: min(100%, 760px); height: auto; border-radius: 14px; padding: 6px; }
+
+.te-Black { fill: #2b2a2e; background: #2b2a2e; }
+.te-Red { fill: #c8372d; background: #c8372d; }
+.te-Blue { fill: #2463c9; background: #2463c9; }
+.te-Green { fill: #2f9a48; background: #2f9a48; }
+
+.te-land { fill: #d9c79a; stroke: #b9a676; stroke-width: 0.6; }
+.te-river { fill: #7fb3d5; stroke: #5f94b8; stroke-width: 0.6; }
+.te-tile { stroke: #fff9; stroke-width: 1.2; }
+.te-tile.te-Black { stroke: #d8d2c4; }
+.te-flipped { fill: #8b7f6a; }
+.te-letter { fill: #fffc; font: 700 13px var(--f-display); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.te-leader { stroke: #fff; stroke-width: 2.5; }
+.te-leader.selected { stroke: var(--brass); stroke-width: 5; }
+.te-mark { fill: #fff; font: 700 17px var(--f-display); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.te-catastrophe { fill: #4a3b33; stroke: #1c1410; stroke-width: 1.5; }
+.te-treasure { fill: #f1d36b; stroke: #6d5615; stroke-width: 1; pointer-events: none; }
+.te-treasure.corner { stroke: #fff; stroke-width: 2; }
+.te-target { fill: color-mix(in srgb, var(--brass) 22%, transparent); stroke: var(--brass); stroke-width: 2.5; pointer-events: none; }
+.te-cell.playable { cursor: pointer; }
+.te-cell.playable:hover .te-land, .te-cell.playable:hover .te-river { filter: brightness(1.12); }
+.te-junction { fill: none; stroke: #fff; stroke-width: 3; stroke-dasharray: 5 3; pointer-events: none; }
+.te-monument { pointer-events: none; }
+.te-monument-frame { fill: none; stroke: #f3ead2; stroke-width: 2.5; }
+.te-monument-top { fill: #f3ead2; fill-opacity: 0.85; stroke: #6b5d43; stroke-width: 1; }
+
+.te-players { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; }
+.te-players li { display: flex; align-items: baseline; gap: 6px; padding: 3px 8px; border-radius: 8px; border: 1px solid transparent; }
+.te-players li.active { border-color: var(--brass); }
+.te-glyph { font-size: 1.2rem; }
+.te-name { font-weight: 700; }
+.te-meta { color: var(--table-muted); font-size: 0.85rem; }
+
+.te-hand, .te-actions, .te-swap { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
+.te-label { color: var(--table-muted); font-size: 0.85rem; }
+.te-pick { width: 40px; height: 40px; border-radius: 7px; border: 2px solid #fff; color: #fff; font: 800 1rem var(--f-display); padding: 0; display: inline-flex; align-items: center; justify-content: center; text-shadow: 0 1px 2px #0008; }
+.te-pick.small { width: 28px; height: 28px; font-size: 0.85rem; }
+.te-pick.selected, .te-actions .selected { outline: 3px solid var(--brass); outline-offset: 2px; }
+.te-leader-pick { color: #fff; border: 2px solid #fff; text-shadow: 0 1px 2px #0008; }
+.te-swap-color { display: inline-flex; gap: 3px; align-items: center; }
+.te-scores { display: inline-flex; gap: 4px; }
+.te-score { min-width: 26px; padding: 2px 6px; border-radius: 6px; color: #fff; font: 700 0.9rem var(--f-display); text-align: center; }
+.te-treasure-count { background: #b8962e; }
+.te-panel { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.te-final { border-collapse: collapse; }
+.te-final th, .te-final td { padding: 4px 10px; text-align: left; }
+.te-final th { color: var(--table-muted); font-weight: 600; font-size: 0.85rem; }
