@@ -219,3 +219,9 @@ label { color: var(--muted); font-size: 0.85rem; font-weight: 500; }
 .rules { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 8px 14px; margin: 8px 0; }
 .rules summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; }
 .rules ul { margin: 8px 0 2px; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }
+
+/* Language picker (home bar). */
+.field .label { color: var(--muted); font-size: 0.85rem; font-weight: 500; }
+.langs { display: flex; gap: 4px; }
+.langs button { min-width: 2.6em; font-family: var(--f-mono); letter-spacing: 0.05em; }
+.langs button[aria-pressed="true"] { border-color: var(--brass); box-shadow: inset 0 0 0 1px var(--brass); }

@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import { setLang } from "../../i18n";
 import type { GameMeta } from "../../engine/types";
 import { RulesReminder } from "../RulesReminder";
 import { Home } from "../Home";
@@ -87,5 +88,42 @@ describe("Home", () => {
     const html = home();
     expect(html.indexOf("Jeux de pièces")).toBeLessThan(html.indexOf("Jeux d&#x27;échange"));
     expect(html.indexOf("Jeux d&#x27;échange")).toBeLessThan(html.indexOf("Monad"));
+  });
+
+  it("sorts by the French names in French", () => {
+    const html = home();
+    expect(html.indexOf("Deadfall")).toBeLessThan(html.indexOf("Jour de chance"));
+  });
+});
+
+describe("Home in English", () => {
+  afterEach(() => setLang("fr"));
+
+  it("shows the home screen without French", () => {
+    setLang("en");
+    const html = home();
+    expect(html).toContain("Join a game");
+    expect(html).toContain("Continuous Pairs");
+    expect(html).toContain("President");
+    expect(html).toContain("Regent");
+    expect(html).toContain("2–6 players");
+    expect(html).toContain(">Cryptid<");
+    expect(html).toContain("Traditional cards");
+    // Each language is named in itself: « Français » stays on the FR button.
+    expect(html.replace('title="Français"', "")).not.toMatch(/joueurs|Rejoindre|Chargement|Énigmes|[éèêàç]/);
+  });
+
+  it("sorts by the English names", () => {
+    setLang("en");
+    const html = home();
+    expect(html.indexOf("Continuous Pairs")).toBeLessThan(html.indexOf("Deadfall"));
+    expect(html.indexOf("Ghost Town")).toBeLessThan(html.indexOf("Regent"));
+  });
+
+  it("offers both languages, the current one pressed", () => {
+    setLang("en");
+    const html = home();
+    expect(html).toMatch(/aria-pressed="true"[^>]*>EN</);
+    expect(html).toMatch(/aria-pressed="false"[^>]*>FR</);
   });
 });
