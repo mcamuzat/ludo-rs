@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
@@ -11,4 +12,6 @@ export default defineConfig({
   // The site may be shared through an ngrok tunnel (any subdomain): `pnpm share`.
   server: { allowedHosts: NGROK_HOSTS },
   preview: { allowedHosts: NGROK_HOSTS },
+  // Tests run in French unless a test switches.
+  test: { setupFiles: ["./src/test-setup.ts"] },
 });
