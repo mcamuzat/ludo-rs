@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import type { GameMeta, Update } from "../engine/types";
 import { clockLabel } from "../session/clock";
+import { rankLabel, seatName } from "../session/names";
+import { gameName, useT } from "../i18n";
 import { gameUi } from "../games/registry";
 import { HostSession } from "../session/host";
 import type { SeatInfo, Session, SessionState } from "../session/session";
@@ -17,13 +19,14 @@ interface Props {
 export function TableScreen({ session, games, onLeave }: Props) {
   const state = useSyncExternalStore(session.subscribe, session.getState);
   const meta = games.find((g) => g.id === state.gameId);
+  const t = useT();
   return (
     <main>
       <div className="topbar">
         <button className="ghost" onClick={onLeave}>
-          ← Menu
+          {t.lobby.back}
         </button>
-        <h2>{meta?.name ?? "…"}</h2>
+        <h2>{meta ? gameName(meta) : "…"}</h2>
         <span className="spacer" />
         {state.latencyMs !== null && <span className="pill mono">{state.latencyMs} ms</span>}
       </div>
@@ -46,7 +49,8 @@ function Playing({ session, state, meta }: { session: Session; state: SessionSta
   // Clocks count down from when the update arrived.
   const receivedAt = useMemo(() => performance.now(), [update]);
   const ui = state.gameId ? gameUi(state.gameId) : undefined;
-  if (state.gameId && !ui) return <p className="error">Jeu inconnu : mets la page à jour.</p>;
+  const t = useT();
+  if (state.gameId && !ui) return <p className="error">{t.table.unknownGame}</p>;
   const Board = ui?.Board;
   return (
     <>
@@ -59,7 +63,7 @@ function Playing({ session, state, meta }: { session: Session; state: SessionSta
           legalActions={update.legalActions}
           pending={update.pending}
           me={state.me}
-          seatNames={state.seats.map((s) => s.name)}
+          seatNames={state.seats.map(seatName)}
           submit={(action) => {
             if (state.me !== null) session.submit(state.me, action);
           }}
@@ -68,20 +72,16 @@ function Playing({ session, state, meta }: { session: Session; state: SessionSta
       )}
       {update?.outcome && (
         <div className="end">
-          <strong>Partie terminée.</strong>{" "}
+          <strong>{t.table.over}</strong>{" "}
           {session.canRestart && (
             <button className="primary" onClick={() => session.restart()}>
-              Revanche
+              {t.table.rematch}
             </button>
           )}
         </div>
       )}
     </>
   );
-}
-
-function rankLabel(rank: number): string {
-  return rank === 0 ? "1er" : `${rank + 1}ᵉ`;
 }
 
 /** Re-renders every `ms` while `active`. */
@@ -108,6 +108,7 @@ function SeatList({
   receivedAt: number;
 }) {
   const now = useNow(250, (update?.clocks.length ?? 0) > 0);
+  const t = useT();
   return (
     <ol className="seatbar">
       {seats.map((seat, i) => {
@@ -117,11 +118,11 @@ function SeatList({
         return (
           <li key={i} className={pending ? "active" : undefined}>
             <strong>
-              {seat.name}
-              {i === me ? " (toi)" : ""}
+              {seatName(seat, i)}
+              {i === me ? t.table.you : ""}
             </strong>
-            {!seat.connected && seat.kind === "remote" && <span className="tag">déconnecté</span>}
-            {pending && <span className="tag">{seat.kind === "ai" ? "réfléchit…" : "à jouer"}</span>}
+            {!seat.connected && seat.kind === "remote" && <span className="tag">{t.table.disconnected}</span>}
+            {pending && <span className="tag">{seat.kind === "ai" ? t.table.thinking : t.table.toPlay}</span>}
             {clock && <span className="clock">{clockLabel(clock, now - receivedAt)}</span>}
             {rank !== undefined && <span className="tag">{rankLabel(rank)}</span>}
           </li>
@@ -132,19 +133,20 @@ function SeatList({
 }
 
 function GuestLobby({ state, meta }: { state: SessionState; meta: GameMeta | undefined }) {
+  const t = useT();
   return (
     <section className="panel">
-      <h3>Sièges</h3>
+      <h3>{t.table.seats}</h3>
       <ol className="seats">
         {state.seats.map((seat, i) => (
           <li key={i}>
-            {seat.name}
-            {i === state.me ? " (toi)" : ""}
+            {seatName(seat, i)}
+            {i === state.me ? t.table.you : ""}
           </li>
         ))}
       </ol>
       {meta && <GameOptions meta={meta} config={state.config} />}
-      <p className="hint">L'hôte lance la partie.</p>
+      <p className="hint">{t.table.hostStarts}</p>
     </section>
   );
 }

@@ -75,6 +75,36 @@ export const en: Dict = {
     host: "Host online",
     hostHint: "Online, you get a code to give the other players.",
   },
+  seats: {
+    ai: (first: string) => `${first} (AI)`,
+    open: "Open seat",
+    guestDefault: "Guest",
+    rank: (rank: number) => {
+      const n = rank + 1;
+      const teen = n % 100 >= 11 && n % 100 <= 13;
+      const suffix = teen ? "th" : ({ 1: "st", 2: "nd", 3: "rd" } as Record<number, string>)[n % 10] ?? "th";
+      return `${n}${suffix}`;
+    },
+  },
+  table: {
+    you: " (you)",
+    disconnected: "disconnected",
+    thinking: "thinking…",
+    toPlay: "to play",
+    over: "Game over.",
+    rematch: "Rematch",
+    seats: "Seats",
+    hostStarts: "The host starts the game.",
+    unknownGame: "Unknown game: reload the page.",
+    onlineGame: "Online game",
+    copyCode: "Copy code",
+    copyLink: "Copy link",
+    inviteLink: "Invitation link",
+    openSeatGuest: "Open seat (guest)",
+    disconnectedSuffix: " (disconnected)",
+    startGame: "Start the game",
+    shareHint: "The other players enter the code in “Join a game”, or open the link.",
+  },
   home: {
     yourName: "Your name",
     joinGame: "Join a game",

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { seatName } from "../names";
 import { SeatRegistry, type HostSeat } from "../seats";
 
 function tokens() {
@@ -21,9 +22,18 @@ describe("SeatRegistry", () => {
 
   it("names each AI after its seat, so they can be told apart", () => {
     const r = table({ kind: "ai", level: "Easy" }, { kind: "ai", level: "Easy" }, { kind: "ai", level: "Hard" });
-    const names = r.info().map((s) => s.name);
+    const names = r.info().map(seatName);
     expect(names).toEqual(["Hôte", "Hugo (IA)", "Lina (IA)", "Oscar (IA)"]);
     expect(r.tableSeats().map((s) => s.name)).toEqual(names);
+  });
+
+  it("sends the kind of an AI or open seat, not a name in the host's language", () => {
+    const r = table({ kind: "ai", level: "Easy" }, { kind: "open" });
+    expect(r.info()).toEqual([
+      { name: "Hôte", kind: "local", connected: true },
+      { name: "", kind: "ai", connected: true },
+      { name: "", kind: "open", connected: false },
+    ]);
   });
 
   it("gives the last open seat to one guest only", () => {

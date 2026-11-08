@@ -1,4 +1,5 @@
 import type { Level, Seat } from "../engine/types";
+import { t } from "../i18n";
 import { aiSeatName } from "./names";
 import type { SeatInfo } from "./session";
 import type { TableSeat } from "./table";
@@ -17,7 +18,7 @@ export type JoinResult =
   | { ok: false; reason: string };
 
 function cleanName(name: string): string {
-  return name.trim().slice(0, 20) || "Invité";
+  return name.trim().slice(0, 20) || t().seats.guestDefault;
 }
 
 /** The host's seats: who sits where, and each guest's reconnection token. */
@@ -76,15 +77,16 @@ export class SeatRegistry {
     return this.seats.every((s) => s.kind !== "open" && (s.kind !== "guest" || s.connected));
   }
 
+  /** What guests receive: AIs and open seats go by kind, each guest names them in its language. */
   info(): SeatInfo[] {
-    return this.seats.map((s, i): SeatInfo => {
+    return this.seats.map((s): SeatInfo => {
       switch (s.kind) {
         case "host":
           return { name: s.name, kind: "local", connected: true };
         case "ai":
-          return { name: aiSeatName(i), kind: "ai", connected: true };
+          return { name: "", kind: "ai", connected: true };
         case "open":
-          return { name: "Place libre", kind: "open", connected: false };
+          return { name: "", kind: "open", connected: false };
         case "guest":
           return { name: s.name, kind: "remote", connected: s.connected };
       }

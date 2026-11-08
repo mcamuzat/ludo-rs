@@ -4,6 +4,7 @@ import { aiName } from "../session/names";
 import type { HostChoice } from "../session/seats";
 import type { SessionState } from "../session/session";
 import { GameOptions } from "./GameOptions";
+import { useT } from "../i18n";
 
 const LEVELS: Level[] = ["Easy", "Medium", "Hard"];
 
@@ -22,22 +23,23 @@ export function HostLobby({
 }) {
   const link = state.shareCode ? `${location.origin}${location.pathname}?join=${state.shareCode}` : null;
   const seats = session.hostSeats();
+  const t = useT();
   return (
     <div className="lobby">
       <section className="panel">
-        <h3>Sièges</h3>
+        <h3>{t.table.seats}</h3>
         <ol className="seats">
           {seats.map((seat, i) => (
             <li key={i}>
-              {seat.kind === "host" && `${seat.name} (toi)`}
-              {seat.kind === "guest" && `${seat.name}${seat.connected ? "" : " (déconnecté)"}`}
+              {seat.kind === "host" && `${seat.name}${t.table.you}`}
+              {seat.kind === "guest" && `${seat.name}${seat.connected ? "" : t.table.disconnectedSuffix}`}
               {(seat.kind === "open" || seat.kind === "ai") && (
                 <select
-                  aria-label={`Siège ${i + 1}`}
+                  aria-label={t.lobby.seat(i + 1)}
                   value={seat.kind === "open" ? "open" : seat.level}
                   onChange={(e) => session.setSeat(i, parseChoice(e.target.value))}
                 >
-                  <option value="open">Place libre (invité)</option>
+                  <option value="open">{t.table.openSeatGuest}</option>
                   {LEVELS.map((level) => (
                     <option key={level} value={level}>
                       {aiName(level)}
@@ -50,24 +52,24 @@ export function HostLobby({
         </ol>
       </section>
       <section className="panel">
-        <h3>Partie en ligne</h3>
+        <h3>{t.table.onlineGame}</h3>
         {state.shareCode && link && (
           <>
             <div className="codebox">
               <strong className="code">{state.shareCode}</strong>
-              <button onClick={() => void navigator.clipboard?.writeText(state.shareCode ?? "")}>Copier le code</button>
+              <button onClick={() => void navigator.clipboard?.writeText(state.shareCode ?? "")}>{t.table.copyCode}</button>
             </div>
             <div className="share">
-              <input readOnly aria-label="Lien d'invitation" value={link} onFocus={(e) => e.currentTarget.select()} />
-              <button onClick={() => void navigator.clipboard?.writeText(link)}>Copier le lien</button>
+              <input readOnly aria-label={t.table.inviteLink} value={link} onFocus={(e) => e.currentTarget.select()} />
+              <button onClick={() => void navigator.clipboard?.writeText(link)}>{t.table.copyLink}</button>
             </div>
-            <p className="hint">Les autres joueurs saisissent le code dans « Rejoindre une partie », ou ouvrent le lien.</p>
+            <p className="hint">{t.table.shareHint}</p>
           </>
         )}
         {meta && <GameOptions meta={meta} config={state.config} />}
         <div className="row">
           <button className="primary" disabled={!session.ready()} onClick={() => session.start()}>
-            Lancer la partie
+            {t.table.startGame}
           </button>
         </div>
       </section>
