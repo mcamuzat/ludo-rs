@@ -1,0 +1,43 @@
+.enemy-chocolatier { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+.ec-city { width: min(100%, 900px); height: auto; border-radius: 14px; }
+
+.ec-street { fill: #ead9bd; }
+.ec-factory polygon { fill: #5b3a24; stroke: #2a1a0f; stroke-width: 4; }
+.ec-factory-name { fill: #f3e4c4; font: 800 110px var(--f-display); text-anchor: middle; dominant-baseline: central; letter-spacing: 4px; }
+
+.ec-Gray { --ec-fill: #a9aaad; --ec-tile: #c9cacc; --ec-ink: #55575c; }
+.ec-Sugar { --ec-fill: #ee9fbd; --ec-tile: #f6bcd2; --ec-ink: #c22f5a; }
+.ec-Chocolate { --ec-fill: #8a5531; --ec-tile: #a5693f; --ec-ink: #f1d9b8; }
+.ec-Nuts { --ec-fill: #e6bd78; --ec-tile: #f1cf93; --ec-ink: #8d5a22; }
+.ec-Love { --ec-fill: #cf4741; --ec-tile: #df5f58; --ec-ink: #fbd3cc; }
+
+.ec-hood-shape { fill: var(--ec-fill); stroke: #2b1d14; stroke-width: 4; stroke-linejoin: round; }
+.ec-far { opacity: 0.55; }
+.ec-house-tile { fill: var(--ec-tile); stroke: #0003; stroke-width: 2; }
+.ec-price { fill: var(--ec-ink); font: 800 44px var(--f-display); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.ec-counter { stroke: #fff; stroke-width: 3; pointer-events: none; }
+.ec-house.playable { cursor: pointer; }
+.ec-house.playable:hover .ec-house-tile { filter: brightness(1.12); }
+.ec-target { fill: color-mix(in srgb, var(--brass) 25%, transparent); stroke: var(--brass); stroke-width: 6; pointer-events: none; }
+.ec-cost { fill: #fff; font: 800 18px var(--f-display); paint-order: stroke; stroke: #000a; stroke-width: 3; pointer-events: none; }
+
+.ec-bill rect { fill: #4f9a55; stroke: #1f4a24; stroke-width: 2; }
+.ec-bill text { fill: #fff; font: 800 20px var(--f-display); text-anchor: middle; dominant-baseline: central; }
+.ec-star polygon { fill: #2c3f9e; stroke: #fff; stroke-width: 2.5; }
+.ec-star text { fill: #fff; font: 800 20px var(--f-display); text-anchor: middle; dominant-baseline: central; }
+.ec-ability rect { fill: #f8efe0; stroke: #2b1d14; stroke-width: 2; }
+.ec-ability text { fill: #2b1d14; font: 700 19px var(--f-display); text-anchor: middle; dominant-baseline: central; }
+.ec-bill, .ec-star, .ec-ability { pointer-events: none; }
+
+.ec-players { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; }
+.ec-players li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 8px; border: 1px solid transparent; }
+.ec-players li.active { border-color: var(--brass); }
+.ec-token { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #fff; display: inline-block; }
+.ec-name { font-weight: 700; }
+.ec-meta, .ec-label { opacity: 0.72; font-size: 0.85rem; }
+.ec-ingredients { display: inline-flex; gap: 3px; }
+.ec-chip { min-width: 24px; padding: 1px 5px; border-radius: 5px; background: var(--ec-fill); color: var(--ec-ink); font: 700 0.8rem var(--f-display); text-align: center; }
+.ec-chip.done { outline: 2px solid var(--brass); }
+.ec-recipe { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
+.ec-recipe-name { font-style: italic; }
+.ec-panel { display: flex; flex-direction: column; align-items: center; gap: 8px; }

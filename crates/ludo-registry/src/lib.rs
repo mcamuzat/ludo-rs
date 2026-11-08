@@ -47,6 +47,7 @@ static BLACK_HOLE: GameEntry<black_hole::BlackHole> = GameEntry::new();
 static CORPORATION: GameEntry<corporation::Corporation> = GameEntry::new();
 static TWIXT: GameEntry<twixt::Twixt> = GameEntry::new();
 static TIGRE_EUPHRATE: GameEntry<tigre_euphrate::TigreEuphrate> = GameEntry::new();
+static ENEMY_CHOCOLATIER: GameEntry<enemy_chocolatier::EnemyChocolatier> = GameEntry::new();
 
 pub static GAMES: &[&dyn AnyGame] = &[
     &YAVALATH,
@@ -94,6 +95,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &CORPORATION,
     &TWIXT,
     &TIGRE_EUPHRATE,
+    &ENEMY_CHOCOLATIER,
 ];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {
@@ -129,6 +131,14 @@ mod tests {
         assert_eq!(
             find("tigre-euphrate").unwrap().player_counts(),
             vec![2, 3, 4]
+        );
+    }
+
+    #[test]
+    fn enemy_chocolatier_is_for_two_to_six() {
+        assert_eq!(
+            find("enemy-chocolatier").unwrap().player_counts(),
+            vec![2, 3, 4, 5, 6]
         );
     }
 

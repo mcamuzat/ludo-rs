@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/ludo-core", "crates/ludo-registry", "crates/ludo-cli", "crates/ludo-wasm", "games/yavalath", "games/riichi", "games/pairs", "games/cards", "games/pennywise", "games/bantu", "games/monad", "games/volltreffer", "games/black-vienna", "games/cryptide", "games/black-pot", "games/manoever", "games/siberian-dice", "games/black-hole", "games/corporation", "games/twixt", "games/tigre-euphrate"]
+members = ["crates/ludo-core", "crates/ludo-registry", "crates/ludo-cli", "crates/ludo-wasm", "games/yavalath", "games/riichi", "games/pairs", "games/cards", "games/pennywise", "games/bantu", "games/monad", "games/volltreffer", "games/black-vienna", "games/cryptide", "games/black-pot", "games/manoever", "games/siberian-dice", "games/black-hole", "games/corporation", "games/twixt", "games/tigre-euphrate", "games/enemy-chocolatier"]
 resolver = "2"
 
 [workspace.package]
@@ -29,6 +29,7 @@ black-hole = { path = "games/black-hole" }
 corporation = { path = "games/corporation" }
 twixt = { path = "games/twixt" }
 tigre-euphrate = { path = "games/tigre-euphrate" }
+enemy-chocolatier = { path = "games/enemy-chocolatier" }
 manoever = { path = "games/manoever" }
 ludo-registry = { path = "crates/ludo-registry" }
 
