@@ -57,4 +57,27 @@ describe("HostSession", () => {
     expect(conn.sent).toContainEqual(expect.objectContaining({ type: "lobby", config: { hands: 3 } }));
     host.dispose();
   });
+
+  it("refuses an older guest in words it can show", () => {
+    peers.length = 0;
+    const host = new HostSession("yavalath", "Ana", [{ kind: "open" }], null, null);
+    peers[0].emit("open");
+    const conn = new FakeConn();
+    conn.open = true;
+    peers[0].emit("connection", conn);
+    conn.emit("data", { type: "hello", protocol: 3, name: "Bo" });
+    expect(conn.sent[conn.sent.length - 1]).toEqual({
+      type: "rejected",
+      reason: `Versions différentes (hôte ${PROTOCOL_VERSION}, toi 3) : recharge la page.`,
+      fatal: true,
+    });
+    host.dispose();
+  });
+
+  it("leaves an unnamed host's name to each screen", () => {
+    peers.length = 0;
+    const host = new HostSession("yavalath", "  ", [{ kind: "open" }], null, null);
+    expect(host.getState().seats[0]).toEqual({ name: "", kind: "local", connected: true });
+    host.dispose();
+  });
 });

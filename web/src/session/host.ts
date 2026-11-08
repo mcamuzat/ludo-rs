@@ -2,7 +2,7 @@ import Peer, { type DataConnection } from "peerjs";
 import { randomSeed } from "../engine/clients";
 import type { GameConfig, Seat, Snapshot } from "../engine/types";
 import { t } from "../i18n";
-import { errorMessage } from "./names";
+import { errorMessage, seatName } from "./names";
 import {
   PEER_PREFIX,
   PROTOCOL_VERSION,
@@ -11,6 +11,7 @@ import {
   type GuestMessage,
   type HostMessage,
   type RejectReason,
+  rejectText,
 } from "./protocol";
 import { StaleActionError } from "./rev";
 import { SeatRegistry, type HostChoice, type HostSeat } from "./seats";
@@ -61,7 +62,7 @@ export class HostSession extends Session {
       });
     } else {
       this.code = newCode();
-      this.registry = new SeatRegistry([{ kind: "host", name: hostName.trim() || "Hôte" }, ...others]);
+      this.registry = new SeatRegistry([{ kind: "host", name: hostName.trim() }, ...others]);
       this.set({ phase: "lobby", gameId, config: this.config, seats: this.registry.info() });
     }
     this.set({ status: t().net.opening });
@@ -177,7 +178,7 @@ export class HostSession extends Session {
     this.sentRev.delete(conn);
     // Unseated, or replaced by a newer connection of the same guest.
     if (seat === null || [...this.conns.values()].includes(seat)) return;
-    const name = this.registry.info()[seat].name;
+    const name = seatName(this.registry.info()[seat], seat);
     this.registry.leave(seat, this.table !== null);
     this.set({
       seats: this.registry.info(),
@@ -227,7 +228,9 @@ export class HostSession extends Session {
       return;
     }
     if (msg.protocol !== PROTOCOL_VERSION) {
-      this.refuse(conn, { code: "version", host: PROTOCOL_VERSION, guest: msg.protocol });
+      const reason: RejectReason = { code: "version", host: PROTOCOL_VERSION, guest: msg.protocol };
+      // Guests before version 4 can only show text.
+      this.refuse(conn, msg.protocol < 4 ? rejectText(reason) : reason);
       return;
     }
     const joined = this.registry.join(msg.name, msg.seatToken, this.table !== null, () => crypto.randomUUID());
@@ -249,7 +252,7 @@ export class HostSession extends Session {
     this.sendUpdate(conn, joined.seat);
   }
 
-  private refuse(conn: DataConnection, reason: RejectReason) {
+  private refuse(conn: DataConnection, reason: RejectReason | string) {
     this.send(conn, { type: "rejected", reason, fatal: true });
     setTimeout(() => conn.close(), 500);
   }

@@ -97,6 +97,8 @@ describe("SeatRegistry", () => {
   it("cleans guest names", () => {
     const r = table({ kind: "open" });
     r.join("   ", undefined, false, tokens());
-    expect(r.info()[1].name).toBe("Invité");
+    // No name: each screen names the guest in its own language.
+    expect(r.info()[1].name).toBe("");
+    expect(seatName(r.info()[1], 1)).toBe("Invité");
   });
 });

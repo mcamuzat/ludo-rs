@@ -31,8 +31,8 @@ export function HostLobby({
         <ol className="seats">
           {seats.map((seat, i) => (
             <li key={i}>
-              {seat.kind === "host" && `${seat.name}${t.table.you}`}
-              {seat.kind === "guest" && `${seat.name}${seat.connected ? "" : t.table.disconnectedSuffix}`}
+              {seat.kind === "host" && `${seat.name || t.seats.hostDefault}${t.table.you}`}
+              {seat.kind === "guest" && `${seat.name || t.seats.guestDefault}${seat.connected ? "" : t.table.disconnectedSuffix}`}
               {(seat.kind === "open" || seat.kind === "ai") && (
                 <select
                   aria-label={t.lobby.seat(i + 1)}

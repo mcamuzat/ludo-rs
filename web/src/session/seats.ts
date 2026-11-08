@@ -1,5 +1,4 @@
 import type { Level, Seat } from "../engine/types";
-import { t } from "../i18n";
 import { aiSeatName } from "./names";
 import type { RejectReason } from "./protocol";
 import type { SeatInfo } from "./session";
@@ -19,7 +18,8 @@ export type JoinResult =
   | { ok: false; reason: RejectReason };
 
 function cleanName(name: string): string {
-  return name.trim().slice(0, 20) || t().seats.guestDefault;
+  // Empty stays empty: each screen gives it its default name (`seatName`).
+  return name.trim().slice(0, 20);
 }
 
 /** The host's seats: who sits where, and each guest's reconnection token. */

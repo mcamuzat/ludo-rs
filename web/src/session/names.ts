@@ -22,8 +22,11 @@ export function seatName(info: SeatInfo, seat: number): string {
       return aiSeatName(seat);
     case "open":
       return t().seats.open;
-    default:
-      return info.name;
+    // Humans who gave no name are named here too.
+    case "local":
+      return info.name || t().seats.hostDefault;
+    case "remote":
+      return info.name || t().seats.guestDefault;
   }
 }
 

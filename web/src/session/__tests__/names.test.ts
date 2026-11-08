@@ -10,6 +10,8 @@ describe("seat names and ranks", () => {
     expect(seatName({ name: "", kind: "open", connected: false }, 2)).toBe("Place libre");
     expect(rankLabel(0)).toBe("1er");
     expect(rankLabel(1)).toBe("2ᵉ");
+    expect(seatName({ name: "", kind: "local", connected: true }, 0)).toBe("Hôte");
+    expect(seatName({ name: "", kind: "remote", connected: true }, 1)).toBe("Invité");
   });
 
   it("names seats in English, keeping the humans' own names", () => {
@@ -18,6 +20,8 @@ describe("seat names and ranks", () => {
     expect(seatName({ name: "", kind: "ai", connected: true }, 2)).toBe("Lina (AI)");
     expect(seatName({ name: "", kind: "open", connected: false }, 2)).toBe("Open seat");
     expect(seatName({ name: "Ana", kind: "remote", connected: true }, 0)).toBe("Ana");
+    expect(seatName({ name: "", kind: "local", connected: true }, 0)).toBe("Host");
+    expect(seatName({ name: "", kind: "remote", connected: true }, 1)).toBe("Guest");
   });
 
   it("writes English ordinals", () => {

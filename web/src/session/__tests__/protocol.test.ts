@@ -80,6 +80,17 @@ describe("refusals", () => {
     expect(rejectText({ code: "version", host: 4, guest: 3 })).toBe("Different versions (host 4, you 3): reload the page.");
   });
 
+  it("survive a host or guest of another version", () => {
+    // A version-3 host sends its refusal as French text.
+    expect(rejectText("Versions différentes (hôte 3, toi 4) : recharge la page." as never)).toBe(
+      "Versions différentes (hôte 3, toi 4) : recharge la page.",
+    );
+    expect(rejectText({ code: "bogus" } as never)).toBe("Refus de l'hôte.");
+    expect(rejectText(null as never)).toBe("Refus de l'hôte.");
+    setLang("en");
+    expect(rejectText({ code: "bogus" } as never)).toBe("Refused by the host.");
+  });
+
   it("keep the engine's own words", () => {
     expect(rejectText({ code: "engine", text: "pas 14" })).toBe("pas 14");
     setLang("en");

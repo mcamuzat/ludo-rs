@@ -76,6 +76,7 @@ export const fr = {
   seats: {
     ai: (first: string) => `${first} (IA)`,
     open: "Place libre",
+    hostDefault: "Hôte",
     guestDefault: "Invité",
     rank: (rank: number) => (rank === 0 ? "1er" : `${rank + 1}ᵉ`),
   },
@@ -106,6 +107,7 @@ export const fr = {
       noSeat: "Tu n'as pas de siège dans cette partie.",
       alreadySeated: "Tu es déjà assis.",
       stale: "La partie a avancé entre-temps : coup ignoré.",
+      unknown: "Refus de l'hôte.",
       version: (host: number, guest: number) => `Versions différentes (hôte ${host}, toi ${guest}) : recharge la page.`,
     },
     opening: "Ouverture de la salle…",

@@ -29,15 +29,25 @@ export type RejectReason =
   | { code: "version"; host: number; guest: number }
   | { code: "engine"; text: string };
 
-export function rejectText(reason: RejectReason): string {
+/** A refusal in this screen's language. Text from a host before version 4 is shown as is. */
+export function rejectText(reason: RejectReason | string): string {
+  if (typeof reason === "string") return reason;
   const words = t().net.reject;
-  switch (reason.code) {
+  switch (reason?.code) {
     case "version":
       return words.version(reason.host, reason.guest);
     case "engine":
       return reason.text;
-    default:
+    case "started":
+    case "full":
+    case "invalid":
+    case "noSeat":
+    case "alreadySeated":
+    case "stale":
       return words[reason.code];
+    default:
+      // A code from a newer host, or a malformed message.
+      return words.unknown;
   }
 }
 
@@ -46,7 +56,8 @@ export type HostMessage =
   | { type: "seated"; seat: number; seatToken: string }
   | { type: "update"; update: Update }
   /** `fatal`: the connection is refused and the guest must leave. */
-  | { type: "rejected"; reason: RejectReason; fatal: boolean }
+  /** `reason` is text when it goes to (or comes from) a peer before version 4. */
+  | { type: "rejected"; reason: RejectReason | string; fatal: boolean }
   | { type: "pong"; t: number };
 
 function isObject(data: unknown): data is Record<string, unknown> {

@@ -78,6 +78,7 @@ export const en: Dict = {
   seats: {
     ai: (first: string) => `${first} (AI)`,
     open: "Open seat",
+    hostDefault: "Host",
     guestDefault: "Guest",
     rank: (rank: number) => {
       const n = rank + 1;
@@ -113,6 +114,7 @@ export const en: Dict = {
       noSeat: "You have no seat in this game.",
       alreadySeated: "You are already seated.",
       stale: "The game moved on meanwhile: move ignored.",
+      unknown: "Refused by the host.",
       version: (host: number, guest: number) => `Different versions (host ${host}, you ${guest}): reload the page.`,
     },
     opening: "Opening the room…",
