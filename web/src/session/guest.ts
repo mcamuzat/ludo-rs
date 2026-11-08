@@ -1,7 +1,8 @@
 import Peer, { type DataConnection } from "peerjs";
 import type { Seat } from "../engine/types";
 import { gameUi } from "../games/registry";
-import { PEER_PREFIX, PROTOCOL_VERSION, normalizeCode, parseHostMessage, type GuestMessage } from "./protocol";
+import { t } from "../i18n";
+import { PEER_PREFIX, PROTOCOL_VERSION, normalizeCode, parseHostMessage, rejectText, type GuestMessage } from "./protocol";
 import { Session } from "./session";
 import { loadGuestToken, saveGuestToken } from "./storage";
 
@@ -24,7 +25,7 @@ export class GuestSession extends Session {
   ) {
     super();
     this.code = normalizeCode(code);
-    this.set({ phase: "connecting", shareCode: this.code, status: "Connexion à l'hôte…" });
+    this.set({ phase: "connecting", shareCode: this.code, status: t().net.connecting });
     this.connect();
     this.ping = setInterval(() => this.send({ type: "ping", t: performance.now() }), PING_MS);
   }
@@ -69,7 +70,7 @@ export class GuestSession extends Session {
     peer.on("error", (err) => {
       if (this.peer !== peer) return;
       if (err.type === "peer-unavailable") {
-        this.set({ status: "Hôte introuvable : vérifie le code, ou attends son retour…" });
+        this.set({ status: t().net.hostNotFound });
       }
       // Only the signaling server is gone: the connection to the host keeps working.
       if (this.conn?.open) return;
@@ -84,7 +85,7 @@ export class GuestSession extends Session {
   private lost() {
     if (this.closed || this.retry) return;
     if (this.getState().phase !== "connecting") {
-      this.set({ status: "Connexion perdue, reconnexion…", latencyMs: null });
+      this.set({ status: t().net.lost, latencyMs: null });
     }
     this.retry = setTimeout(() => {
       this.retry = null;
@@ -98,7 +99,7 @@ export class GuestSession extends Session {
     switch (msg.type) {
       case "lobby":
         if (!gameUi(msg.gameId)) {
-          this.stop("Jeu inconnu : mets la page à jour.");
+          this.stop(t().table.unknownGame);
           return;
         }
         this.set({
@@ -106,7 +107,7 @@ export class GuestSession extends Session {
           seats: msg.seats,
           config: msg.config ?? null,
           phase: msg.started ? "playing" : "lobby",
-          status: msg.started ? null : "En attente du lancement par l'hôte.",
+          status: msg.started ? null : t().net.waitingStart,
         });
         break;
       case "seated":
@@ -117,8 +118,8 @@ export class GuestSession extends Session {
         this.set({ phase: "playing", update: msg.update, status: null, notice: null });
         break;
       case "rejected":
-        if (msg.fatal) this.stop(msg.reason);
-        else this.set({ notice: msg.reason });
+        if (msg.fatal) this.stop(rejectText(msg.reason));
+        else this.set({ notice: rejectText(msg.reason) });
         break;
       case "pong":
         this.set({ latencyMs: Math.round(performance.now() - msg.t) });

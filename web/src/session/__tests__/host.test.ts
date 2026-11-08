@@ -17,7 +17,7 @@ describe("HostSession", () => {
     conn.emit("data", { type: "hello", protocol: PROTOCOL_VERSION, name: "Bo" });
     conn.emit("data", { type: "hello", protocol: PROTOCOL_VERSION, name: "Bo" });
     expect(host.getState().seats.map((s) => s.kind)).toEqual(["local", "remote", "open"]);
-    expect(conn.sent).toContainEqual({ type: "rejected", reason: "Tu es déjà assis.", fatal: false });
+    expect(conn.sent).toContainEqual({ type: "rejected", reason: { code: "alreadySeated" }, fatal: false });
     host.dispose();
   });
 
@@ -40,7 +40,7 @@ describe("HostSession", () => {
     await new Promise((r) => setTimeout(r, 0));
     const types = conn.sent.map((m) => (m as { type: string }).type);
     expect(types.slice(-2)).toEqual(["update", "rejected"]);
-    expect(conn.sent[conn.sent.length - 1]).toMatchObject({ reason: "6 × 4 = 24 ÷ 2 = 12, pas 14" });
+    expect(conn.sent[conn.sent.length - 1]).toMatchObject({ reason: { code: "engine", text: "6 × 4 = 24 ÷ 2 = 12, pas 14" } });
     (host as unknown as { table: unknown }).table = null;
     host.dispose();
   });

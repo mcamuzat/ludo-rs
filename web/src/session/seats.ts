@@ -1,6 +1,7 @@
 import type { Level, Seat } from "../engine/types";
 import { t } from "../i18n";
 import { aiSeatName } from "./names";
+import type { RejectReason } from "./protocol";
 import type { SeatInfo } from "./session";
 import type { TableSeat } from "./table";
 
@@ -15,7 +16,7 @@ export type HostChoice = { kind: "ai"; level: Level } | { kind: "open" };
 
 export type JoinResult =
   | { ok: true; seat: Seat; token: string; reconnected: boolean }
-  | { ok: false; reason: string };
+  | { ok: false; reason: RejectReason };
 
 function cleanName(name: string): string {
   return name.trim().slice(0, 20) || t().seats.guestDefault;
@@ -50,9 +51,9 @@ export class SeatRegistry {
       this.seats[back] = { ...seat, connected: true };
       return { ok: true, seat: back, token: seat.token, reconnected: true };
     }
-    if (started) return { ok: false, reason: "La partie a déjà commencé." };
+    if (started) return { ok: false, reason: { code: "started" } };
     const open = this.seats.findIndex((s) => s.kind === "open");
-    if (open < 0) return { ok: false, reason: "La table est complète." };
+    if (open < 0) return { ok: false, reason: { code: "full" } };
     const fresh = newToken();
     this.seats[open] = { kind: "guest", name: cleanName(name), token: fresh, connected: true };
     return { ok: true, seat: open, token: fresh, reconnected: false };

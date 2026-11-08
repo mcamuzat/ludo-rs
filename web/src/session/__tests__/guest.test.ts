@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { setLang } from "../../i18n";
 import { peers } from "./fakePeer";
 
 vi.mock("peerjs", async () => ({ default: (await import("./fakePeer")).FakePeer }));
@@ -52,5 +53,17 @@ describe("GuestSession", () => {
     conn.emit("data", { type: "lobby", gameId: "yavalath", seats: [], started: false, config: null });
     expect(session.getState().config).toBeNull();
     session.dispose();
+  });
+
+  it("reads a refusal in its own language", () => {
+    setLang("en");
+    try {
+      const { session, conn } = connected();
+      conn.emit("data", { type: "rejected", reason: { code: "full" }, fatal: true });
+      expect(session.getState().error).toBe("The table is full.");
+      session.dispose();
+    } finally {
+      setLang("fr");
+    }
   });
 });

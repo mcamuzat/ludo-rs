@@ -1,6 +1,7 @@
 import Peer, { type DataConnection } from "peerjs";
 import { randomSeed } from "../engine/clients";
 import type { GameConfig, Seat, Snapshot } from "../engine/types";
+import { t } from "../i18n";
 import { errorMessage } from "./names";
 import {
   PEER_PREFIX,
@@ -9,7 +10,9 @@ import {
   parseGuestMessage,
   type GuestMessage,
   type HostMessage,
+  type RejectReason,
 } from "./protocol";
+import { StaleActionError } from "./rev";
 import { SeatRegistry, type HostChoice, type HostSeat } from "./seats";
 import { Session } from "./session";
 import { clearHost, saveHost, savedConfig, type SavedHost } from "./storage";
@@ -61,7 +64,7 @@ export class HostSession extends Session {
       this.registry = new SeatRegistry([{ kind: "host", name: hostName.trim() || "Hôte" }, ...others]);
       this.set({ phase: "lobby", gameId, config: this.config, seats: this.registry.info() });
     }
-    this.set({ status: "Ouverture de la salle…" });
+    this.set({ status: t().net.opening });
     this.listen();
   }
 
@@ -128,7 +131,7 @@ export class HostSession extends Session {
       this.retries = 0;
       this.set({
         shareCode: this.code,
-        status: this.table ? null : "Partage le code ou le lien avec tes invités.",
+        status: this.table ? null : t().net.share,
       });
     });
     peer.on("connection", (conn) => this.accept(conn));
@@ -143,15 +146,15 @@ export class HostSession extends Session {
         }
         // Resumed room: the previous page may still hold the code for a while.
         if (++this.retries > MAX_RETRIES) {
-          this.fail("Le code de la salle est encore pris. Réessaie dans une minute.");
+          this.fail(t().net.codeTaken);
           return;
         }
-        this.set({ status: "Le code de la salle est encore réservé, nouvel essai…" });
+        this.set({ status: t().net.codeRetry });
         setTimeout(() => {
           if (!this.disposed) this.listen();
         }, RETRY_MS);
       } else if (err.type !== "peer-unavailable") {
-        this.set({ notice: `Connexion : ${err.message}` });
+        this.set({ notice: t().net.connection(err.message) });
       }
     });
     // Signaling server lost: established connections keep working.
@@ -178,7 +181,7 @@ export class HostSession extends Session {
     this.registry.leave(seat, this.table !== null);
     this.set({
       seats: this.registry.info(),
-      status: this.table ? `${name} s'est déconnecté : on attend son retour.` : null,
+      status: this.table ? t().net.left(name) : null,
     });
     this.broadcastLobby();
   }
@@ -186,7 +189,7 @@ export class HostSession extends Session {
   private onGuestMessage(conn: DataConnection, data: unknown) {
     const msg = parseGuestMessage(data);
     if (!msg) {
-      this.send(conn, { type: "rejected", reason: "Message invalide.", fatal: false });
+      this.send(conn, { type: "rejected", reason: { code: "invalid" }, fatal: false });
       return;
     }
     switch (msg.type) {
@@ -199,7 +202,7 @@ export class HostSession extends Session {
       case "action": {
         const seat = this.conns.get(conn) ?? null;
         if (seat === null || !this.table) {
-          this.send(conn, { type: "rejected", reason: "Tu n'as pas de siège dans cette partie.", fatal: false });
+          this.send(conn, { type: "rejected", reason: { code: "noSeat" }, fatal: false });
           return;
         }
         // The engine checks it is this seat's decision and that it is legal.
@@ -207,7 +210,11 @@ export class HostSession extends Session {
         // and must still read why its move was refused.
         this.table.submit(seat, msg.action, msg.rev).catch((e) => {
           this.sendUpdate(conn, seat);
-          this.send(conn, { type: "rejected", reason: errorMessage(e), fatal: false });
+          this.send(conn, {
+            type: "rejected",
+            reason: e instanceof StaleActionError ? { code: "stale" } : { code: "engine", text: errorMessage(e) },
+            fatal: false,
+          });
         });
         break;
       }
@@ -216,11 +223,11 @@ export class HostSession extends Session {
 
   private onHello(conn: DataConnection, msg: Extract<GuestMessage, { type: "hello" }>) {
     if (this.conns.get(conn) != null) {
-      this.send(conn, { type: "rejected", reason: "Tu es déjà assis.", fatal: false });
+      this.send(conn, { type: "rejected", reason: { code: "alreadySeated" }, fatal: false });
       return;
     }
     if (msg.protocol !== PROTOCOL_VERSION) {
-      this.refuse(conn, `Versions différentes (hôte ${PROTOCOL_VERSION}, toi ${msg.protocol}) : recharge la page.`);
+      this.refuse(conn, { code: "version", host: PROTOCOL_VERSION, guest: msg.protocol });
       return;
     }
     const joined = this.registry.join(msg.name, msg.seatToken, this.table !== null, () => crypto.randomUUID());
@@ -242,7 +249,7 @@ export class HostSession extends Session {
     this.sendUpdate(conn, joined.seat);
   }
 
-  private refuse(conn: DataConnection, reason: string) {
+  private refuse(conn: DataConnection, reason: RejectReason) {
     this.send(conn, { type: "rejected", reason, fatal: true });
     setTimeout(() => conn.close(), 500);
   }

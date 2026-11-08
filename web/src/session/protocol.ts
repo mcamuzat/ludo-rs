@@ -2,9 +2,10 @@
 // only sends actions and displays the updates of its own seat.
 import type { GameConfig, Update } from "../engine/types";
 import type { SeatInfo } from "./session";
+import { t } from "../i18n";
 
 /** Bumped on any incompatible change: host and guest must match. */
-export const PROTOCOL_VERSION = 3;
+export const PROTOCOL_VERSION = 4;
 
 /** Prefix of PeerJS ids, so a short code doesn't collide with other apps. */
 export const PEER_PREFIX = "ludo-";
@@ -14,12 +15,38 @@ export type GuestMessage =
   | { type: "action"; rev: number; action: unknown }
   | { type: "ping"; t: number };
 
+/**
+ * Why the host refused something. A code, so each guest reads it in its own
+ * language; only the engine's refusals travel as text (in French for now).
+ */
+export type RejectReason =
+  | { code: "started" }
+  | { code: "full" }
+  | { code: "invalid" }
+  | { code: "noSeat" }
+  | { code: "alreadySeated" }
+  | { code: "stale" }
+  | { code: "version"; host: number; guest: number }
+  | { code: "engine"; text: string };
+
+export function rejectText(reason: RejectReason): string {
+  const words = t().net.reject;
+  switch (reason.code) {
+    case "version":
+      return words.version(reason.host, reason.guest);
+    case "engine":
+      return reason.text;
+    default:
+      return words[reason.code];
+  }
+}
+
 export type HostMessage =
   | { type: "lobby"; gameId: string; seats: SeatInfo[]; started: boolean; config: GameConfig | null }
   | { type: "seated"; seat: number; seatToken: string }
   | { type: "update"; update: Update }
   /** `fatal`: the connection is refused and the guest must leave. */
-  | { type: "rejected"; reason: string; fatal: boolean }
+  | { type: "rejected"; reason: RejectReason; fatal: boolean }
   | { type: "pong"; t: number };
 
 function isObject(data: unknown): data is Record<string, unknown> {

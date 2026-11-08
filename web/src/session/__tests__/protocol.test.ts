@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
-import { PROTOCOL_VERSION, newCode, normalizeCode, parseGuestMessage, parseHostMessage } from "../protocol";
+import { afterEach, describe, expect, it } from "vitest";
+import { setLang } from "../../i18n";
+import { PROTOCOL_VERSION, newCode, normalizeCode, parseGuestMessage, parseHostMessage, rejectText } from "../protocol";
 
 describe("parseGuestMessage", () => {
   it("rejects garbage", () => {
@@ -60,5 +61,28 @@ describe("codes", () => {
 
   it("are normalized", () => {
     expect(normalizeCode("  ab3dxy ")).toBe("AB3DXY");
+  });
+});
+
+describe("refusals", () => {
+  afterEach(() => setLang("fr"));
+
+  it("are told in French", () => {
+    expect(rejectText({ code: "full" })).toBe("La table est complète.");
+    expect(rejectText({ code: "version", host: 4, guest: 3 })).toBe("Versions différentes (hôte 4, toi 3) : recharge la page.");
+    expect(rejectText({ code: "stale" })).toBe("La partie a avancé entre-temps : coup ignoré.");
+  });
+
+  it("are told in English by an English guest", () => {
+    setLang("en");
+    expect(rejectText({ code: "full" })).toBe("The table is full.");
+    expect(rejectText({ code: "started" })).toBe("The game has already started.");
+    expect(rejectText({ code: "version", host: 4, guest: 3 })).toBe("Different versions (host 4, you 3): reload the page.");
+  });
+
+  it("keep the engine's own words", () => {
+    expect(rejectText({ code: "engine", text: "pas 14" })).toBe("pas 14");
+    setLang("en");
+    expect(rejectText({ code: "engine", text: "pas 14" })).toBe("pas 14");
   });
 });

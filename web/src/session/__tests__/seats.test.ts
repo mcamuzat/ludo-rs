@@ -40,7 +40,7 @@ describe("SeatRegistry", () => {
     const r = table({ kind: "open" });
     const next = tokens();
     expect(r.join("Ana", undefined, false, next).ok).toBe(true);
-    expect(r.join("Bo", undefined, false, next)).toEqual({ ok: false, reason: "La table est complète." });
+    expect(r.join("Bo", undefined, false, next)).toEqual({ ok: false, reason: { code: "full" } });
   });
 
   it("gives a returning guest their seat back", () => {
@@ -58,7 +58,7 @@ describe("SeatRegistry", () => {
     const r = table({ kind: "open" });
     r.join("Ana", undefined, false, tokens());
     r.leave(1, true);
-    expect(r.join("Eve", "forged", true, tokens())).toEqual({ ok: false, reason: "La partie a déjà commencé." });
+    expect(r.join("Eve", "forged", true, tokens())).toEqual({ ok: false, reason: { code: "started" } });
   });
 
   it("frees a seat when a guest leaves the lobby", () => {
