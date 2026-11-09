@@ -82,6 +82,8 @@ import { VOLLTREFFER_RULES } from "./volltreffer/rules";
 import { SiberianDiceBoard } from "./siberian-dice/Board";
 import { BlackHoleBoard } from "./black-hole/Board";
 import { BLACK_HOLE_RULES } from "./black-hole/rules";
+import { KuroteBoard } from "./kurote/Board";
+import { KUROTE_RULES } from "./kurote/rules";
 import { TwixtBoard } from "./twixt/Board";
 import { TWIXT_RULES } from "./twixt/rules";
 import { CorporationBoard } from "./corporation/Board";
@@ -138,6 +140,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "corporation", family: "board", Board: CorporationBoard, rules: CORPORATION_RULES },
   { id: "tigre-euphrate", family: "board", Board: TigreEuphrateBoard, rules: TIGRE_EUPHRATE_RULES },
   { id: "enemy-chocolatier", family: "board", Board: EnemyChocolatierBoard, rules: ENEMY_CHOCOLATIER_RULES },
+  { id: "kurote", family: "board", Board: KuroteBoard, rules: KUROTE_RULES },
   { id: "riichi", family: "tiles", Board: RiichiBoard, hidden: true },
   { id: "pairs-continuous", family: "pairs", Board: ContinuousBoard, rules: CONTINUOUS_RULES },
   { id: "pairs-auberge", family: "pairs", Board: AubergeBoard, rules: AUBERGE_RULES },

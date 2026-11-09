@@ -48,6 +48,7 @@ static CORPORATION: GameEntry<corporation::Corporation> = GameEntry::new();
 static TWIXT: GameEntry<twixt::Twixt> = GameEntry::new();
 static TIGRE_EUPHRATE: GameEntry<tigre_euphrate::TigreEuphrate> = GameEntry::new();
 static ENEMY_CHOCOLATIER: GameEntry<enemy_chocolatier::EnemyChocolatier> = GameEntry::new();
+static KUROTE: GameEntry<kurote::Kurote> = GameEntry::new();
 
 pub static GAMES: &[&dyn AnyGame] = &[
     &YAVALATH,
@@ -96,6 +97,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &TWIXT,
     &TIGRE_EUPHRATE,
     &ENEMY_CHOCOLATIER,
+    &KUROTE,
 ];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {

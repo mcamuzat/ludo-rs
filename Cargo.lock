@@ -288,6 +288,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "kurote"
+version = "0.1.0"
+dependencies = [
+ "ludo-core",
+ "rand 0.8.8",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "libc"
 version = "0.2.189"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -323,6 +333,7 @@ dependencies = [
  "corporation",
  "cryptide",
  "enemy-chocolatier",
+ "kurote",
  "ludo-core",
  "manoever",
  "monad",

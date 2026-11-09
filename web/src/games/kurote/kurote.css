@@ -1,0 +1,21 @@
+.kurote { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.kr-board { width: min(100%, 520px); height: auto; border-radius: 12px; background: #141012; }
+.kr-light { fill: #9e5558; }
+.kr-dark { fill: #57302f; }
+.kr-cell.pickable, .kr-cell.target, .kr-reserve.pickable { cursor: pointer; }
+.kr-cell.pickable:hover .kr-light, .kr-cell.pickable:hover .kr-dark { filter: brightness(1.15); }
+.kr-cell.selected rect:first-child { stroke: var(--brass); stroke-width: 4; }
+.kr-cell.target:hover .kr-dot { r: 13; }
+.kr-dot { fill: color-mix(in srgb, var(--brass) 85%, transparent); }
+.kr-last { fill: none; stroke: #fff; stroke-width: 2; stroke-dasharray: 5 4; opacity: 0.7; }
+.kr-cross { stroke: #fff; stroke-width: 4; stroke-linecap: round; opacity: 0.8; }
+.kr-slot { fill: none; stroke: transparent; stroke-width: 2.5; }
+.kr-reserve.pickable .kr-slot { stroke: var(--brass); }
+.kr-reserve.selected .kr-slot { fill: color-mix(in srgb, var(--brass) 30%, transparent); }
+.kr-wizard path, .kr-wizard circle { stroke: #2a1a14; stroke-width: 1.5; }
+.kr-wizard.exhausted { opacity: 0.75; }
+.kr-owner-0 path, .kr-owner-0 circle { fill: #8fb95c; }
+.kr-owner-1 path, .kr-owner-1 circle { fill: #e9c57f; }
+.kurote .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.kurote .swatch.kr-owner-0 { background: #8fb95c; }
+.kurote .swatch.kr-owner-1 { background: #e9c57f; }
