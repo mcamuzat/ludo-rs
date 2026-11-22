@@ -173,13 +173,15 @@ pub fn timeout_action(handle: u32, seat: u8) -> Result<String, JsError> {
 /// A Cryptide riddle (`cryptide::riddle`): a table of AIs stopped as soon
 /// as one of them knows the habitat.
 #[wasm_bindgen(js_name = cryptideRiddle)]
-pub fn cryptide_riddle(mode: &str, players: u8, seed: u32) -> Result<String, JsError> {
+pub fn cryptide_riddle(level: &str, mode: &str, players: u8, seed: u32) -> Result<String, JsError> {
+    let level: cryptide::RiddleLevel = serde_json::from_value(Value::from(level))
+        .map_err(|_| JsError::new(&format!("Niveau inconnu : {level}.")))?;
     let mode: cryptide::Mode = serde_json::from_value(Value::from(mode))
         .map_err(|_| JsError::new(&format!("Mode inconnu : {mode}.")))?;
     if !(3..=5).contains(&players) {
         return Err(JsError::new("Une énigme se joue à 3, 4 ou 5."));
     }
-    let riddle = cryptide::riddle(cryptide::RiddleLevel::Full, mode, players, seed.into())
+    let riddle = cryptide::riddle(level, mode, players, seed.into())
         .ok_or_else(|| JsError::new("Aucune énigme trouvée pour cette graine."))?;
     Ok(text(&riddle))
 }

@@ -148,6 +148,6 @@ export const en: Dict = {
     games: (n: number) => (n > 1 ? `${n} games` : "1 game"),
     riddles: "Riddles",
     training: "training",
-    riddlesHint: "Find the habitat in an AI's place",
+    riddlesHint: "From warm-up to full riddle, in four levels",
   },
 };

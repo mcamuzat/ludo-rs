@@ -141,7 +141,7 @@ export const fr = {
     games: (n: number) => (n > 1 ? `${n} jeux` : "1 jeu"),
     riddles: "Énigmes",
     training: "entraînement",
-    riddlesHint: "Trouve l'habitat à la place d'une IA",
+    riddlesHint: "De l'échauffement à l'énigme, en quatre niveaux",
   },
 };
 

@@ -46,8 +46,8 @@ export class EngineClient {
   }
 
   /** A Cryptide riddle (games/cryptide/src/riddle.rs); needs no match. */
-  cryptideRiddle<T>(mode: string, players: number, seed: number) {
-    return this.rpc.call<T>({ kind: "cryptideRiddle", mode, players, seed });
+  cryptideRiddle<T>(level: string, mode: string, players: number, seed: number) {
+    return this.rpc.call<T>({ kind: "cryptideRiddle", level, mode, players, seed });
   }
 
   dispose() {

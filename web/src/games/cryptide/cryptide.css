@@ -23,8 +23,24 @@
 .cr-help ul { margin: 0; padding-left: 1.2em; font-size: 0.9rem; }
 .cr-help-note { margin: 6px 0 0; font-size: 0.85rem; }
 .cr-log { width: 100%; max-width: 720px; margin: 0; padding-left: 1.6em; font-size: 0.85rem; box-sizing: border-box; }
+.cr-space.cr-shaded { opacity: 0.25; }
 .cr-miss { stroke: #fff; stroke-width: 3.5; stroke-linecap: round; pointer-events: none; filter: drop-shadow(0 0 1px #000); }
 .cr-reveal h4 { margin: 12px 0 4px; }
 .cr-reveal > ul > li { margin-top: 6px; }
 .cr-deduction { list-style: disc; padding-left: 2.2em !important; font-size: 0.9rem; color: var(--muted); }
 .cr-deduction li.true { color: var(--fg); font-weight: 700; }
+
+/* Riddle levels */
+.cr-given { margin: 0.4rem 0; padding-left: 1.2rem; }
+.cr-given li { margin: 0.15rem 0; }
+.cr-picker { max-width: 720px; margin: 0.5rem auto; }
+.cr-picker section { margin: 0.4rem 0; }
+.cr-picker h4 { margin: 0.3rem 0; font-size: 0.9rem; }
+.cr-picker ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.cr-picker button { text-align: left; font-size: 0.85rem; }
+.cr-picker button:disabled { text-decoration: line-through; opacity: 0.5; }
+.cr-shade-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+.cr-shade-list button { text-align: left; }
+.cr-shade-list button.active { border-color: var(--brass); box-shadow: inset 4px 0 0 var(--brass); font-weight: 600; }
+.cr-combos { padding-left: 1.2rem; }
+.cr-combos li { margin: 0.2rem 0; }

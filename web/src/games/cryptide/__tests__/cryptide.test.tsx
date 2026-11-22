@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { CryptideBoard, TurnControls, actionsAt, describeEvent, place } from "../Board";
 import { HintHelp } from "../HintHelp";
-import { RiddleBoard } from "../Riddle";
+import { RiddleBoard, freshAttempt, sameHint } from "../Riddle";
 import { hintLabel } from "../hints";
 import type { Clue, CryptideAction, CryptideView, Hint, Riddle, Terrain } from "../types";
 
@@ -148,6 +148,7 @@ describe("Cryptide board", () => {
 
   describe("riddles", () => {
     const RIDDLE: Riddle = {
+      level: "Full",
       players: 3,
       mode: "Normal",
       squares: VIEW.squares,
@@ -157,17 +158,66 @@ describe("Cryptide board", () => {
       hint: NORMAL[11],
       habitat: 30,
       hints: [NORMAL[0], NORMAL[11], NORMAL[20]],
+      given: [null, NORMAL[11], null],
+      hint_cells: [[30, 31], [29, 30], [30]],
       deduction: [[NORMAL[0], NORMAL[3]], [], [NORMAL[20]]],
+      eliminations: [],
+      combinations: {
+        working: [{ hints: [NORMAL[0], NORMAL[11], NORMAL[20]], outcome: { Habitat: 30 } }],
+        fallen: [{ hints: [NORMAL[3], NORMAL[11], NORMAL[20]], outcome: "Nowhere" }],
+        nowhere: 1,
+        several: 0,
+        repeated: 0,
+        complete: true,
+      },
       mode_hints: NORMAL,
     };
-    const board = (misses: number[], solved: "found" | "shown" | null) =>
-      hostElements(
-        <RiddleBoard riddle={RIDDLE} misses={misses} solved={solved} onGuess={() => {}} onGiveUp={() => {}} />,
-      );
-    const html = (misses: number[], solved: "found" | "shown" | null) =>
-      renderToStaticMarkup(
-        <RiddleBoard riddle={RIDDLE} misses={misses} solved={solved} onGuess={() => {}} onGiveUp={() => {}} />,
-      ).replaceAll("&#x27;", "'");
+    const EMPTY = Array.from({ length: 108 }, () => ({ cube: null, discs: [] as number[] }));
+    const WARMUP: Riddle = {
+      ...RIDDLE,
+      level: "Warmup",
+      tokens: EMPTY,
+      log: [],
+      solver: 0,
+      hint: NORMAL[0],
+      given: [NORMAL[0], NORMAL[11], NORMAL[20]],
+      deduction: [[], [], []],
+      combinations: { ...RIDDLE.combinations, working: [], fallen: [], nowhere: 0 },
+    };
+    const HINT: Riddle = {
+      ...RIDDLE,
+      level: "Hint",
+      solver: 2,
+      hint: NORMAL[20],
+      given: [null, null, null],
+      deduction: [[], [], []],
+      eliminations: [{ hint: NORMAL[0], cell: 6, mark: "Disc" }],
+      combinations: WARMUP.combinations,
+    };
+    type Extra = { hintMisses?: (typeof NORMAL)[number][]; onGuessHint?(h: unknown): void; shaded?: number | null };
+    const element = (riddle: Riddle, misses: number[], solved: "found" | "shown" | null, extra: Extra = {}) => (
+      <RiddleBoard
+        riddle={riddle}
+        misses={misses}
+        hintMisses={extra.hintMisses ?? []}
+        solved={solved}
+        shaded={extra.shaded ?? null}
+        onGuess={() => {}}
+        onGuessHint={extra.onGuessHint ?? (() => {})}
+        onShade={() => {}}
+        onGiveUp={() => {}}
+      />
+    );
+    const board = (misses: number[], solved: "found" | "shown" | null, riddle = RIDDLE, extra: Extra = {}) =>
+      hostElements(element(riddle, misses, solved, extra));
+    const html = (misses: number[], solved: "found" | "shown" | null, riddle = RIDDLE, extra: Extra = {}) =>
+      renderToStaticMarkup(element(riddle, misses, solved, extra)).replaceAll("&#x27;", "'");
+    const clickable = (els: AnyElement[]) => {
+      const map = els.find((el) => el.type === "svg");
+      return hostElements(map)
+        .filter((el) => el.props["data-cell"] !== undefined && el.props.onClick)
+        .map((el) => el.props["data-cell"]);
+    };
 
     it("gives the solver's clue and keeps the others hidden", () => {
       const page = html([], null);
@@ -179,13 +229,10 @@ describe("Cryptide board", () => {
     });
 
     it("lets every space without a cube or a miss be guessed", () => {
-      const map = board([12], null).find((el) => el.type === "svg");
-      expect(map).toBeDefined();
-      const spaces = hostElements(map).filter((el) => el.props["data-cell"] !== undefined);
-      const clickable = spaces.filter((el) => el.props.onClick).map((el) => el.props["data-cell"]);
-      expect(clickable).toHaveLength(106);
-      expect(clickable).not.toContain(5);
-      expect(clickable).not.toContain(12);
+      const cells = clickable(board([12], null));
+      expect(cells).toHaveLength(106);
+      expect(cells).not.toContain(5);
+      expect(cells).not.toContain(12);
       expect(html([12], null)).toContain("Raté : 1 essai");
     });
 
@@ -196,6 +243,64 @@ describe("Cryptide board", () => {
       expect(page).toContain("Margot (IA) : un indice parmi 2");
       expect(page).toContain("Lina (IA) : un seul indice possible");
       expect(page).toContain(`<li class="true">${hintLabel(NORMAL[20])}</li>`);
+    });
+
+    it("the full solution shows the combinations", () => {
+      const page = html([], "shown");
+      expect(page).toContain("Combinaisons qui marchent");
+      expect(page).toContain("1 sans case commune");
+      expect(page).toContain(hintLabel(NORMAL[3]).replace(/\.$/, ""));
+      expect(page).not.toContain(". ·");
+      expect(page).not.toContain(". →");
+    });
+
+    it("warmup lists every hint and lets every space be picked", () => {
+      const page = html([], null, WARMUP);
+      for (const h of WARMUP.hints) expect(page).toContain(hintLabel(h));
+      expect(page).toContain("Trouve la seule case qui les vérifie tous");
+      expect(clickable(board([], null, WARMUP))).toHaveLength(108);
+      expect(clickable(board([4], null, WARMUP))).not.toContain(4);
+    });
+
+    it("warmup's solution shades the spaces a hint keeps", () => {
+      const map = board([], "shown", WARMUP, { shaded: 1 }).find((el) => el.type === "svg");
+      const shaded = hostElements(map)
+        .filter((el) => typeof el.props.className === "string" && el.props.className.includes("cr-shaded"))
+        .map((el) => el.props["data-cell"]);
+      expect(shaded).toHaveLength(106);
+      expect(shaded).not.toContain(29);
+      expect(shaded).not.toContain(30);
+    });
+
+    it("a hint riddle hides every hint and offers the mode's hints to pick", () => {
+      const els = board([], null, HINT, { hintMisses: [NORMAL[4]] });
+      const page = html([], null, HINT);
+      expect(page).not.toContain("Indice de");
+      expect(page).toContain("Les jetons de <strong>Lina (IA)</strong> ne laissent qu'un indice possible");
+      expect(clickable(els)).toHaveLength(0);
+      const picks = els.filter((el) => el.type === "button" && el.props["data-hint"] !== undefined);
+      expect(picks).toHaveLength(NORMAL.length);
+      const missed = picks.find((el) => el.props["data-hint"] === JSON.stringify(NORMAL[4]));
+      expect(missed?.props.disabled).toBe(true);
+    });
+
+    it("a hint riddle's solution names the token that rules each hint out", () => {
+      const page = html([], "shown", HINT);
+      expect(page).toContain(`L'indice de Lina (IA) : ${hintLabel(NORMAL[20])}`);
+      expect(page).toContain(
+        `${hintLabel(NORMAL[0]).replace(/\.$/, "")} : écarté par le disque de Lina (IA) en ligne 1, colonne 7`,
+      );
+      expect(page).not.toContain(". : écarté");
+    });
+
+    it("a hint is matched whole, negation included", () => {
+      expect(sameHint(ADVANCED[3], ADVANCED[3])).toBe(true);
+      expect(sameHint(ADVANCED[3], ADVANCED[27])).toBe(false);
+      expect(sameHint({ clue: { Terrains: ["Forest", "Desert"] }, negated: false }, ADVANCED[0])).toBe(true);
+    });
+
+    it("a new riddle clears the misses and the answer", () => {
+      expect(freshAttempt()).toEqual({ misses: [], hintMisses: [], solved: null, shaded: null });
     });
   });
 });

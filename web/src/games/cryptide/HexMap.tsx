@@ -97,10 +97,12 @@ export interface HexMapProps {
   habitat: Cell | null;
   /** Wrong guesses, crossed out (riddles). */
   misses?: Cell[];
+  /** When set, the spaces outside it are dimmed (riddle solutions). */
+  shaded?: Set<Cell> | null;
   onPick(cell: Cell): void;
 }
 
-export function HexMap({ squares, tokens, playable, selected, focus, habitat, misses = [], onPick }: HexMapProps) {
+export function HexMap({ squares, tokens, playable, selected, focus, habitat, misses = [], shaded = null, onPick }: HexMapProps) {
   const width = R * 2 + (COLS - 1) * 1.5 * R;
   const height = SQRT3 * R * ROWS + (SQRT3 / 2) * R;
   return (
@@ -108,7 +110,7 @@ export function HexMap({ squares, tokens, playable, selected, focus, habitat, mi
       {squares.map((sq, cell) => {
         const { x, y } = center(cell);
         const can = playable.has(cell);
-        const classes = ["cr-space", can ? "playable" : "", cell === selected ? "selected" : "", cell === focus ? "focus" : "", cell === habitat ? "habitat" : ""]
+        const classes = ["cr-space", can ? "playable" : "", cell === selected ? "selected" : "", cell === focus ? "focus" : "", cell === habitat ? "habitat" : "", shaded && !shaded.has(cell) ? "cr-shaded" : ""]
           .filter(Boolean)
           .join(" ");
         return (

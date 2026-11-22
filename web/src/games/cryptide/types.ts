@@ -67,19 +67,60 @@ export interface CryptideView {
   reveal: Reveal | null;
 }
 
-/** A table of AIs stopped once `solver` knows the habitat (riddle.rs). */
+/** What a riddle asks (riddle.rs). */
+export type RiddleLevel = "Warmup" | "Hint" | "Easy" | "Full";
+
+/** The token that rules a hint out: a disc outside it, or a cube inside. */
+export type Mark = "Disc" | "Cube";
+
+export interface Elimination {
+  hint: Hint;
+  cell: Cell;
+  mark: Mark;
+}
+
+/** What a combination of hints gives on the spaces without a cube. */
+export type Outcome = { Habitat: Cell } | "Nowhere" | { Several: number } | "Repeated";
+
+export interface Combination {
+  /** One hint per seat, the solver's included. */
+  hints: Hint[];
+  outcome: Outcome;
+}
+
+export interface Combinations {
+  working: Combination[];
+  /** A few fallen ones, as examples. */
+  fallen: Combination[];
+  nowhere: number;
+  several: number;
+  repeated: number;
+  complete: boolean;
+}
+
+/** A riddle of one level: a map, maybe a table of AIs stopped at the right moment (riddle.rs). */
 export interface Riddle {
+  level: RiddleLevel;
   players: number;
   mode: Mode;
   squares: Square[];
   tokens: Tokens[];
   log: CryptideEvent[];
+  /** The seat in focus: whose hint is given (Easy, Full) or sought (Hint); 0 at the warm-up. */
   solver: number;
   hint: Hint;
   habitat: Cell;
   hints: Hint[];
+  /** The hints shown to the player, by seat. */
+  given: (Hint | null)[];
+  /** By seat, the spaces its hint keeps. */
+  hint_cells: Cell[][];
   /** What the solver can tell of each other seat's hint. */
   deduction: Hint[][];
+  /** Level Hint: a token ruling out each other hint of the mode. */
+  eliminations: Elimination[];
+  /** Level Full: the combinations and why they work or fall. */
+  combinations: Combinations;
   mode_hints: Hint[];
 }
 

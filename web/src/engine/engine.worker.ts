@@ -54,6 +54,6 @@ serve<EngineRequest>(init(), (req) => {
     case "timeoutAction":
       return JSON.parse(wasm.timeoutAction(current(), req.seat));
     case "cryptideRiddle":
-      return JSON.parse(wasm.cryptideRiddle(req.mode, req.players, req.seed));
+      return JSON.parse(wasm.cryptideRiddle(req.level, req.mode, req.players, req.seed));
   }
 });
