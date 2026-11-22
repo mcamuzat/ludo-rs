@@ -236,15 +236,14 @@ fn no_link_crosses_an_opposing_link() {
 #[test]
 fn a_side_without_a_hole_ends_the_game() {
     let mut board = twixt::Board::new();
-    for x in 1..23usize {
-        for y in 0..24usize {
-            let c = if y == 0 || y == 23 {
-                Color::Red
-            } else {
-                Color::Black
-            };
-            board.pegs[c.index()][x][y] = true;
-        }
+    let holes = (1..23usize).flat_map(|x| (0..24usize).map(move |y| (x, y)));
+    for (x, y) in holes {
+        let c = if y == 0 || y == 23 {
+            Color::Red
+        } else {
+            Color::Black
+        };
+        board.pegs[c.index()][x][y] = true;
     }
     board.turn = Color::Black;
     // A history that is past the swap (the board is built by hand).

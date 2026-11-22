@@ -160,8 +160,8 @@ impl State {
         self.blacks = vec![0; n];
         self.status = vec![Status::In; n];
         self.min_take = 1;
-        for i in 0..n {
-            self.chips[i] -= ANTE as i32;
+        for chips in self.chips.iter_mut().take(n) {
+            *chips -= ANTE as i32;
         }
         let mut cards: Vec<Vec<Rank>> = vec![Vec::new(); n];
         let mut tied: Vec<Seat> = self.seats().collect();

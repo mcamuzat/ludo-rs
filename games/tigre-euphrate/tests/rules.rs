@@ -24,9 +24,10 @@ fn empty(players: u8, reinforcements: Reinforcements) -> State {
     let mut s = TigreEuphrate::new(&Config { reinforcements }, players, 7);
     s.cells.iter_mut().for_each(|c| *c = None);
     s.treasure.iter_mut().for_each(|t| *t = false);
-    for i in 0..usize::from(players) {
-        s.hands[i] = [0; 4];
-    }
+    s.hands
+        .iter_mut()
+        .take(usize::from(players))
+        .for_each(|h| *h = [0; 4]);
     s
 }
 

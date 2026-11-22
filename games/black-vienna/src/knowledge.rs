@@ -520,8 +520,8 @@ fn feasible_criminals(s: &State, seat: Seat, sheet: &Knowledge, candidates: &[bo
     let seats = usize::from(s.players);
     let mut base = Problem::of(s, seat);
     for x in Suspect::all() {
-        for r in 0..=seats {
-            if let Some(v) = sheet.cells[r][x.index()] {
+        for (r, row) in sheet.cells.iter().enumerate().take(seats + 1) {
+            if let Some(v) = row[x.index()] {
                 base.set(x, r, v);
             }
         }
