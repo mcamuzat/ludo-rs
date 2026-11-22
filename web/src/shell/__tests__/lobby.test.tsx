@@ -21,8 +21,28 @@ function lobby(): string {
   return renderToStaticMarkup(<Lobby game={TIGRIS} onLocal={noop} onHost={noop} onBack={noop} />);
 }
 
+const SOLO: GameMeta = {
+  id: "five-by-fifteen",
+  name: "5×15",
+  minPlayers: 1,
+  maxPlayers: 1,
+  playerCounts: [1],
+  hiddenInfo: false,
+  sharedScreen: true,
+  clock: false,
+  options: [{ key: "route", kind: { type: "choice", values: ["Short", "Medium", "Long"], default: "Short" } }],
+};
+
 describe("Lobby", () => {
   afterEach(() => setLang("fr"));
+
+  it("starts a solo game without seats nor hosting", () => {
+    const html = renderToStaticMarkup(<Lobby game={SOLO} onLocal={() => {}} onBack={() => {}} />);
+    expect(html).not.toContain("Sièges");
+    expect(html).not.toContain("Héberger");
+    expect(html).toContain("Jouer sur cet appareil");
+    expect(html).toContain("Parcours");
+  });
 
   it("speaks French by default", () => {
     const html = lobby();

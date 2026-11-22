@@ -59,35 +59,37 @@ export function Lobby({ game, onLocal, onHost, onBack }: Props) {
       </div>
       <RulesReminder rules={gameUi(game.id)?.rules} open />
       <div className="lobby">
-        <section className="panel">
-          <div className="panel-head">
-            <h3>{t.lobby.seats}</h3>
-            <div className="row">
-              <label htmlFor="players">{t.lobby.players}</label>
-              <select id="players" value={players} onChange={(e) => setPlayers(Number(e.target.value))}>
-                {game.playerCounts.map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <ol className="seats">
-            <li>{t.lobby.you}</li>
-            {others.map((c, i) => (
-              <li key={i}>
-                <select value={c} aria-label={t.lobby.seat(i + 2)} onChange={(e) => choose(i, e.target.value as SeatChoice)}>
-                  {options.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
+        {game.maxPlayers > 1 && (
+          <section className="panel">
+            <div className="panel-head">
+              <h3>{t.lobby.seats}</h3>
+              <div className="row">
+                <label htmlFor="players">{t.lobby.players}</label>
+                <select id="players" value={players} onChange={(e) => setPlayers(Number(e.target.value))}>
+                  {game.playerCounts.map((n) => (
+                    <option key={n} value={n}>
+                      {n}
                     </option>
                   ))}
                 </select>
-              </li>
-            ))}
-          </ol>
-        </section>
+              </div>
+            </div>
+            <ol className="seats">
+              <li>{t.lobby.you}</li>
+              {others.map((c, i) => (
+                <li key={i}>
+                  <select value={c} aria-label={t.lobby.seat(i + 2)} onChange={(e) => choose(i, e.target.value as SeatChoice)}>
+                    {options.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
         {config && (
           <section className="panel">
             <h3>{t.lobby.options}</h3>

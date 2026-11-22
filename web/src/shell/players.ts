@@ -9,7 +9,8 @@ export function playersLabel(meta: GameMeta): string {
   return run ? `${counts[0]}–${counts[counts.length - 1]}` : counts.join(` ${t().players.or} `);
 }
 
-/** « 2–4 joueurs » / « 2–4 players ». */
+/** « 2–4 joueurs » / « 2–4 players »; « Solo » for a one-player game. */
 export function playersCount(meta: GameMeta): string {
+  if (meta.maxPlayers === 1) return t().players.solo;
   return t().players.count(playersLabel(meta));
 }

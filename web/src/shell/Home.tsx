@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { GameMeta } from "../engine/types";
 import { gameUi, type GameFamily } from "../games/registry";
 import { Die, Emblem } from "./Emblem";
@@ -6,7 +6,11 @@ import { playersCount } from "./players";
 import { gameName, getLang, setLang, useLang, useT, type Lang } from "../i18n";
 import type { SavedHost } from "../session/storage";
 
+export type HomeTab = "multi" | "solo";
+
 interface Props {
+  tab: HomeTab;
+  onTab(tab: HomeTab): void;
   catalog: GameMeta[] | null;
   error: string | null;
   name: string;
@@ -19,7 +23,7 @@ interface Props {
   onAbandon(): void;
 }
 
-/** Home screen sections, in display order. */
+/** Multiplayer sections, in display order. */
 const SHELVES: { shelf: "board" | "pairs" | "cards" | "modern" | "coins" | "trade"; families: GameFamily[] }[] = [
   { shelf: "board", families: ["board", "tiles"] },
   { shelf: "pairs", families: ["pairs"] },
@@ -51,13 +55,15 @@ function LanguagePicker() {
   );
 }
 
-export function Home({ catalog, error, name, onName, onPick, onRiddles, onJoin, saved, onResume, onAbandon }: Props) {
+const TABS: HomeTab[] = ["multi", "solo"];
+
+export function Home({ tab, onTab, catalog, error, name, onName, onPick, onRiddles, onJoin, saved, onResume, onAbandon }: Props) {
   const [code, setCode] = useState("");
   const t = useT();
   const games = (catalog ?? [])
     .flatMap((meta) => {
       const ui = gameUi(meta.id);
-      return ui && !ui.hidden ? [{ meta, family: ui.family, name: gameName(meta) }] : [];
+      return ui && !ui.hidden ? [{ meta, family: ui.family, solo: ui.solo, name: gameName(meta) }] : [];
     })
     .sort((a, b) => a.name.localeCompare(b.name, getLang(), { sensitivity: "base" }));
   const savedMeta = saved ? catalog?.find((g) => g.id === saved.gameId) : undefined;
@@ -108,46 +114,71 @@ export function Home({ catalog, error, name, onName, onPick, onRiddles, onJoin, 
       )}
       {error && <p className="error">{error}</p>}
       {!catalog && !error && <p className="status">{t.home.loading}</p>}
-      {SHELVES.map((shelf) => {
-        const shelved = games.filter((g) => shelf.families.includes(g.family));
-        if (shelved.length === 0) return null;
-        return (
-          <section key={shelf.shelf} className="family">
-            <div className="family-head">
-              <h2>{t.home.shelves[shelf.shelf]}</h2>
-              <span>{t.home.games(shelved.length)}</span>
-            </div>
-            <ul className="games">
-              {shelved.map(({ meta, family, name }) => (
-                <li key={meta.id}>
-                  <button className="game" onClick={() => onPick(meta)}>
-                    <Emblem family={family} name={name} />
-                    <strong>{name}</strong>
-                    <small>{playersCount(meta)}</small>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </section>
-        );
-      })}
-      {catalog && (
-        <section className="family">
-          <div className="family-head">
-            <h2>{t.home.riddles}</h2>
-            <span>{t.home.training}</span>
-          </div>
-          <ul className="games">
-            <li>
-              <button className="game" onClick={onRiddles}>
-                <Emblem family="modern" name={gameName(CRYPTIDE)} />
-                <strong>{gameName(CRYPTIDE)}</strong>
-                <small>{t.home.riddlesHint}</small>
-              </button>
-            </li>
-          </ul>
-        </section>
+      <div className="tabs" role="group" aria-label={t.home.tabs.label}>
+        {TABS.map((id) => (
+          <button key={id} type="button" aria-pressed={id === tab} onClick={() => onTab(id)}>
+            {t.home.tabs[id]}
+          </button>
+        ))}
+      </div>
+      {tab === "multi" &&
+        SHELVES.map((shelf) => (
+          <Shelf
+            key={shelf.shelf}
+            title={t.home.shelves[shelf.shelf]}
+            games={games.filter((g) => !g.solo && shelf.families.includes(g.family))}
+            onPick={onPick}
+          />
+        ))}
+      {tab === "solo" && (
+        <>
+          <Shelf title={t.home.shelves.automaton} games={games.filter((g) => g.solo === "automaton")} onPick={onPick} />
+          <Shelf title={t.home.shelves.puzzles} games={games.filter((g) => g.solo === "puzzle")} onPick={onPick}>
+            {catalog && (
+              <li>
+                <button className="game" onClick={onRiddles}>
+                  <Emblem family="modern" name={gameName(CRYPTIDE)} />
+                  <strong>{t.home.riddles}</strong>
+                  <small>{t.home.riddlesHint}</small>
+                </button>
+              </li>
+            )}
+          </Shelf>
+        </>
       )}
     </main>
+  );
+}
+
+interface ShelfGame {
+  meta: GameMeta;
+  family: GameFamily;
+  name: string;
+}
+
+/** A titled row of games; extra entries (`children`) come after them. Hidden when empty. */
+function Shelf({ title, games, onPick, children }: { title: string; games: ShelfGame[]; onPick(game: GameMeta): void; children?: ReactNode }) {
+  const t = useT();
+  const count = games.length + (children ? 1 : 0);
+  if (count === 0) return null;
+  return (
+    <section className="family">
+      <div className="family-head">
+        <h2>{title}</h2>
+        <span>{t.home.games(count)}</span>
+      </div>
+      <ul className="games">
+        {games.map(({ meta, family, name }) => (
+          <li key={meta.id}>
+            <button className="game" onClick={() => onPick(meta)}>
+              <Emblem family={family} name={name} />
+              <strong>{name}</strong>
+              <small>{playersCount(meta)}</small>
+            </button>
+          </li>
+        ))}
+        {children}
+      </ul>
+    </section>
   );
 }

@@ -225,3 +225,8 @@ label { color: var(--muted); font-size: 0.85rem; font-weight: 500; }
 .langs { display: flex; gap: 4px; }
 .langs button { min-width: 2.6em; font-family: var(--f-mono); letter-spacing: 0.05em; }
 .langs button[aria-pressed="true"] { border-color: var(--brass); box-shadow: inset 0 0 0 1px var(--brass); }
+
+/* Home tabs: multiplayer games or solo games. */
+.tabs { display: flex; gap: 6px; }
+.tabs button { padding: 8px 18px; font-family: var(--f-display); font-size: 1.05rem; }
+.tabs button[aria-pressed="true"] { border-color: var(--brass); box-shadow: inset 0 0 0 1px var(--brass); background: var(--brass-soft); }

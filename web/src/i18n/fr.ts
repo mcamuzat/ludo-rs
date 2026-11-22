@@ -9,6 +9,7 @@ export const fr = {
     or: "ou",
     /** "2–4" → "2–4 joueurs". */
     count: (label: string) => `${label} joueurs`,
+    solo: "Solo",
   },
   /** Lobby labels by `<game id>.<key>`, and `<game id>.<key>.<value>` for choices. Missing: the key itself. */
   options: {
@@ -134,6 +135,7 @@ export const fr = {
     resume: "Reprendre",
     abandon: "Abandonner",
     loading: "Chargement…",
+    tabs: { label: "Genre de jeux", multi: "À plusieurs", solo: "Solo" },
     shelves: {
       board: "Plateau et tuiles",
       pairs: "Deck Pairs",
@@ -141,10 +143,11 @@ export const fr = {
       modern: "Jeux de cartes d'auteur",
       coins: "Jeux de pièces",
       trade: "Jeux d'échange",
+      automaton: "Contre un automate",
+      puzzles: "Puzzles",
     },
     games: (n: number) => (n > 1 ? `${n} jeux` : "1 jeu"),
-    riddles: "Énigmes",
-    training: "entraînement",
+    riddles: "Énigmes Cryptide",
     riddlesHint: "De l'échauffement à l'énigme, en quatre niveaux",
   },
 };

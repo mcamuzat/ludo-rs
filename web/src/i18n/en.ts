@@ -13,6 +13,7 @@ export const en: Dict = {
   players: {
     or: "or",
     count: (label: string) => `${label} players`,
+    solo: "Solo",
   },
   options: {
     "pairs-ghost-town.hands": "Hands",
@@ -141,6 +142,7 @@ export const en: Dict = {
     resume: "Resume",
     abandon: "Abandon",
     loading: "Loading…",
+    tabs: { label: "Kind of games", multi: "Multiplayer", solo: "Solo" },
     shelves: {
       board: "Board and tiles",
       pairs: "Pairs deck",
@@ -148,10 +150,11 @@ export const en: Dict = {
       modern: "Designer card games",
       coins: "Coin games",
       trade: "Trading games",
+      automaton: "Against an automaton",
+      puzzles: "Puzzles",
     },
     games: (n: number) => (n > 1 ? `${n} games` : "1 game"),
-    riddles: "Riddles",
-    training: "training",
+    riddles: "Cryptid riddles",
     riddlesHint: "From warm-up to full riddle, in four levels",
   },
 };

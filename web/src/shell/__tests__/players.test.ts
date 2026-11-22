@@ -34,4 +34,10 @@ describe("in English", () => {
   it("keeps « joueurs » in French", () => {
     expect(playersCount(meta([2, 3, 4]))).toBe("2–4 joueurs");
   });
+
+  it("calls a one-player game solo", () => {
+    expect(playersCount(meta([1]))).toBe("Solo");
+    setLang("en");
+    expect(playersCount(meta([1]))).toBe("Solo");
+  });
 });

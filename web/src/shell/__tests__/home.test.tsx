@@ -20,12 +20,15 @@ const CATALOG = [
   meta("cards-president", "Président"),
   meta("pennywise", "Pennywise"),
   meta("monad", "Monad"),
+  { ...meta("five-by-fifteen", "5×15"), minPlayers: 1, maxPlayers: 1, playerCounts: [1] },
 ];
 
-function home(): string {
+function home(tab: "multi" | "solo" = "multi"): string {
   const noop = () => {};
   return renderToStaticMarkup(
     <Home
+      tab={tab}
+      onTab={noop}
       catalog={CATALOG}
       error={null}
       name="Ana"
@@ -55,13 +58,25 @@ describe("Home", () => {
       "Président",
       "Pennywise",
       "Monad",
-      // The riddles shelf, last.
-      "Cryptide",
     ]);
   });
 
-  it("offers the Cryptide riddles", () => {
-    expect(home()).toContain("Énigmes");
+  it("keeps the solo games and the riddles for the Solo tab", () => {
+    const html = home();
+    expect(html).not.toContain("5×15");
+    expect(html).not.toContain("Énigmes Cryptide");
+    expect(html).toMatch(/aria-pressed="true"[^>]*>À plusieurs</);
+    expect(html).toMatch(/aria-pressed="false"[^>]*>Solo</);
+  });
+
+  it("shelves the puzzles on the Solo tab, with the Cryptide riddles", () => {
+    const html = home("solo");
+    const names = [...html.matchAll(/<strong>([^<]+)<\/strong>/g)].map((m) => m[1]);
+    expect(names).toEqual(["5×15", "Énigmes Cryptide"]);
+    expect(html).toContain("Puzzles");
+    expect(html).not.toContain("Contre un automate");
+    expect(html).not.toContain("Yavalath");
+    expect(html).toMatch(/aria-pressed="true"[^>]*>Solo</);
   });
 
   it("shows a rules reminder only when there are rules", () => {
@@ -107,10 +122,12 @@ describe("Home in English", () => {
     expect(html).toContain("President");
     expect(html).toContain("Regent");
     expect(html).toContain("2–6 players");
-    expect(html).toContain(">Cryptid<");
     expect(html).toContain("Traditional cards");
+    expect(home("solo")).toContain("Cryptid riddles");
     // Each language is named in itself: « Français » stays on the FR button.
-    expect(html.replace('title="Français"', "")).not.toMatch(/joueurs|Rejoindre|Chargement|Énigmes|[éèêàç]/);
+    for (const tab of ["multi", "solo"] as const) {
+      expect(home(tab).replace('title="Français"', "")).not.toMatch(/joueurs|Rejoindre|Chargement|Énigmes|[éèêàç]/);
+    }
   });
 
   it("sorts by the English names", () => {

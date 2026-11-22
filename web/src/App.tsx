@@ -7,7 +7,7 @@ import { LocalSession } from "./session/local";
 import type { HostChoice } from "./session/seats";
 import type { Session } from "./session/session";
 import { clearHost, loadHost, loadName, saveName } from "./session/storage";
-import { Home } from "./shell/Home";
+import { Home, type HomeTab } from "./shell/Home";
 import { Lobby, type SeatChoice } from "./shell/Lobby";
 import { TableScreen } from "./shell/TableScreen";
 import { CryptideRiddles } from "./games/cryptide/Riddle";
@@ -28,7 +28,17 @@ function initialScreen(name: string): Screen {
   return code ? { name: "table", session: new GuestSession(code, name) } : { name: "home" };
 }
 
+/** The home tab an address asks for: `#/solo`, else the multiplayer games. */
+function tabOf(hash: string): HomeTab {
+  return hash === "#/solo" ? "solo" : "multi";
+}
+
+function tabAddress(tab: HomeTab): string {
+  return tab === "solo" ? `${location.pathname}#/solo` : location.pathname;
+}
+
 export function App() {
+  const [tab, setTab] = useState<HomeTab>(() => tabOf(location.hash));
   const [catalog, setCatalog] = useState<GameMeta[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState(loadName);
@@ -43,7 +53,7 @@ export function App() {
 
   const home = () => {
     if (screen.name === "table") screen.session.dispose();
-    history.replaceState(null, "", location.pathname);
+    history.replaceState(null, "", tabAddress(tab));
     setSaved(loadHost());
     setScreen({ name: "home" });
   };
@@ -52,6 +62,11 @@ export function App() {
     case "home":
       return (
         <Home
+          tab={tab}
+          onTab={(next) => {
+            setTab(next);
+            history.replaceState(null, "", tabAddress(next));
+          }}
           catalog={catalog}
           error={error}
           name={name}
@@ -76,8 +91,12 @@ export function App() {
           game={screen.game}
           onBack={home}
           onLocal={(seats, config) => open(new LocalSession(screen.game.id, seats, config))}
-          onHost={(choices, clock, config) =>
-            open(new HostSession(screen.game.id, name, choices.map(hostChoice), clock, config))
+          onHost={
+            // A solo game is played on this device only.
+            screen.game.maxPlayers > 1
+              ? (choices, clock, config) =>
+                  open(new HostSession(screen.game.id, name, choices.map(hostChoice), clock, config))
+              : undefined
           }
         />
       );
