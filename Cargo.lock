@@ -343,6 +343,7 @@ dependencies = [
  "corporation",
  "cryptide",
  "enemy-chocolatier",
+ "five-by-fifteen",
  "kurote",
  "ludo-core",
  "manoever",

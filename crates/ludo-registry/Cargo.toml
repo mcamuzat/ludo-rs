@@ -8,6 +8,7 @@ license.workspace = true
 [dependencies]
 ludo-core.workspace = true
 yavalath.workspace = true
+five-by-fifteen.workspace = true
 bantu.workspace = true
 black-pot.workspace = true
 manoever.workspace = true

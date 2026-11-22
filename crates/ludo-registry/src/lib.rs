@@ -49,6 +49,7 @@ static TWIXT: GameEntry<twixt::Twixt> = GameEntry::new();
 static TIGRE_EUPHRATE: GameEntry<tigre_euphrate::TigreEuphrate> = GameEntry::new();
 static ENEMY_CHOCOLATIER: GameEntry<enemy_chocolatier::EnemyChocolatier> = GameEntry::new();
 static KUROTE: GameEntry<kurote::Kurote> = GameEntry::new();
+static FIVE_BY_FIFTEEN: GameEntry<five_by_fifteen::FiveByFifteen> = GameEntry::new();
 
 pub static GAMES: &[&dyn AnyGame] = &[
     &YAVALATH,
@@ -98,6 +99,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &TIGRE_EUPHRATE,
     &ENEMY_CHOCOLATIER,
     &KUROTE,
+    &FIVE_BY_FIFTEEN,
 ];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {
@@ -111,6 +113,11 @@ mod tests {
     use serde_json::Value;
 
     use super::*;
+
+    #[test]
+    fn five_by_fifteen_is_solo() {
+        assert_eq!(find("five-by-fifteen").unwrap().player_counts(), vec![1]);
+    }
 
     #[test]
     fn david_goliath_is_for_three_to_six() {
