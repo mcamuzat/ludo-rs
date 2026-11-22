@@ -94,6 +94,8 @@ import { ENEMY_CHOCOLATIER_RULES } from "./enemy-chocolatier/rules";
 import { CORPORATION_RULES } from "./corporation/rules";
 import { SIBERIAN_DICE_RULES } from "./siberian-dice/rules";
 import { YavalathBoard } from "./yavalath/Board";
+import { FiveByFifteenBoard } from "./five-by-fifteen/Board";
+import { FIVE_BY_FIFTEEN_RULES } from "./five-by-fifteen/rules";
 
 /** What every game board receives. It displays and submits; it computes nothing. */
 export interface BoardProps {
@@ -126,11 +128,14 @@ export interface GameUi {
   hidden?: boolean;
   /** A short reminder shown at the table. */
   rules?: string[];
+  /** A one-player game, shown on the Solo tab: against an automaton, or a puzzle. */
+  solo?: "automaton" | "puzzle";
 }
 
 /** Adding a game: one entry here (and one in crates/ludo-registry). */
 export const GAME_UIS: GameUi[] = [
   { id: "yavalath", family: "board", Board: YavalathBoard },
+  { id: "five-by-fifteen", family: "tiles", solo: "puzzle", Board: FiveByFifteenBoard, rules: FIVE_BY_FIFTEEN_RULES },
   { id: "bantu", family: "board", Board: BantuBoard, rules: BANTU_RULES },
   { id: "black-pot", family: "board", Board: BlackPotBoard, rules: BLACK_POT_RULES },
   { id: "manoever", family: "board", Board: ManoeverBoard, rules: MANOEVER_RULES },

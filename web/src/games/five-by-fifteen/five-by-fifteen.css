@@ -1,0 +1,171 @@
+/* 5×15, after the "Shinkansen Express" version: a rail depot at dusk. */
+.fx {
+  --fx-sky-top: #101a33;
+  --fx-sky-mid: #2a2148;
+  --fx-sky-bottom: #5a2a3a;
+  --fx-panel: #211a2c;
+  --fx-text: #f4ecd8;
+  --fx-muted: #ded1a6;
+  --fx-gold: #e8b84b;
+  --fx-accent: #d94f37;
+  --fx-win: #7fe07f;
+  --fx-gap: #352c48;
+  --fx-rail: #1c140f;
+  --fx-ballast: #2a2338;
+  --fx-wheel: #14101c;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.fx-status { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+.fx-warning {
+  margin: 0;
+  padding: 8px 10px;
+  color: #6b4a00;
+  background: #fff3cd;
+  border: 2px solid var(--fx-gold);
+}
+.fx-scroll { overflow-x: auto; padding-bottom: 6px; }
+.fx-grid {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 100%;
+  padding: 8px;
+  background:
+    radial-gradient(circle at 80% 12%, rgba(255, 207, 107, 0.22), transparent 42%),
+    linear-gradient(180deg, var(--fx-sky-top) 0%, var(--fx-sky-mid) 55%, var(--fx-sky-bottom) 100%);
+  border: 2px solid var(--fx-rail);
+  font-family: "VT323", var(--f-mono), monospace;
+  color: var(--fx-text);
+}
+.fx-row {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(36px, 1fr));
+  gap: 3px;
+  padding: 2px 0;
+  background-image: repeating-linear-gradient(90deg, var(--fx-rail) 0 4px, transparent 4px 22px);
+  background-color: var(--fx-ballast);
+}
+.fx-rulers { background: none; padding: 0; }
+.fx-ruler { text-align: center; font-size: 0.95rem; color: var(--fx-muted); }
+.fx-ruler:first-child { color: var(--fx-gold); }
+
+.fx-anchor {
+  aspect-ratio: 1 / 1.18;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  color: #fff8ec;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+  border: 2px solid var(--fx-gold);
+}
+.fx-anchor b { font-size: 1.7rem; font-weight: 400; }
+.fx-anchor small { font-size: 0.72rem; letter-spacing: 0.02em; }
+
+.fx-cell {
+  position: relative;
+  aspect-ratio: 1 / 1.18;
+  background: var(--fx-gap);
+  border: 1px solid var(--fx-rail);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.15s, background 0.2s, opacity 0.3s;
+}
+.fx-cell.fx-placed { box-shadow: 0 0 0 1px var(--fx-win) inset; }
+.fx-cell.fx-locked { background: transparent; border-color: transparent; opacity: 0.15; }
+.fx-cell.fx-target { box-shadow: 0 0 0 2px var(--fx-accent) inset; background-color: rgba(255, 179, 71, 0.25); cursor: pointer; }
+.fx-cell.fx-selected { box-shadow: 0 0 0 2px var(--fx-gold) inset; }
+
+.fx-tile {
+  position: relative;
+  width: 88%;
+  height: 78%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: #fff8ec;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.25), inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+}
+.fx-tile::before,
+.fx-tile::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  width: 16%;
+  aspect-ratio: 1;
+  background: var(--fx-wheel);
+  box-shadow: 0 0 0 1px #000;
+}
+.fx-tile::before { left: 12%; }
+.fx-tile::after { right: 12%; }
+.fx-tile.fx-picked { box-shadow: 0 0 0 2px var(--fx-accent) inset, 0 0 10px 2px rgba(255, 179, 71, 0.6); }
+.fx-tile.fx-source { animation: fx-pulse 1s ease-in-out infinite; }
+.fx-tile.fx-dragging { opacity: 0.25; }
+@keyframes fx-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(255, 179, 71, 0.9) inset; }
+  50% { box-shadow: 0 0 0 2px transparent inset; }
+}
+
+.fx-ghost {
+  position: fixed;
+  z-index: 50;
+  width: 40px;
+  height: 46px;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(1.08);
+  font-family: "VT323", var(--f-mono), monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fx-ghost .fx-tile { width: 100%; height: 100%; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5); }
+
+/* The locomotive: 13, 14 and 15 coupled. */
+.loco-chimney, .loco-puff, .loco-cab, .loco-coal { display: none; }
+.fx-tile.loco-15.loco-linked .loco-chimney {
+  display: block; position: absolute; top: -6px; left: 14%; width: 12%; aspect-ratio: 2 / 3;
+  background: var(--fx-wheel); box-shadow: 0 0 0 1px #000;
+}
+.fx-tile.loco-15.loco-linked .loco-puff {
+  display: block; position: absolute; top: -8px; left: 16%; width: 6px; height: 6px;
+  background: rgba(230, 225, 235, 0.85); border-radius: 50%;
+  animation: fx-puff 1.6s ease-out infinite;
+}
+.fx-tile.loco-15.loco-linked.loco-ready .loco-puff { animation-duration: 0.8s; background: rgba(255, 235, 190, 0.95); }
+@keyframes fx-puff {
+  0% { opacity: 0.9; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-6px, -18px) scale(2.4); }
+}
+.fx-tile.loco-15.loco-linked {
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.25), 0 0 0 2px rgba(255, 207, 107, 0.5);
+}
+.fx-tile.loco-15.loco-linked.loco-ready { animation: fx-ready 1s ease-in-out infinite; }
+@keyframes fx-ready {
+  0%, 100% { box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.25), 0 0 0 2px rgba(255, 207, 107, 0.9); }
+  50% { box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.25), 0 0 10px 3px rgba(255, 207, 107, 0.9); }
+}
+.fx-tile.loco-14.loco-linked .loco-coal { display: flex; gap: 2px; position: absolute; top: -6px; left: 0; right: 0; justify-content: center; }
+.fx-tile.loco-14.loco-linked .loco-coal span { width: 5px; height: 5px; background: var(--fx-wheel); box-shadow: 0 0 0 1px #000; }
+.fx-tile.loco-13.loco-linked .loco-cab {
+  display: block; position: absolute; top: -5px; left: 22%; right: 22%; height: 5px;
+  background: var(--fx-wheel); box-shadow: 0 0 0 1px #000;
+}
+
+.fx-c-emerald { background: linear-gradient(#3fae72 0 40%, #1f6b46 40% 100%); }
+.fx-c-crimson { background: linear-gradient(#e2564a 0 40%, #8a1f1f 40% 100%); }
+.fx-c-azure { background: linear-gradient(#4a90d9 0 40%, #1f3a6b 40% 100%); }
+.fx-c-amber { background: linear-gradient(#f2b544 0 40%, #8a5a1d 40% 100%); }
+.fx-c-violet { background: linear-gradient(#a866d9 0 40%, #4a1f6b 40% 100%); }
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-tile.fx-source, .fx-tile.loco-15.loco-linked .loco-puff, .fx-tile.loco-15.loco-linked.loco-ready { animation: none; }
+}
