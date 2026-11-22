@@ -16,7 +16,7 @@ use crate::Clue;
 pub const CAP: u64 = 400_000;
 
 /// The spaces where `seat` laid discs, and cubes.
-fn marks(tokens: &[Tokens], seat: Seat) -> (Mask, Mask) {
+pub(crate) fn marks(tokens: &[Tokens], seat: Seat) -> (Mask, Mask) {
     let mut discs = Mask::empty();
     let mut cubes = Mask::empty();
     for (i, t) in tokens.iter().enumerate() {

@@ -9,13 +9,16 @@ use rand_chacha::ChaCha8Rng;
 use serde::{Deserialize, Serialize};
 
 use crate::clues::{hints, Hint, Mode};
-use crate::knowledge::{query, Inference, CAP};
+use crate::knowledge::{marks, possible, query, Inference, CAP};
 use crate::map::{Cell, Square};
 use crate::rules::{Config, Cryptide, Event, Phase, State, Tokens};
 
 /// Games tried before giving up (one is nearly always enough: a game ends
 /// on a search, and an AI searches once it knows).
 const ATTEMPTS: u64 = 32;
+/// Games tried at level Hint: at three seats, a seat's own tokens pin its
+/// hint in about one game in forty (a game costs ~3 ms natively).
+const HINT_ATTEMPTS: u64 = 400;
 /// Actions in one game at most.
 const MAX_MOVES: usize = 2_000;
 
@@ -30,6 +33,21 @@ pub enum RiddleLevel {
     Easy,
     /// The solver knows: find the space in its place.
     Full,
+}
+
+/// The token that rules a hint out: a disc outside it, or a cube inside.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
+pub enum Mark {
+    Disc,
+    Cube,
+}
+
+/// A hint of the mode that the target's tokens rule out (level Hint).
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
+pub struct Elimination {
+    pub hint: Hint,
+    pub cell: Cell,
+    pub mark: Mark,
 }
 
 /// A riddle: a map, the tokens of a table of AIs stopped at the right
@@ -59,6 +77,9 @@ pub struct Riddle {
     /// solver, and for every seat outside Easy and Full): the hints left in
     /// some combination naming one space.
     pub deduction: Vec<Vec<Hint>>,
+    /// Level Hint: for every other hint of the mode, a token of the target's
+    /// that rules it out. Empty at the other levels.
+    pub eliminations: Vec<Elimination>,
     /// For the player aid: every hint of the mode.
     pub mode_hints: Vec<Hint>,
 }
@@ -85,6 +106,53 @@ fn solver(s: &State) -> Option<Stop> {
                 per_seat: k.per_seat,
             })
         })
+}
+
+/// The first seat, from the one to play, whose own tokens leave it a
+/// single hint of the mode (the others' tokens are not used).
+fn pinned_seat(s: &State) -> Option<Stop> {
+    let table = s.table();
+    (0..s.players)
+        .map(|p| Seat((s.turn.0 + p) % s.players))
+        .find(|&seat| possible(table, &s.tokens, seat).len() == 1)
+        .map(|seat| Stop {
+            seat,
+            per_seat: vec![Vec::new(); usize::from(s.players)],
+        })
+}
+
+/// For every hint of the mode but `seat`'s, the first of its discs outside
+/// the hint, else the first of its cubes inside (in space order).
+fn eliminations(s: &State, seat: Seat) -> Vec<Elimination> {
+    let table = s.table();
+    let (discs, cubes) = marks(&s.tokens, seat);
+    let own = s.puzzle.hints[seat.index()];
+    table
+        .hints
+        .iter()
+        .zip(&table.masks)
+        .filter(|(h, _)| **h != own)
+        .filter_map(|(&hint, &m)| {
+            let disc = discs
+                .iter()
+                .find(|&c| !m.contains(c))
+                .map(|cell| Elimination {
+                    hint,
+                    cell,
+                    mark: Mark::Disc,
+                });
+            disc.or_else(|| {
+                cubes
+                    .iter()
+                    .find(|&c| m.contains(c))
+                    .map(|cell| Elimination {
+                        hint,
+                        cell,
+                        mark: Mark::Cube,
+                    })
+            })
+        })
+        .collect()
 }
 
 fn riddle_of(level: RiddleLevel, s: &State, stop: &Stop) -> Riddle {
@@ -119,6 +187,11 @@ fn riddle_of(level: RiddleLevel, s: &State, stop: &Stop) -> Riddle {
             .iter()
             .map(|list| list.iter().map(|&i| table.hints[i]).collect())
             .collect(),
+        eliminations: if level == RiddleLevel::Hint {
+            eliminations(s, seat)
+        } else {
+            Vec::new()
+        },
         hints: mine,
         mode_hints: hints(s.mode),
     }
@@ -151,8 +224,22 @@ fn play(
     None
 }
 
-fn seeds(seed: u64) -> impl Iterator<Item = u64> {
-    (0..ATTEMPTS).map(move |k| seed.wrapping_add(k.wrapping_mul(0x9E37_79B9)))
+fn seeds(seed: u64, attempts: u64) -> impl Iterator<Item = u64> {
+    (0..attempts).map(move |k| seed.wrapping_add(k.wrapping_mul(0x9E37_79B9)))
+}
+
+/// The first game, from `seed` on, that `stop` cuts short.
+fn found(
+    attempts: u64,
+    level: RiddleLevel,
+    mode: Mode,
+    players: u8,
+    seed: u64,
+    stop: &dyn Fn(&State) -> Option<Stop>,
+) -> Option<Riddle> {
+    seeds(seed, attempts).find_map(|seed| {
+        play(mode, players, seed, stop).map(|(s, stop)| riddle_of(level, &s, &stop))
+    })
 }
 
 /// A riddle of `level` for `players` seats (3 to 5), from `seed`.
@@ -167,10 +254,9 @@ pub fn riddle(level: RiddleLevel, mode: Mode, players: u8, seed: u64) -> Option<
             };
             Some(riddle_of(level, &s, &stop))
         }
-        RiddleLevel::Full => seeds(seed).find_map(|seed| {
-            play(mode, players, seed, &solver).map(|(s, stop)| riddle_of(level, &s, &stop))
-        }),
-        RiddleLevel::Hint | RiddleLevel::Easy => None,
+        RiddleLevel::Hint => found(HINT_ATTEMPTS, level, mode, players, seed, &pinned_seat),
+        RiddleLevel::Full => found(ATTEMPTS, level, mode, players, seed, &solver),
+        RiddleLevel::Easy => None,
     }
 }
 
@@ -183,7 +269,7 @@ mod tests {
         for mode in [Mode::Normal, Mode::Advanced] {
             for players in 3u8..=5 {
                 for seed in 0..3u64 {
-                    let (s, stop) = seeds(seed)
+                    let (s, stop) = seeds(seed, ATTEMPTS)
                         .find_map(|seed| play(mode, players, seed, &solver))
                         .expect("a riddle");
                     let k = query(&s, stop.seat, Inference::Bot, CAP).unwrap().combos();
