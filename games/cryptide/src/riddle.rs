@@ -19,6 +19,11 @@ const ATTEMPTS: u64 = 32;
 /// Games tried at level Hint: at three seats, a seat's own tokens pin its
 /// hint in about one game in forty (a game costs ~3 ms natively).
 const HINT_ATTEMPTS: u64 = 400;
+/// Games tried at level Easy: at five seats, about one game in seven to
+/// ten reaches a solver that pins every other seat's hint.
+const EASY_ATTEMPTS: u64 = 64;
+/// Level Easy: possible hints left to each other seat, at most.
+pub const EASY_MAX: usize = 1;
 /// Actions in one game at most.
 const MAX_MOVES: usize = 2_000;
 
@@ -155,6 +160,16 @@ fn eliminations(s: &State, seat: Seat) -> Vec<Elimination> {
         .collect()
 }
 
+/// A solver that, besides, leaves each other seat at most `EASY_MAX` hints.
+fn easy_solver(s: &State) -> Option<Stop> {
+    solver(s).filter(|stop| {
+        stop.per_seat
+            .iter()
+            .enumerate()
+            .all(|(p, list)| p == stop.seat.index() || list.len() <= EASY_MAX)
+    })
+}
+
 fn riddle_of(level: RiddleLevel, s: &State, stop: &Stop) -> Riddle {
     let table = s.table();
     let board = s.puzzle.board();
@@ -256,7 +271,7 @@ pub fn riddle(level: RiddleLevel, mode: Mode, players: u8, seed: u64) -> Option<
         }
         RiddleLevel::Hint => found(HINT_ATTEMPTS, level, mode, players, seed, &pinned_seat),
         RiddleLevel::Full => found(ATTEMPTS, level, mode, players, seed, &solver),
-        RiddleLevel::Easy => None,
+        RiddleLevel::Easy => found(EASY_ATTEMPTS, level, mode, players, seed, &easy_solver),
     }
 }
 

@@ -1,7 +1,7 @@
 use std::time::Instant;
 
 use cryptide::knowledge::possible;
-use cryptide::{habitat, riddle, Event, HintTable, Mark, Mode, RiddleLevel, Tokens};
+use cryptide::{habitat, riddle, Event, HintTable, Mark, Mode, RiddleLevel, Tokens, EASY_MAX};
 
 #[test]
 fn a_riddle_gives_the_solver_s_hint_and_what_it_knows() {
@@ -100,8 +100,34 @@ fn board_of(r: &cryptide::Riddle) -> cryptide::Board {
 }
 
 #[test]
+fn an_easy_riddle_leaves_each_other_seat_few_hints() {
+    for mode in [Mode::Normal, Mode::Advanced] {
+        for players in 3u8..=5 {
+            for seed in 0..3u64 {
+                let r = riddle(RiddleLevel::Easy, mode, players, seed).expect("an easy riddle");
+                assert_eq!(r.level, RiddleLevel::Easy);
+                assert_eq!(r.given[r.solver.index()], Some(r.hint));
+                for (p, list) in r.deduction.iter().enumerate() {
+                    if p != r.solver.index() {
+                        assert!(!list.is_empty() && list.len() <= EASY_MAX, "{list:?}");
+                        assert!(list.contains(&r.hints[p]));
+                    }
+                }
+            }
+        }
+    }
+}
+
+const LEVELS: [RiddleLevel; 4] = [
+    RiddleLevel::Warmup,
+    RiddleLevel::Hint,
+    RiddleLevel::Easy,
+    RiddleLevel::Full,
+];
+
+#[test]
 fn a_riddle_is_pinned_by_its_seed() {
-    for level in [RiddleLevel::Warmup, RiddleLevel::Full] {
+    for level in LEVELS {
         assert_eq!(
             riddle(level, Mode::Normal, 4, 7),
             riddle(level, Mode::Normal, 4, 7)
@@ -110,8 +136,10 @@ fn a_riddle_is_pinned_by_its_seed() {
 }
 
 #[test]
-fn a_riddle_comes_quickly() {
-    let t = Instant::now();
-    riddle(RiddleLevel::Full, Mode::Advanced, 5, 3).expect("a riddle");
-    assert!(t.elapsed().as_secs() < 5, "{:?}", t.elapsed());
+fn every_level_comes_quickly() {
+    for level in LEVELS {
+        let t = Instant::now();
+        riddle(level, Mode::Advanced, 5, 3).expect("a riddle");
+        assert!(t.elapsed().as_secs() < 5, "{level:?}: {:?}", t.elapsed());
+    }
 }
