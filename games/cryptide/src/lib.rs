@@ -19,8 +19,8 @@ pub use map::{
     Structure, Terrain, CELLS,
 };
 pub use riddle::{
-    riddle, Combination, Combinations, Elimination, Mark, Outcome, Riddle, RiddleLevel, EASY_MAX,
-    FALLEN_SHOWN,
+    riddle, Combination, Combinations, Elimination, Mark, Outcome, Riddle, RiddleLevel,
+    EASY_FALLBACK, EASY_MAX, FALLEN_SHOWN,
 };
 pub use rules::{Action, Answer, Config, Cryptide, Event, Phase, State, TableCache, Tokens, Why};
 pub use view::{Reveal, View};

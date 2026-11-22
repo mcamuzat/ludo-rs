@@ -121,9 +121,12 @@ avant est rejetée et l'on essaie la graine suivante.
    indice, un jeton qui l'écarte : un disque hors de l'indice, ou un cube
    dedans. À 3 joueurs ce moment n'arrive qu'une partie sur 40 environ : 400
    graines au plus.
-3. **Énigme facile** : comme l'énigme, mais il faut en plus que les jetons ne
-   laissent qu'un indice possible (`EASY_MAX` = 1) à chaque autre siège ;
-   64 graines au plus.
+3. **Énigme facile** : comme l'énigme, mais il faut en plus que le résolveur
+   ne puisse plus prêter qu'un indice (`EASY_MAX` = 1) à chaque autre siège
+   (indices présents dans une combinaison qui marche). 32 graines au plus ;
+   faute de mieux, le premier moment vu avec au plus deux indices
+   (`EASY_FALLBACK`, environ 7 % des énigmes à 5 joueurs en avancé), puis un
+   simple résolveur, pour qu'une énigme vienne toujours.
 4. **Énigme** : arrêt dès qu'un siège sait où est l'habitat : toutes les
    combinaisons d'indices distincts qui s'accordent aux jetons, avec son
    propre indice, désignent la même case unique (le raisonnement de [B],

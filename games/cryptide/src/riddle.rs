@@ -21,9 +21,12 @@ const ATTEMPTS: u64 = 32;
 const HINT_ATTEMPTS: u64 = 400;
 /// Games tried at level Easy: at five seats, about one game in seven to
 /// ten reaches a solver that pins every other seat's hint.
-const EASY_ATTEMPTS: u64 = 64;
+const EASY_ATTEMPTS: u64 = 32;
 /// Level Easy: possible hints left to each other seat, at most.
 pub const EASY_MAX: usize = 1;
+/// Level Easy, when no game reaches `EASY_MAX`: the first moment seen with
+/// at most this many; failing that, a plain solver.
+pub const EASY_FALLBACK: usize = 2;
 /// Actions in one game at most.
 const MAX_MOVES: usize = 2_000;
 
@@ -201,14 +204,15 @@ fn eliminations(s: &State, seat: Seat) -> Vec<Elimination> {
         .collect()
 }
 
-/// A solver that, besides, leaves each other seat at most `EASY_MAX` hints.
-fn easy_solver(s: &State) -> Option<Stop> {
-    solver(s).filter(|stop| {
-        stop.per_seat
-            .iter()
-            .enumerate()
-            .all(|(p, list)| p == stop.seat.index() || list.len() <= EASY_MAX)
-    })
+/// The most hints the solver still lends one other seat.
+fn widest(stop: &Stop) -> usize {
+    stop.per_seat
+        .iter()
+        .enumerate()
+        .filter(|&(p, _)| p != stop.seat.index())
+        .map(|(_, list)| list.len())
+        .max()
+        .unwrap_or(0)
 }
 
 /// Every combination of the others' possible hints (their own tokens only,
@@ -366,6 +370,60 @@ fn play(
     None
 }
 
+/// A game stopped at some moment, and why.
+type Moment = (State, Stop);
+
+/// One game of Hard AIs for level Easy, played once for both thresholds:
+/// the first solver within `EASY_MAX` (the game stops there), and the first
+/// within `EASY_FALLBACK` seen before.
+fn play_easy(mode: Mode, players: u8, seed: u64) -> (Option<Moment>, Option<Moment>) {
+    let mut near = None;
+    let mut s = Cryptide::new(&Config { mode }, players, seed);
+    let mut rng = ChaCha8Rng::seed_from_u64(seed);
+    for _ in 0..MAX_MOVES {
+        if s.phase == Phase::Over {
+            break;
+        }
+        if s.phase != Phase::Setup {
+            if let Some(stop) = solver(&s) {
+                let w = widest(&stop);
+                if w <= EASY_MAX {
+                    return (Some((s, stop)), near);
+                }
+                if w <= EASY_FALLBACK && near.is_none() {
+                    near = Some((s.clone(), stop));
+                }
+            }
+        }
+        let seat = s.turn;
+        let Some(action) = Cryptide::policy_action(&s, seat, Level::Hard, &mut rng) else {
+            break;
+        };
+        if Cryptide::apply(&mut s, seat, &action).is_err() {
+            break;
+        }
+    }
+    (None, near)
+}
+
+/// Level Easy: a game reaching `EASY_MAX`, else the first moment within
+/// `EASY_FALLBACK`, else a plain solver, so that a riddle always comes.
+fn easy(mode: Mode, players: u8, seed: u64) -> Option<Riddle> {
+    let level = RiddleLevel::Easy;
+    let mut near = None;
+    for k in seeds(seed, EASY_ATTEMPTS) {
+        let (exact, close) = play_easy(mode, players, k);
+        if let Some((s, stop)) = exact {
+            return Some(riddle_of(level, &s, &stop));
+        }
+        near = near.or(close);
+    }
+    match near {
+        Some((s, stop)) => Some(riddle_of(level, &s, &stop)),
+        None => found(ATTEMPTS, level, mode, players, seed, &solver),
+    }
+}
+
 fn seeds(seed: u64, attempts: u64) -> impl Iterator<Item = u64> {
     (0..attempts).map(move |k| seed.wrapping_add(k.wrapping_mul(0x9E37_79B9)))
 }
@@ -398,7 +456,7 @@ pub fn riddle(level: RiddleLevel, mode: Mode, players: u8, seed: u64) -> Option<
         }
         RiddleLevel::Hint => found(HINT_ATTEMPTS, level, mode, players, seed, &pinned_seat),
         RiddleLevel::Full => found(ATTEMPTS, level, mode, players, seed, &solver),
-        RiddleLevel::Easy => found(EASY_ATTEMPTS, level, mode, players, seed, &easy_solver),
+        RiddleLevel::Easy => easy(mode, players, seed),
     }
 }
 

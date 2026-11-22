@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use cryptide::knowledge::possible;
 use cryptide::{
-    habitat, riddle, Event, HintTable, Mark, Mode, Outcome, RiddleLevel, Tokens, EASY_MAX,
+    habitat, riddle, Event, HintTable, Mark, Mode, Outcome, RiddleLevel, Tokens, EASY_FALLBACK,
     FALLEN_SHOWN,
 };
 
@@ -112,7 +112,7 @@ fn an_easy_riddle_leaves_each_other_seat_few_hints() {
                 assert_eq!(r.given[r.solver.index()], Some(r.hint));
                 for (p, list) in r.deduction.iter().enumerate() {
                     if p != r.solver.index() {
-                        assert!(!list.is_empty() && list.len() <= EASY_MAX, "{list:?}");
+                        assert!(!list.is_empty() && list.len() <= EASY_FALLBACK, "{list:?}");
                         assert!(list.contains(&r.hints[p]));
                     }
                 }
@@ -154,6 +154,17 @@ fn only_the_full_level_lists_combinations() {
     for level in [RiddleLevel::Warmup, RiddleLevel::Hint, RiddleLevel::Easy] {
         let r = riddle(level, Mode::Normal, 4, 2).unwrap();
         assert!(r.combinations.working.is_empty() && r.combinations.fallen.is_empty());
+    }
+}
+
+#[test]
+fn an_easy_riddle_is_always_found() {
+    // A seed where no game of 64 reached one hint per other seat.
+    let r = riddle(RiddleLevel::Easy, Mode::Advanced, 5, 252_165_612_864).expect("an easy riddle");
+    for (p, list) in r.deduction.iter().enumerate() {
+        if p != r.solver.index() {
+            assert!(list.contains(&r.hints[p]));
+        }
     }
 }
 
