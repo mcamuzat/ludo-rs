@@ -106,34 +106,50 @@ export function HexMap({ squares, tokens, playable, selected, focus, habitat, mi
   const width = R * 2 + (COLS - 1) * 1.5 * R;
   const height = SQRT3 * R * ROWS + (SQRT3 / 2) * R;
   return (
-    <svg className="cr-map" viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Carte de Cryptide">
-      {squares.map((sq, cell) => {
-        const { x, y } = center(cell);
-        const can = playable.has(cell);
-        const classes = ["cr-space", can ? "playable" : "", cell === selected ? "selected" : "", cell === focus ? "focus" : "", cell === habitat ? "habitat" : "", shaded && !shaded.has(cell) ? "cr-shaded" : ""]
-          .filter(Boolean)
-          .join(" ");
-        return (
-          <g key={cell} className={classes} data-cell={cell} onClick={can ? () => onPick(cell) : undefined}>
-            <polygon points={hexPoints(x, y, R)} fill={TERRAIN_FILL[sq.terrain]} className="cr-hex" />
-            {sq.animal && (
-              <polygon
-                points={hexPoints(x, y, R * 0.8)}
-                className={sq.animal === "Bear" ? "cr-bear" : "cr-cougar"}
-                fill="none"
-              />
-            )}
-            {sq.structure && structure(sq.structure[0], sq.structure[1], x, y)}
-            {tokensAt(tokens[cell], x, y)}
-            {misses.includes(cell) && (
-              <path
-                className="cr-miss"
-                d={`M${x - R * 0.45},${y - R * 0.45} L${x + R * 0.45},${y + R * 0.45} M${x + R * 0.45},${y - R * 0.45} L${x - R * 0.45},${y + R * 0.45}`}
-              />
-            )}
-          </g>
-        );
-      })}
-    </svg>
+    <>
+      <svg className="cr-map" viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Carte de Cryptide">
+        {squares.map((sq, cell) => {
+          const { x, y } = center(cell);
+          const can = playable.has(cell);
+          const classes = ["cr-space", can ? "playable" : "", cell === selected ? "selected" : "", cell === focus ? "focus" : "", cell === habitat ? "habitat" : "", shaded && !shaded.has(cell) ? "cr-shaded" : ""]
+            .filter(Boolean)
+            .join(" ");
+          return (
+            <g key={cell} className={classes} data-cell={cell} onClick={can ? () => onPick(cell) : undefined}>
+              <polygon points={hexPoints(x, y, R)} fill={TERRAIN_FILL[sq.terrain]} className="cr-hex" />
+              {sq.animal && (
+                <polygon
+                  points={hexPoints(x, y, R * 0.8)}
+                  className={sq.animal === "Bear" ? "cr-bear" : "cr-cougar"}
+                  fill="none"
+                />
+              )}
+              {sq.structure && structure(sq.structure[0], sq.structure[1], x, y)}
+              {tokensAt(tokens[cell], x, y)}
+              {misses.includes(cell) && (
+                <path
+                  className="cr-miss"
+                  d={`M${x - R * 0.45},${y - R * 0.45} L${x + R * 0.45},${y + R * 0.45} M${x + R * 0.45},${y - R * 0.45} L${x - R * 0.45},${y + R * 0.45}`}
+                />
+              )}
+            </g>
+          );
+        })}
+      </svg>
+      <p className="cr-legend">
+        <span>
+          <svg viewBox="0 0 24 10" aria-hidden="true">
+            <line x1="2" y1="5" x2="22" y2="5" className="cr-cougar" />
+          </svg>
+          Territoire de puma
+        </span>
+        <span>
+          <svg viewBox="0 0 24 10" aria-hidden="true">
+            <line x1="2" y1="5" x2="22" y2="5" className="cr-bear" />
+          </svg>
+          Territoire d'ours
+        </span>
+      </p>
+    </>
   );
 }

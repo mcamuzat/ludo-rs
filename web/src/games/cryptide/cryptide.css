@@ -44,3 +44,8 @@
 .cr-shade-list button.active { border-color: var(--brass); box-shadow: inset 4px 0 0 var(--brass); font-weight: 600; }
 .cr-combos { padding-left: 1.2rem; }
 .cr-combos li { margin: 0.2rem 0; }
+
+/* Which outline is which animal's (red: cougar, black: bear). */
+.cr-legend { display: flex; flex-wrap: wrap; gap: 16px; margin: 6px 0 0; font-size: 0.85rem; }
+.cr-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.cr-legend svg { width: 24px; height: 10px; }

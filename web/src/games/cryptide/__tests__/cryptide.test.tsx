@@ -304,3 +304,14 @@ describe("Cryptide board", () => {
     });
   });
 });
+
+describe("Cryptide map legend", () => {
+  it("says which outline is a cougar's and which a bear's", async () => {
+    const { HexMap } = await import("../HexMap");
+    const html = renderToStaticMarkup(
+      <HexMap squares={[]} tokens={[]} playable={new Set()} selected={null} focus={null} habitat={null} onPick={() => {}} />,
+    );
+    expect(html).toMatch(/class="cr-cougar"[^]*Territoire de puma/);
+    expect(html).toMatch(/class="cr-bear"[^]*Territoire d&#x27;ours/);
+  });
+});
