@@ -1,7 +1,10 @@
 use std::time::Instant;
 
 use cryptide::knowledge::possible;
-use cryptide::{habitat, riddle, Event, HintTable, Mark, Mode, RiddleLevel, Tokens, EASY_MAX};
+use cryptide::{
+    habitat, riddle, Event, HintTable, Mark, Mode, Outcome, RiddleLevel, Tokens, EASY_MAX,
+    FALLEN_SHOWN,
+};
 
 #[test]
 fn a_riddle_gives_the_solver_s_hint_and_what_it_knows() {
@@ -115,6 +118,42 @@ fn an_easy_riddle_leaves_each_other_seat_few_hints() {
                 }
             }
         }
+    }
+}
+
+#[test]
+fn a_full_riddle_explains_its_combinations() {
+    for mode in [Mode::Normal, Mode::Advanced] {
+        for players in 3u8..=5 {
+            for seed in 0..3u64 {
+                let r = riddle(RiddleLevel::Full, mode, players, seed).unwrap();
+                let c = &r.combinations;
+                assert!(c.complete);
+                assert!(!c.working.is_empty());
+                assert!(c
+                    .working
+                    .iter()
+                    .all(|w| w.outcome == Outcome::Habitat(r.habitat)));
+                assert!(c.working.iter().any(|w| w.hints == r.hints));
+                assert!(c.fallen.len() <= FALLEN_SHOWN);
+                assert!(c
+                    .fallen
+                    .iter()
+                    .all(|f| !matches!(f.outcome, Outcome::Habitat(_))));
+                assert_eq!(
+                    c.fallen.len() as u32,
+                    (c.nowhere + c.several + c.repeated).min(FALLEN_SHOWN as u32)
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn only_the_full_level_lists_combinations() {
+    for level in [RiddleLevel::Warmup, RiddleLevel::Hint, RiddleLevel::Easy] {
+        let r = riddle(level, Mode::Normal, 4, 2).unwrap();
+        assert!(r.combinations.working.is_empty() && r.combinations.fallen.is_empty());
     }
 }
 

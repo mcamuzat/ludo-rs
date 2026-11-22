@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::clues::{hints, Hint, Mode};
 use crate::knowledge::{marks, possible, query, Inference, CAP};
-use crate::map::{Cell, Square};
+use crate::map::{Cell, Mask, Square, CELLS};
 use crate::rules::{Config, Cryptide, Event, Phase, State, Tokens};
 
 /// Games tried before giving up (one is nearly always enough: a game ends
@@ -55,6 +55,45 @@ pub struct Elimination {
     pub mark: Mark,
 }
 
+/// What a combination of hints (one per seat) gives on the spaces without
+/// a cube.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
+pub enum Outcome {
+    /// Exactly one space: a combination that works.
+    Habitat(Cell),
+    /// No space in common.
+    Nowhere,
+    /// Several spaces left (capped at 255).
+    Several(u8),
+    /// Two seats would hold the same hint.
+    Repeated,
+}
+
+/// One hint per seat, the solver's included, and what they give.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+pub struct Combination {
+    pub hints: Vec<Hint>,
+    pub outcome: Outcome,
+}
+
+/// Fallen combinations shown as examples, at most.
+pub const FALLEN_SHOWN: usize = 12;
+
+/// Level Full: the combinations of hints the tokens allow the others,
+/// with the solver's own, and why all but the working ones fall.
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
+pub struct Combinations {
+    /// Every combination naming one space.
+    pub working: Vec<Combination>,
+    /// The first `FALLEN_SHOWN` that fall.
+    pub fallen: Vec<Combination>,
+    pub nowhere: u32,
+    pub several: u32,
+    pub repeated: u32,
+    /// `false` when `CAP` combinations were walked before the end.
+    pub complete: bool,
+}
+
 /// A riddle: a map, the tokens of a table of AIs stopped at the right
 /// moment (none at the warm-up), what the player is given and the answer.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -85,6 +124,8 @@ pub struct Riddle {
     /// Level Hint: for every other hint of the mode, a token of the target's
     /// that rules it out. Empty at the other levels.
     pub eliminations: Vec<Elimination>,
+    /// Level Full: the combinations and why they work or fall.
+    pub combinations: Combinations,
     /// For the player aid: every hint of the mode.
     pub mode_hints: Vec<Hint>,
 }
@@ -170,6 +211,87 @@ fn easy_solver(s: &State) -> Option<Stop> {
     })
 }
 
+/// Every combination of the others' possible hints (their own tokens only,
+/// minus the solver's hint and those sharing no space with it, as in
+/// `Query::walk`), the solver's hint fixed.
+fn combinations(s: &State, seat: Seat) -> Combinations {
+    let table = s.table();
+    let no_cube: Mask = (0..CELLS)
+        .map(Cell)
+        .filter(|c| s.tokens[c.index()].cube.is_none())
+        .collect();
+    let Some(mine) = table.index_of(&s.puzzle.hints[seat.index()]) else {
+        return Combinations::default();
+    };
+    let start = table.masks[mine] & no_cube;
+    let lists: Vec<Vec<usize>> = (0..s.players)
+        .map(|p| {
+            if p == seat.0 {
+                return vec![mine];
+            }
+            possible(table, &s.tokens, Seat(p))
+                .into_iter()
+                .filter(|&i| i != mine && !(start & table.masks[i]).is_empty())
+                .collect()
+        })
+        .collect();
+    let mut out = Combinations {
+        complete: true,
+        ..Combinations::default()
+    };
+    if lists.iter().any(Vec::is_empty) {
+        return out;
+    }
+    // An odometer over the lists.
+    let mut at = vec![0usize; lists.len()];
+    let mut walked = 0u64;
+    loop {
+        if walked == CAP {
+            out.complete = false;
+            break;
+        }
+        walked += 1;
+        let chosen: Vec<usize> = at.iter().zip(&lists).map(|(&k, l)| l[k]).collect();
+        let repeated = (1..chosen.len()).any(|k| chosen[..k].contains(&chosen[k]));
+        let inter = chosen.iter().fold(no_cube, |m, &i| m & table.masks[i]);
+        let outcome = if repeated {
+            out.repeated += 1;
+            Outcome::Repeated
+        } else if let Some(home) = inter.single() {
+            Outcome::Habitat(home)
+        } else if inter.is_empty() {
+            out.nowhere += 1;
+            Outcome::Nowhere
+        } else {
+            out.several += 1;
+            Outcome::Several(u8::try_from(inter.len()).unwrap_or(u8::MAX))
+        };
+        let combination = || Combination {
+            hints: chosen.iter().map(|&i| table.hints[i]).collect(),
+            outcome,
+        };
+        if matches!(outcome, Outcome::Habitat(_)) {
+            out.working.push(combination());
+        } else if out.fallen.len() < FALLEN_SHOWN {
+            out.fallen.push(combination());
+        }
+        // Next combination.
+        let mut d = 0;
+        loop {
+            if d == at.len() {
+                return out;
+            }
+            at[d] += 1;
+            if at[d] < lists[d].len() {
+                break;
+            }
+            at[d] = 0;
+            d += 1;
+        }
+    }
+    out
+}
+
 fn riddle_of(level: RiddleLevel, s: &State, stop: &Stop) -> Riddle {
     let table = s.table();
     let board = s.puzzle.board();
@@ -206,6 +328,11 @@ fn riddle_of(level: RiddleLevel, s: &State, stop: &Stop) -> Riddle {
             eliminations(s, seat)
         } else {
             Vec::new()
+        },
+        combinations: if level == RiddleLevel::Full {
+            combinations(s, seat)
+        } else {
+            Combinations::default()
         },
         hints: mine,
         mode_hints: hints(s.mode),

@@ -104,19 +104,36 @@ Facile raisonne joueur par joueur. L'IA ne fouille pas pendant le premier
 tour de table : sinon, à 3 joueurs, elle gagnait souvent avant que les
 autres aient joué [U]. Un joueur humain le peut.
 
-## Énigmes (entraînement) [U 2026-10-22]
-Hors de la règle : un écran d'entraînement, `riddle.rs`.
-- Une table d'IA Difficile (3 à 5 sièges, mode normal ou avancé) joue une
-  partie normale.
-- Après chaque coup, hors partage initial, le moteur cherche un siège qui
-  sait où est l'habitat : toutes les combinaisons d'indices distincts qui
-  s'accordent aux jetons, avec son propre indice, désignent la même case
-  unique (le raisonnement de [B], sans les garanties du générateur). Le
-  premier trouvé, depuis le siège qui a la main, est le « résolveur ».
-- La partie s'arrête là. Le joueur voit la carte, tous les jetons, le
-  déroulement et l'indice du résolveur seulement ; il clique sur une case
-  sans cube. Il peut se tromper autant qu'il veut ou demander la solution.
-- Avec la solution : la case, et pour chaque autre siège les indices que le
-  résolveur pouvait encore lui prêter (le vrai en gras).
-- Une partie finie par une fouille avant que quiconque sache est rejetée ;
-  on essaie la graine suivante (32 au plus).
+## Énigmes (entraînement) [U 2026-10-22, niveaux 2026-11-22]
+Hors de la règle : un écran d'entraînement, `riddle.rs`, en quatre niveaux.
+Aux niveaux 2 à 4, une table d'IA Difficile (3 à 5 sièges, mode normal ou
+avancé) joue une partie normale. Après chaque coup, hors partage initial,
+le moteur regarde si le moment de s'arrêter est venu ; une partie finie
+avant est rejetée et l'on essaie la graine suivante.
+
+1. **Échauffement** : aucune partie. Le joueur voit la carte et tous les
+   indices, et clique la seule case qui les vérifie tous. La solution montre,
+   indice par indice, les cases qu'il garde.
+2. **L'indice d'un joueur** : arrêt dès que les disques et les cubes d'un
+   siège (le premier trouvé depuis celui qui a la main), à eux seuls, ne
+   laissent qu'un indice du mode. Aucun indice n'est donné ; le joueur choisit
+   celui de ce siège dans l'aide de jeu. La solution donne, pour chaque autre
+   indice, un jeton qui l'écarte : un disque hors de l'indice, ou un cube
+   dedans. À 3 joueurs ce moment n'arrive qu'une partie sur 40 environ : 400
+   graines au plus.
+3. **Énigme facile** : comme l'énigme, mais il faut en plus que les jetons ne
+   laissent qu'un indice possible (`EASY_MAX` = 1) à chaque autre siège ;
+   64 graines au plus.
+4. **Énigme** : arrêt dès qu'un siège sait où est l'habitat : toutes les
+   combinaisons d'indices distincts qui s'accordent aux jetons, avec son
+   propre indice, désignent la même case unique (le raisonnement de [B],
+   sans les garanties du générateur). Le premier trouvé, depuis le siège qui
+   a la main, est le « résolveur » ; 32 graines au plus.
+
+Aux niveaux 3 et 4, le joueur voit la carte, tous les jetons, le déroulement
+et l'indice du résolveur seulement ; il clique sur une case sans cube, peut se
+tromper autant qu'il veut ou demander la solution. La solution donne la case
+et, pour chaque autre siège, les indices que le résolveur pouvait encore lui
+prêter (le vrai en gras). Au niveau 4 elle liste en plus les combinaisons
+qui marchent et compte celles qui tombent : sans case commune, avec
+plusieurs cases, ou avec deux sièges au même indice (douze exemples).
