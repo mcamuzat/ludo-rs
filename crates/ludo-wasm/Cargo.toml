@@ -16,7 +16,7 @@ twixt.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 # Must match the installed wasm-bindgen CLI exactly (`wasm-bindgen --version`).
-wasm-bindgen = "=0.2.121"
+wasm-bindgen = "=0.2.130"
 js-sys = "0.3"
 console_error_panic_hook = "0.1"
 # rand pulls in getrandom 0.2, which needs its "js" backend to compile on
