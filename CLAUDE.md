@@ -52,6 +52,7 @@ ludo-rs : plateforme de jeux traditionnels. Moteur Rust (`crates/ludo-core`, `ga
 - `cargo run --release -p ludo-cli -- arena enemy-chocolatier 40 hard easy` : Difficile doit marquer ≥ 0.55 contre Facile (0.925 mesuré à 2 joueurs, 0.867 à 4 sur 40 parties ; ~2 min 30 pour 40 parties à 2). Plateau : `scripts/chocolatier-board.py` (lancer avec `uv run --with numpy --with scipy --with pillow --with scikit-image`) régénère `games/enemy-chocolatier/src/board_data.rs` et `web/src/games/enemy-chocolatier/board.json` depuis le PDF des planches (hors dépôt) ; le relevé des maisons est dans le script.
 - `cargo run --release -p ludo-cli -- arena kurote 100 hard easy` : Difficile doit marquer ≥ 0.80 contre Facile (1.000 mesuré ; Difficile contre Moyen 0.900 sur 40 ; ~3 min 20 pour 100 parties sur 12 cœurs). 2 joueurs, sans option. Nulle après 80 tours sans capture (limite du site).
 - `cargo run --release -p ludo-cli -- arena twixt 24 hard easy` : Difficile doit marquer ≥ 0.80 contre Facile (1.000 mesuré ; Moyen contre Facile 1.000 sur 40, Difficile contre Moyen 0.833 sur 12 ; ~18 min pour 24 parties sur 12 cœurs : Difficile évalue le réseau 48 fois par coup, ~110 ms chacune). Le réseau de twixtbot vit dans `web/src/engine/twixt-net-f16.bin`, produit par `scripts/twixt-export.py` (voir son en-tête) ; `games/twixt/tests/net.rs` le compare à PyTorch.
+- `cargo test -p five-by-fifteen --release` : 5×15, jeu solo (pas d'IA à mesurer).
 - `cargo run --release -p ludo-cli -- play yavalath 2 medium` : partie en terminal.
 - Web : `./scripts/build-wasm.sh` (ou `dev`), puis `cd web && pnpm dev` / `pnpm test` / `pnpm build`.
 
@@ -76,6 +77,8 @@ ludo-rs : plateforme de jeux traditionnels. Moteur Rust (`crates/ludo-core`, `ga
 2. `crates/ludo-registry/src/lib.rs` : un `static` et une entrée dans `GAMES` ; ajouter la dépendance dans son `Cargo.toml` et dans le workspace.
 3. `web/src/games/<id>/types.ts` + `Board.tsx`, et une entrée dans `web/src/games/registry.ts`.
 4. `ludo-cli arena <id> …` pour vérifier que l'IA tient la route.
+
+Un **jeu solo** (onglet Solo de l'accueil, `#/solo`) : `min_players = max_players = 1`, et `solo: "automaton"` (contre un automate) ou `"puzzle"` dans son entrée de `web/src/games/registry.ts`. Son salon n'a ni sièges ni hébergement ; « Annuler » passe par `assist.takeBack()`. Pas de seuil `arena` : les tests de règles suffisent.
 
 ## Ajouter un jeu Pairs
 Comme « Ajouter un jeu », mais sans nouvelle crate :
