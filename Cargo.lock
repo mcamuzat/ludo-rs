@@ -203,6 +203,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "five-by-fifteen"
+version = "0.1.0"
+dependencies = [
+ "ludo-core",
+ "rand 0.8.8",
+ "rand_chacha",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "futures-core"
 version = "0.3.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
