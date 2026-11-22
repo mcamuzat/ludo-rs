@@ -179,7 +179,7 @@ pub fn cryptide_riddle(mode: &str, players: u8, seed: u32) -> Result<String, JsE
     if !(3..=5).contains(&players) {
         return Err(JsError::new("Une énigme se joue à 3, 4 ou 5."));
     }
-    let riddle = cryptide::riddle(mode, players, seed.into())
+    let riddle = cryptide::riddle(cryptide::RiddleLevel::Full, mode, players, seed.into())
         .ok_or_else(|| JsError::new("Aucune énigme trouvée pour cette graine."))?;
     Ok(text(&riddle))
 }

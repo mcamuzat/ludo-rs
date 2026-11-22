@@ -6,7 +6,7 @@ use ludo_core::ai::Level;
 use ludo_core::{Game, Heuristics, Seat};
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::clues::{hints, Hint, Mode};
 use crate::knowledge::{query, Inference, CAP};
@@ -19,26 +19,55 @@ const ATTEMPTS: u64 = 32;
 /// Actions in one game at most.
 const MAX_MOVES: usize = 2_000;
 
-/// A table stopped as soon as `solver` knows the habitat.
+/// What the player is asked to find [U 2026-11-22].
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub enum RiddleLevel {
+    /// Every hint given, no game played: find the one space.
+    Warmup,
+    /// One seat's tokens leave it a single hint: name it.
+    Hint,
+    /// The solver knows, and each other seat's hint is (nearly) pinned.
+    Easy,
+    /// The solver knows: find the space in its place.
+    Full,
+}
+
+/// A riddle: a map, the tokens of a table of AIs stopped at the right
+/// moment (none at the warm-up), what the player is given and the answer.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct Riddle {
+    pub level: RiddleLevel,
     pub players: u8,
     pub mode: Mode,
     pub squares: Vec<Square>,
     pub tokens: Vec<Tokens>,
     pub log: Vec<Event>,
-    /// The seat whose hint the player is given.
+    /// The seat in focus: whose hint is given (Easy, Full), whose hint is
+    /// sought (Hint), seat 0 at the warm-up.
     pub solver: Seat,
+    /// `hints[solver]`.
     pub hint: Hint,
-    /// The answer.
+    /// The answer of the "find the space" levels.
     pub habitat: Cell,
     /// Every seat's hint, shown with the answer.
     pub hints: Vec<Hint>,
+    /// The hints shown to the player, by seat.
+    pub given: Vec<Option<Hint>>,
+    /// By seat, the spaces its hint keeps.
+    pub hint_cells: Vec<Vec<Cell>>,
     /// What the solver can tell of each other seat's hint (empty for the
-    /// solver): the hints left in some combination naming one space.
+    /// solver, and for every seat outside Easy and Full): the hints left in
+    /// some combination naming one space.
     pub deduction: Vec<Vec<Hint>>,
     /// For the player aid: every hint of the mode.
     pub mode_hints: Vec<Hint>,
+}
+
+/// Where a game stops: the seat in focus and, for the solver levels, what
+/// it can tell of the others.
+struct Stop {
+    seat: Seat,
+    per_seat: Vec<Vec<usize>>,
 }
 
 /// The seat that can name the habitat now, if any, with what it can tell
@@ -46,45 +75,70 @@ pub struct Riddle {
 /// distinct hints agreeing with the tokens points to the same single
 /// space. It is what a player works out at the table, without the
 /// generator's own guarantees (`Inference::Puzzle`).
-fn solver(s: &State) -> Option<(Seat, Vec<Vec<usize>>)> {
+fn solver(s: &State) -> Option<Stop> {
     (0..s.players)
         .map(|p| Seat((s.turn.0 + p) % s.players))
         .find_map(|seat| {
             let k = query(s, seat, Inference::Bot, CAP)?.combos();
-            (k.complete && k.cells.len() == 1).then_some((seat, k.per_seat))
+            (k.complete && k.cells.len() == 1).then_some(Stop {
+                seat,
+                per_seat: k.per_seat,
+            })
         })
 }
 
-fn riddle_of(s: &State, seat: Seat, per_seat: &[Vec<usize>]) -> Riddle {
+fn riddle_of(level: RiddleLevel, s: &State, stop: &Stop) -> Riddle {
     let table = s.table();
+    let board = s.puzzle.board();
+    let seat = stop.seat;
+    let mine = s.puzzle.hints.clone();
+    let given = match level {
+        RiddleLevel::Warmup => mine.iter().copied().map(Some).collect(),
+        RiddleLevel::Hint => vec![None; mine.len()],
+        RiddleLevel::Easy | RiddleLevel::Full => (0..mine.len())
+            .map(|p| (p == seat.index()).then_some(mine[p]))
+            .collect(),
+    };
     Riddle {
+        level,
         players: s.players,
         mode: s.mode,
-        squares: s.puzzle.board().squares,
+        squares: board.squares.clone(),
         tokens: s.tokens.clone(),
         log: s.log.clone(),
         solver: seat,
-        hint: s.puzzle.hints[seat.index()],
+        hint: mine[seat.index()],
         habitat: s.puzzle.habitat,
-        hints: s.puzzle.hints.clone(),
-        deduction: per_seat
+        given,
+        hint_cells: mine
+            .iter()
+            .map(|h| h.cells(&board).iter().collect())
+            .collect(),
+        deduction: stop
+            .per_seat
             .iter()
             .map(|list| list.iter().map(|&i| table.hints[i]).collect())
             .collect(),
+        hints: mine,
         mode_hints: hints(s.mode),
     }
 }
 
-/// One game of Hard AIs, stopped once a seat knows: the table, the seat
-/// and what it can tell of the others; `None` if the game ended first.
-fn play(mode: Mode, players: u8, seed: u64) -> Option<(State, Seat, Vec<Vec<usize>>)> {
+/// One game of Hard AIs, stopped once `stop` finds its moment; `None` if
+/// the game ended first.
+fn play(
+    mode: Mode,
+    players: u8,
+    seed: u64,
+    stop: &dyn Fn(&State) -> Option<Stop>,
+) -> Option<(State, Stop)> {
     let mut s = Cryptide::new(&Config { mode }, players, seed);
     let mut rng = ChaCha8Rng::seed_from_u64(seed);
     for _ in 0..MAX_MOVES {
         // During the setup nobody knows anything yet, and the walk is slow.
         if !matches!(s.phase, Phase::Setup | Phase::Over) {
-            if let Some((seat, per_seat)) = solver(&s) {
-                return Some((s, seat, per_seat));
+            if let Some(found) = stop(&s) {
+                return Some((s, found));
             }
         }
         if s.phase == Phase::Over {
@@ -101,11 +155,23 @@ fn seeds(seed: u64) -> impl Iterator<Item = u64> {
     (0..ATTEMPTS).map(move |k| seed.wrapping_add(k.wrapping_mul(0x9E37_79B9)))
 }
 
-/// A riddle for `players` seats (3 to 5), from `seed`.
-pub fn riddle(mode: Mode, players: u8, seed: u64) -> Option<Riddle> {
-    seeds(seed).find_map(|seed| {
-        play(mode, players, seed).map(|(s, seat, per_seat)| riddle_of(&s, seat, &per_seat))
-    })
+/// A riddle of `level` for `players` seats (3 to 5), from `seed`.
+pub fn riddle(level: RiddleLevel, mode: Mode, players: u8, seed: u64) -> Option<Riddle> {
+    match level {
+        RiddleLevel::Warmup => {
+            // A fresh game holds the puzzle and no token yet.
+            let s = Cryptide::new(&Config { mode }, players, seed);
+            let stop = Stop {
+                seat: Seat(0),
+                per_seat: vec![Vec::new(); usize::from(players)],
+            };
+            Some(riddle_of(level, &s, &stop))
+        }
+        RiddleLevel::Full => seeds(seed).find_map(|seed| {
+            play(mode, players, seed, &solver).map(|(s, stop)| riddle_of(level, &s, &stop))
+        }),
+        RiddleLevel::Hint | RiddleLevel::Easy => None,
+    }
 }
 
 #[cfg(test)]
@@ -117,10 +183,10 @@ mod tests {
         for mode in [Mode::Normal, Mode::Advanced] {
             for players in 3u8..=5 {
                 for seed in 0..3u64 {
-                    let (s, seat, _) = seeds(seed)
-                        .find_map(|seed| play(mode, players, seed))
+                    let (s, stop) = seeds(seed)
+                        .find_map(|seed| play(mode, players, seed, &solver))
                         .expect("a riddle");
-                    let k = query(&s, seat, Inference::Bot, CAP).unwrap().combos();
+                    let k = query(&s, stop.seat, Inference::Bot, CAP).unwrap().combos();
                     assert!(k.complete);
                     assert_eq!(
                         k.cells.iter().map(|c| c.0).collect::<Vec<_>>(),

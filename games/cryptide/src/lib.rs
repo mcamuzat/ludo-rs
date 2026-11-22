@@ -18,6 +18,6 @@ pub use map::{
     distance, random_layout, within, Animal, Board, Cell, Color, Kind, Layout, Mask, Square,
     Structure, Terrain, CELLS,
 };
-pub use riddle::{riddle, Riddle};
+pub use riddle::{riddle, Riddle, RiddleLevel};
 pub use rules::{Action, Answer, Config, Cryptide, Event, Phase, State, TableCache, Tokens, Why};
 pub use view::{Reveal, View};

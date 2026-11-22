@@ -1,18 +1,23 @@
 use std::time::Instant;
 
-use cryptide::{riddle, Event, Mode};
+use cryptide::{habitat, riddle, Event, HintTable, Mode, RiddleLevel, Tokens};
 
 #[test]
 fn a_riddle_gives_the_solver_s_hint_and_what_it_knows() {
     for mode in [Mode::Normal, Mode::Advanced] {
         for players in 3u8..=5 {
             for seed in 0..3u64 {
-                let r = riddle(mode, players, seed).expect("a riddle");
+                let r = riddle(RiddleLevel::Full, mode, players, seed).expect("a riddle");
+                assert_eq!(r.level, RiddleLevel::Full);
                 assert_eq!(r.players, players);
                 assert_eq!(r.hints.len(), usize::from(players));
                 assert_eq!(r.hint, r.hints[r.solver.index()]);
                 assert!(r.hint.cells(&board_of(&r)).contains(r.habitat));
                 assert!(!r.log.iter().any(|e| matches!(e, Event::Won { .. })));
+                for (p, given) in r.given.iter().enumerate() {
+                    let expected = (p == r.solver.index()).then_some(r.hint);
+                    assert_eq!(*given, expected);
+                }
                 for (p, list) in r.deduction.iter().enumerate() {
                     if p == r.solver.index() {
                         assert!(list.is_empty());
@@ -20,6 +25,30 @@ fn a_riddle_gives_the_solver_s_hint_and_what_it_knows() {
                         assert!(list.contains(&r.hints[p]), "the true hint stays possible");
                     }
                 }
+            }
+        }
+    }
+}
+
+#[test]
+fn a_warmup_shows_every_hint_and_no_token() {
+    for mode in [Mode::Normal, Mode::Advanced] {
+        for players in 3u8..=5 {
+            let r = riddle(RiddleLevel::Warmup, mode, players, 1).expect("a warmup");
+            assert_eq!(r.level, RiddleLevel::Warmup);
+            assert!(r.tokens.iter().all(|t| *t == Tokens::default()));
+            assert!(r.log.is_empty());
+            assert_eq!(
+                r.given,
+                r.hints.iter().copied().map(Some).collect::<Vec<_>>()
+            );
+            let board = board_of(&r);
+            let table = HintTable::new(&board, mode);
+            let all: Vec<usize> = r.hints.iter().map(|h| table.index_of(h).unwrap()).collect();
+            assert_eq!(habitat(&table, &all), Some(r.habitat));
+            assert_eq!(r.hint_cells.len(), r.hints.len());
+            for (p, cells) in r.hint_cells.iter().enumerate() {
+                assert_eq!(*cells, r.hints[p].cells(&board).iter().collect::<Vec<_>>());
             }
         }
     }
@@ -33,12 +62,17 @@ fn board_of(r: &cryptide::Riddle) -> cryptide::Board {
 
 #[test]
 fn a_riddle_is_pinned_by_its_seed() {
-    assert_eq!(riddle(Mode::Normal, 4, 7), riddle(Mode::Normal, 4, 7));
+    for level in [RiddleLevel::Warmup, RiddleLevel::Full] {
+        assert_eq!(
+            riddle(level, Mode::Normal, 4, 7),
+            riddle(level, Mode::Normal, 4, 7)
+        );
+    }
 }
 
 #[test]
 fn a_riddle_comes_quickly() {
     let t = Instant::now();
-    riddle(Mode::Advanced, 5, 3).expect("a riddle");
+    riddle(RiddleLevel::Full, Mode::Advanced, 5, 3).expect("a riddle");
     assert!(t.elapsed().as_secs() < 5, "{:?}", t.elapsed());
 }
