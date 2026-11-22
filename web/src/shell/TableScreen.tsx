@@ -96,7 +96,7 @@ function useNow(ms: number, active: boolean): number {
 }
 
 
-function SeatList({
+export function SeatList({
   seats,
   update,
   me,
@@ -113,7 +113,8 @@ function SeatList({
     <ol className="seatbar">
       {seats.map((seat, i) => {
         const pending = update?.pending.includes(i) ?? false;
-        const rank = update?.outcome?.[i];
+        // A solo game has no ranking: its board says won or lost.
+        const rank = seats.length > 1 ? update?.outcome?.[i] : undefined;
         const clock = update?.clocks.find((x) => x.seat === i);
         return (
           <li key={i} className={pending ? "active" : undefined}>

@@ -147,11 +147,15 @@ export function FiveByFifteenBoard({ view, legalActions, me, submit, assist }: B
       const to = cellAt(e.clientX, e.clientY);
       if (to) play(actionFor(legal, d.from, to));
     };
+    // A gesture the browser takes over (a touch scroll) plays nothing.
+    const cancel = () => setDrag(null);
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", up, { once: true });
+    window.addEventListener("pointercancel", cancel, { once: true });
     return () => {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", cancel);
     };
   });
 
