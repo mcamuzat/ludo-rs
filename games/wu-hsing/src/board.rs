@@ -151,52 +151,60 @@ impl Board {
         if cells.iter().any(|c| self.cells.contains_key(c)) {
             return Err(Illegal::new("Ces cases ne sont pas libres."));
         }
+        let frame = self.frame(cells, p.dir);
         let (first, second) = p.sides();
-        let laid = [(cells[0], first), (cells[1], second)];
-        let at = |cell: (i8, i8)| {
-            laid.iter()
-                .find(|(c, _)| *c == cell)
-                .map(|&(_, v)| v)
-                .or_else(|| self.value_at(cell.0, cell.1))
-        };
-        let (own, across) = match p.dir {
-            Dir::Right => ((0, 1), (1, 0)),
-            Dir::Down => ((1, 0), (0, 1)),
-        };
-        let own_line = line(cells[0], own, &at);
-        let lines = [
-            own_line,
-            line(cells[0], across, &at),
-            line(cells[1], across, &at),
-        ];
-        if lines.iter().any(|l| l.len() >= 2 && !valid_cycle(l)) {
+        let mut buf = Vec::new();
+        if !frame.cycles_hold(first, second, &mut buf) {
             return Err(Illegal::new("Ce placement casse un cycle de couleurs."));
         }
-        // [R] Rule 1. The domino's own two cells only count as a group when
-        // they extend one (longer than 2); a perpendicular line exists only
-        // with a neighbour.
-        let groups: Vec<usize> = lines
-            .iter()
-            .enumerate()
-            .filter(|&(i, l)| if i == 0 { l.len() > 2 } else { l.len() >= 2 })
-            .map(|(_, l)| l.len())
-            .collect();
-        if groups.len() < 2 {
+        let Some(product) = frame.product() else {
             return Err(Illegal::new(
                 "Ce domino doit prolonger au moins deux groupes.",
             ));
-        }
+        };
         if self.fourth_in_line(p) {
             return Err(Illegal::new(
                 "Quatre dominos alignés par leur grand côté : interdit.",
             ));
         }
-        let product: u32 = groups.iter().map(|&n| n as u32).product();
         Ok(if is_double(p.domino) {
             product * 2
         } else {
             product
         })
+    }
+
+    /// The values beside the free cells `cells` of a domino along `dir`.
+    fn frame(&self, cells: [(i8, i8); 2], dir: Dir) -> Frame {
+        let (own, across) = match dir {
+            Dir::Right => ((0, 1), (1, 0)),
+            Dir::Down => ((1, 0), (0, 1)),
+        };
+        Frame {
+            own: (
+                self.run(cells[0], (-own.0, -own.1)),
+                self.run(cells[1], own),
+            ),
+            across: cells.map(|c| (self.run(c, (-across.0, -across.1)), self.run(c, across))),
+        }
+    }
+
+    /// The values met from `from` (excluded) along `step` until an empty
+    /// cell, nearest last when walking backwards (that is, in line order).
+    fn run(&self, from: (i8, i8), step: (i8, i8)) -> Vec<u8> {
+        let mut out = Vec::new();
+        let mut cell = from;
+        while let (Some(r), Some(c)) = (cell.0.checked_add(step.0), cell.1.checked_add(step.1)) {
+            match self.value_at(r, c) {
+                Some(v) => out.push(v),
+                None => break,
+            }
+            cell = (r, c);
+        }
+        if step.0 < 0 || step.1 < 0 {
+            out.reverse();
+        }
+        out
     }
 
     /// [R] Rule 2: `p` would be the fourth domino of a run of dominoes of
@@ -249,22 +257,51 @@ impl Board {
                 }
             }
         }
+        // What does not depend on the values is settled once per spot.
+        let frames: Vec<(i8, i8, Dir, Frame, u32)> = spots
+            .into_iter()
+            .filter_map(|(row, col, dir)| {
+                let p = Placement {
+                    domino: 0,
+                    row,
+                    col,
+                    dir,
+                    flipped: false,
+                };
+                let cells = p.cells()?;
+                if cells.iter().any(|c| self.cells.contains_key(c)) {
+                    return None;
+                }
+                let frame = self.frame(cells, dir);
+                let product = frame.product()?;
+                if self.fourth_in_line(&p) {
+                    return None;
+                }
+                Some((row, col, dir, frame, product))
+            })
+            .collect();
         let mut moves = Vec::new();
+        let mut buf = Vec::new();
         for &domino in dominoes {
-            for &(row, col, dir) in &spots {
+            if usize::from(domino) >= DOMINOES {
+                continue;
+            }
+            let double = is_double(domino);
+            for (row, col, dir, frame, product) in &frames {
                 for flipped in [false, true] {
-                    if flipped && is_double(domino) {
+                    if flipped && double {
                         continue;
                     }
                     let p = Placement {
                         domino,
-                        row,
-                        col,
-                        dir,
+                        row: *row,
+                        col: *col,
+                        dir: *dir,
                         flipped,
                     };
-                    if let Ok(points) = self.evaluate(&p) {
-                        moves.push((p, points));
+                    let (first, second) = p.sides();
+                    if frame.cycles_hold(first, second, &mut buf) {
+                        moves.push((p, if double { product * 2 } else { *product }));
                     }
                 }
             }
@@ -273,25 +310,54 @@ impl Board {
     }
 }
 
-/// The values of the line through `from` along `step`, ending at empty cells.
-fn line(from: (i8, i8), step: (i8, i8), at: &impl Fn((i8, i8)) -> Option<u8>) -> Vec<u8> {
-    let walk = |sign: i8| {
-        let mut out = Vec::new();
-        let mut cell = from;
-        while let (Some(r), Some(c)) = (
-            cell.0.checked_add(sign * step.0),
-            cell.1.checked_add(sign * step.1),
-        ) {
-            match at((r, c)) {
-                Some(v) => out.push(v),
-                None => break,
-            }
-            cell = (r, c);
+/// The values beside a free footprint, on its own line and across each cell.
+struct Frame {
+    own: (Vec<u8>, Vec<u8>),
+    across: [(Vec<u8>, Vec<u8>); 2],
+}
+
+impl Frame {
+    /// Every line of 2 or more stays a valid cycle with `first` on the
+    /// anchor and `second` on the other cell.
+    fn cycles_hold(&self, first: u8, second: u8, buf: &mut Vec<u8>) -> bool {
+        buf.clear();
+        buf.extend_from_slice(&self.own.0);
+        buf.extend([first, second]);
+        buf.extend_from_slice(&self.own.1);
+        if !valid_cycle(buf) {
+            return false;
         }
-        out
-    };
-    let mut values: Vec<u8> = walk(-1).into_iter().rev().collect();
-    values.push(at(from).expect("the laid cell"));
-    values.extend(walk(1));
-    values
+        self.across
+            .iter()
+            .zip([first, second])
+            .all(|((before, after), v)| {
+                if before.is_empty() && after.is_empty() {
+                    return true;
+                }
+                buf.clear();
+                buf.extend_from_slice(before);
+                buf.push(v);
+                buf.extend_from_slice(after);
+                valid_cycle(buf)
+            })
+    }
+
+    /// [R] Rule 1: the product of the lengths of the groups extended, if
+    /// there are two or more. The domino's own two cells only count when
+    /// they extend a group (line longer than 2); a line across exists only
+    /// with a neighbour.
+    fn product(&self) -> Option<u32> {
+        let own = self.own.0.len() + 2 + self.own.1.len();
+        let mut groups: Vec<usize> = Vec::with_capacity(3);
+        if own > 2 {
+            groups.push(own);
+        }
+        for (before, after) in &self.across {
+            let n = before.len() + 1 + after.len();
+            if n >= 2 {
+                groups.push(n);
+            }
+        }
+        (groups.len() >= 2).then(|| groups.iter().map(|&n| n as u32).product())
+    }
 }

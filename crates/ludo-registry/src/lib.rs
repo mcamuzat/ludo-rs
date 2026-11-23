@@ -50,6 +50,7 @@ static TIGRE_EUPHRATE: GameEntry<tigre_euphrate::TigreEuphrate> = GameEntry::new
 static ENEMY_CHOCOLATIER: GameEntry<enemy_chocolatier::EnemyChocolatier> = GameEntry::new();
 static KUROTE: GameEntry<kurote::Kurote> = GameEntry::new();
 static FIVE_BY_FIFTEEN: GameEntry<five_by_fifteen::FiveByFifteen> = GameEntry::new();
+static WU_HSING: GameEntry<wu_hsing::WuHsing> = GameEntry::new();
 
 pub static GAMES: &[&dyn AnyGame] = &[
     &YAVALATH,
@@ -100,6 +101,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &ENEMY_CHOCOLATIER,
     &KUROTE,
     &FIVE_BY_FIFTEEN,
+    &WU_HSING,
 ];
 
 pub fn find(id: &str) -> Result<&'static dyn AnyGame, LudoError> {
@@ -159,6 +161,11 @@ mod tests {
     #[test]
     fn corporation_is_for_two_to_four() {
         assert_eq!(find("corporation").unwrap().player_counts(), vec![2, 3, 4]);
+    }
+
+    #[test]
+    fn wu_hsing_is_for_two_to_four() {
+        assert_eq!(find("wu-hsing").unwrap().player_counts(), vec![2, 3, 4]);
     }
 
     #[test]

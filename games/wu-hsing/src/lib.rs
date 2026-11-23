@@ -4,6 +4,7 @@
 
 pub mod board;
 pub mod deck;
+mod heuristics;
 mod view;
 
 pub use board::{valid_cycle, Board, Dir, Placed, Placement};
