@@ -96,6 +96,8 @@ import { SIBERIAN_DICE_RULES } from "./siberian-dice/rules";
 import { YavalathBoard } from "./yavalath/Board";
 import { FiveByFifteenBoard } from "./five-by-fifteen/Board";
 import { FIVE_BY_FIFTEEN_RULES } from "./five-by-fifteen/rules";
+import { WuHsingBoard } from "./wu-hsing/Board";
+import { WU_HSING_RULES } from "./wu-hsing/rules";
 
 /** What every game board receives. It displays and submits; it computes nothing. */
 export interface BoardProps {
@@ -146,6 +148,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "tigre-euphrate", family: "board", Board: TigreEuphrateBoard, rules: TIGRE_EUPHRATE_RULES },
   { id: "enemy-chocolatier", family: "board", Board: EnemyChocolatierBoard, rules: ENEMY_CHOCOLATIER_RULES },
   { id: "kurote", family: "board", Board: KuroteBoard, rules: KUROTE_RULES },
+  { id: "wu-hsing", family: "board", Board: WuHsingBoard, rules: WU_HSING_RULES },
   { id: "riichi", family: "tiles", Board: RiichiBoard, hidden: true },
   { id: "pairs-continuous", family: "pairs", Board: ContinuousBoard, rules: CONTINUOUS_RULES },
   { id: "pairs-auberge", family: "pairs", Board: AubergeBoard, rules: AUBERGE_RULES },
