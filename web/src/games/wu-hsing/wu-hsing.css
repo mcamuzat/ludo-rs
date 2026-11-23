@@ -15,3 +15,4 @@
 .wh-hand-domino.selected { border-color: var(--brass); outline: 2px solid var(--brass); outline-offset: 1px; }
 .wh-tools, .wh-aid { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: center; }
 .wh-aid button[aria-pressed="true"] { outline: 2px solid var(--brass); }
+.wh-hit { fill: transparent; }

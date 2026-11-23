@@ -1,10 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import type { BoardProps } from "../registry";
-import type { Dir, Finish, HandDomino, LegalMove, Placement, PlacedView, WuHsingAction, WuHsingView } from "./types";
+import type { Dir, Finish, HandDomino, PlacedView, WuHsingAction, WuHsingView } from "./types";
+import {
+  DOMINO_BODY,
+  SEAT_COLORS,
+  cellsOf,
+  key,
+  placementsOf,
+  previewAt,
+  previewClick,
+  type Aid,
+  type Cell,
+} from "./interaction";
 import "./wu-hsing.css";
 
-/** How much the board helps to find a placement. */
-export type Aid = "none" | "playable" | "places";
+export type { Aid } from "./interaction";
 
 const AID_KEY = "wu-hsing.aid";
 const AIDS: [Aid, string][] = [
@@ -33,6 +43,8 @@ function saveAid(aid: Aid) {
 
 const CELL = 40;
 const MARGIN = 2;
+/** Room above the grid for the points of a placement in the top row. */
+const LABEL = 16;
 /** The five elements: 1 Wood, 2 Fire, 3 Earth, 4 Metal, 5 Water. */
 const VALUE_COLORS: Record<number, { bg: string; dot: string }> = {
   1: { bg: "#3f9142", dot: "#eaf6ea" },
@@ -43,16 +55,8 @@ const VALUE_COLORS: Record<number, { bg: string; dot: string }> = {
 };
 /** Pip places in a 3×3 grid numbered 1 to 9. */
 const PIPS: Record<number, number[]> = { 1: [5], 2: [1, 9], 3: [1, 5, 9], 4: [1, 3, 7, 9], 5: [1, 3, 5, 7, 9] };
-const SEAT_COLORS = ["#ffffff", "#141414", "#c77dff", "#ff8fab"];
 const NEUTRAL = "#7a7a7a";
 
-type Cell = [number, number];
-
-function cellsOf(row: number, col: number, dir: Dir): [Cell, Cell] {
-  return [[row, col], dir === "Right" ? [row, col + 1] : [row + 1, col]];
-}
-
-const key = ([r, c]: Cell) => `${r},${c}`;
 
 function listFr(items: (string | number)[]): string {
   if (items.length <= 1) return items.join("");
@@ -105,7 +109,7 @@ function Domino({
   const [dx, dy] = dir === "Right" ? [CELL, 0] : [0, CELL];
   return (
     <g className={className}>
-      <rect x={x} y={y} width={CELL + dx} height={CELL + dy} rx={7} fill="#1b1b1b" stroke={stroke} strokeWidth={3} />
+      <rect x={x} y={y} width={CELL + dx} height={CELL + dy} rx={7} fill={DOMINO_BODY} stroke={stroke} strokeWidth={3} />
       <Half x={x} y={y} value={first} />
       <Half x={x + dx} y={y + dy} value={second} />
     </g>
@@ -122,7 +126,7 @@ function HandTile({ d, selected, playable, onPick }: { d: HandDomino; selected: 
       onClick={onPick}
     >
       <svg viewBox={`0 0 ${CELL * 2} ${CELL}`} width={CELL * 2} height={CELL}>
-        <Domino x={0} y={0} dir="Right" first={d.a} second={d.b} className="" stroke="#1b1b1b" />
+        <Domino x={0} y={0} dir="Right" first={d.a} second={d.b} className="" stroke={DOMINO_BODY} />
       </svg>
     </button>
   );
@@ -143,45 +147,17 @@ export function WuHsingBoard({ view, me, seatNames, submit, initialAid }: Props)
   const [flipped, setFlipped] = useState(false);
   const [choice, setChoice] = useState(0);
 
-  const valuesOf = useMemo(() => new Map(v.hand.map((d) => [d.id, [d.a, d.b] as const])), [v.hand]);
-  const legalPlaces = myTurn
-    ? v.legal.flatMap((m) => (m.action === "Pass" ? [] : [{ p: m.action.Place, points: m.points, move: m }]))
-    : [];
-  const sameValues = (id: number, d: HandDomino) => {
-    const vals = valuesOf.get(id);
-    return vals !== undefined && vals[0] === d.a && vals[1] === d.b;
-  };
-  const playable = (d: HandDomino) => legalPlaces.some((l) => sameValues(l.p.domino, d));
+  const legal = myTurn ? v.legal : [];
+  const playable = (d: HandDomino) => placementsOf(v.hand, legal, d).length > 0;
   const helped = aid !== "none" && myTurn;
 
   // The domino in hand: the one picked, else (with help) the first playable, else the first.
   const selected =
     v.hand.find((d) => d.id === picked) ?? (helped ? v.hand.find(playable) : undefined) ?? v.hand[0] ?? null;
-  const mine = selected ? legalPlaces.filter((l) => sameValues(l.p.domino, selected)) : [];
-
-  const targets = new Set(aid === "places" ? mine.flatMap((l) => cellsOf(l.p.row, l.p.col, l.p.dir).map(key)) : []);
-
-  // The previewed placement on the touched cell.
-  let preview: { p: Placement; sides: [number, number]; move: LegalMove | null } | null = null;
-  if (myTurn && selected && cursor) {
-    if (aid === "places") {
-      const here = mine.filter((l) => cellsOf(l.p.row, l.p.col, l.p.dir).some((c) => key(c) === key(cursor)));
-      if (here.length > 0) {
-        const l = here[choice % here.length];
-        const [a, b] = valuesOf.get(l.p.domino) ?? [selected.a, selected.b];
-        preview = { p: l.p, sides: l.p.flipped ? [b, a] : [a, b], move: l.move };
-      }
-    } else {
-      const sides: [number, number] = flipped ? [selected.b, selected.a] : [selected.a, selected.b];
-      const p = { domino: selected.id, row: cursor[0], col: cursor[1], dir, flipped };
-      const match = mine.find((l) => {
-        const [a, b] = valuesOf.get(l.p.domino) ?? [0, 0];
-        const s = l.p.flipped ? [b, a] : [a, b];
-        return l.p.row === p.row && l.p.col === p.col && l.p.dir === p.dir && s[0] === sides[0] && s[1] === sides[1];
-      });
-      preview = { p, sides, move: match?.move ?? null };
-    }
-  }
+  const mine = selected ? placementsOf(v.hand, legal, selected) : [];
+  const targets = new Set(aid === "places" ? mine.flatMap(({ p }) => cellsOf(p.row, p.col, p.dir).map(key)) : []);
+  const preview =
+    myTurn && selected && cursor ? previewAt(v.hand, legal, aid, selected, cursor, dir, flipped, choice) : null;
 
   const rotate = () => (aid === "places" ? setChoice((c) => c + 1) : setDir((d) => (d === "Right" ? "Down" : "Right")));
   const flip = () => (aid === "places" ? setChoice((c) => c + 1) : setFlipped((f) => !f));
@@ -253,9 +229,9 @@ export function WuHsingBoard({ view, me, seatNames, submit, initialAid }: Props)
       <div className="wh-scroll felt">
         <svg
           className="wh-board"
-          viewBox={`0 0 ${width * CELL} ${height * CELL}`}
+          viewBox={`0 ${-LABEL} ${width * CELL} ${height * CELL + LABEL}`}
           width={width * CELL}
-          height={height * CELL}
+          height={height * CELL + LABEL}
           role="img"
           aria-label="Plateau de Wu Hsing"
         >
@@ -295,7 +271,6 @@ export function WuHsingBoard({ view, me, seatNames, submit, initialAid }: Props)
           {preview && (
             <g
               className={`wh-preview${preview.move ? " legal" : " illegal"}`}
-              onClick={confirm}
               role={preview.move ? "button" : undefined}
               aria-label={preview.move ? `poser ici pour ${preview.move.points} points` : "pose illégale"}
             >
@@ -314,6 +289,16 @@ export function WuHsingBoard({ view, me, seatNames, submit, initialAid }: Props)
               >
                 {preview.move ? `+${preview.move.points}` : "illégal"}
               </text>
+              {cellsOf(preview.p.row, preview.p.col, preview.p.dir).map((c) => (
+                <rect
+                  key={key(c)}
+                  className="wh-hit"
+                  {...at(c[0], c[1])}
+                  width={CELL}
+                  height={CELL}
+                  onClick={() => (cursor && previewClick(preview, c, cursor) === "confirm" ? confirm() : touch(c))}
+                />
+              ))}
             </g>
           )}
         </svg>

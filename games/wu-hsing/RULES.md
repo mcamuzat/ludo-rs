@@ -37,8 +37,10 @@ implémentée (pas la « variante stratégique » ni les mains visibles).
 - [R] Règle 1 : chaque domino doit prolonger correctement **deux groupes ou
   plus**. Les deux demi-dominos d'un domino ne forment pas à eux seuls un
   groupe prolongé : sa propre ligne ne compte que si elle touche un domino déjà
-  posé dans son axe (exemples A, C, E de [R] : deux groupes ; B, D : trois ;
-  X, Z illégaux). Toute ligne touchée doit rester un cycle valide.
+  posé dans son axe (exemples de [R] : A, C, E prolongent deux groupes ; B en
+  prolonge trois ; D prolonge un groupe vertical et unit deux groupes
+  horizontaux, la rangée réunie comptant comme un seul groupe ; X, Z
+  illégaux). Toute ligne touchée doit rester un cycle valide.
 - [R] Règle 2 : interdit de placer un quatrième domino dans l'alignement de
   trois dominos qui se touchent déjà par leur grand côté (exemple Y). Comme
   l'adaptation JS : on compte les dominos de même orientation exactement

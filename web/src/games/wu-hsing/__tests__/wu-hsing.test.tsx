@@ -96,6 +96,11 @@ describe("Wu Hsing board", () => {
     expect(render({ ...VIEW, last: { seat: 0, placed: null, points: 0 } })).toContain("Tu as passé.");
   });
 
+  it("leaves room above the grid for the points of a placement", () => {
+    // The "+N" label of a vertical placement in the top row sits above the grid.
+    expect(render(VIEW)).toMatch(/viewBox="0 -16 /);
+  });
+
   it("hides the hand of a spectator", () => {
     const html = render({ ...VIEW, me: null, hand: [], legal: [] }, "places", null);
     expect(html).not.toContain("wh-hand-domino");
