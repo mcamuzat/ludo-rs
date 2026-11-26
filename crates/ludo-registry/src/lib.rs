@@ -47,6 +47,8 @@ static BLACK_HOLE: GameEntry<black_hole::BlackHole> = GameEntry::new();
 static CORPORATION: GameEntry<corporation::Corporation> = GameEntry::new();
 static TWIXT: GameEntry<twixt::Twixt> = GameEntry::new();
 static TIGRE_EUPHRATE: GameEntry<tigre_euphrate::TigreEuphrate> = GameEntry::new();
+static TIGRE_EUPHRATE_CARTES: GameEntry<tigre_euphrate_cartes::TigreEuphrateCartes> =
+    GameEntry::new();
 static ENEMY_CHOCOLATIER: GameEntry<enemy_chocolatier::EnemyChocolatier> = GameEntry::new();
 static KUROTE: GameEntry<kurote::Kurote> = GameEntry::new();
 static FIVE_BY_FIFTEEN: GameEntry<five_by_fifteen::FiveByFifteen> = GameEntry::new();
@@ -98,6 +100,7 @@ pub static GAMES: &[&dyn AnyGame] = &[
     &CORPORATION,
     &TWIXT,
     &TIGRE_EUPHRATE,
+    &TIGRE_EUPHRATE_CARTES,
     &ENEMY_CHOCOLATIER,
     &KUROTE,
     &FIVE_BY_FIFTEEN,
@@ -161,6 +164,14 @@ mod tests {
     #[test]
     fn corporation_is_for_two_to_four() {
         assert_eq!(find("corporation").unwrap().player_counts(), vec![2, 3, 4]);
+    }
+
+    #[test]
+    fn tigre_euphrate_cartes_is_for_two_to_four() {
+        assert_eq!(
+            find("tigre-euphrate-cartes").unwrap().player_counts(),
+            vec![2, 3, 4]
+        );
     }
 
     #[test]

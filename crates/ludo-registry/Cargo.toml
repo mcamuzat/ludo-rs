@@ -17,6 +17,7 @@ black-hole.workspace = true
 corporation.workspace = true
 twixt.workspace = true
 tigre-euphrate.workspace = true
+tigre-euphrate-cartes.workspace = true
 enemy-chocolatier.workspace = true
 kurote.workspace = true
 wu-hsing.workspace = true
