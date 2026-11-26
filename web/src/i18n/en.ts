@@ -6,6 +6,7 @@ export const en: Dict = {
     "pairs-continuous": "Continuous Pairs",
     "pairs-auberge": "Regent",
     "tigre-euphrate": "Tigris & Euphrates",
+    "tigre-euphrate-cartes": "Tigris & Euphrates: Contest of Kings",
     cryptide: "Cryptid",
     riichi: "Riichi Mahjong",
   },

@@ -89,6 +89,8 @@ import { TWIXT_RULES } from "./twixt/rules";
 import { CorporationBoard } from "./corporation/Board";
 import { TigreEuphrateBoard } from "./tigre-euphrate/Board";
 import { TIGRE_EUPHRATE_RULES } from "./tigre-euphrate/rules";
+import { TigreEuphrateCartesBoard } from "./tigre-euphrate-cartes/Board";
+import { TIGRE_EUPHRATE_CARTES_RULES } from "./tigre-euphrate-cartes/rules";
 import { EnemyChocolatierBoard } from "./enemy-chocolatier/Board";
 import { ENEMY_CHOCOLATIER_RULES } from "./enemy-chocolatier/rules";
 import { CORPORATION_RULES } from "./corporation/rules";
@@ -185,6 +187,7 @@ export const GAME_UIS: GameUi[] = [
   { id: "cards-hattrick", family: "modern", Board: HattrickBoard, rules: HATTRICK_RULES },
   { id: "cards-david-goliath", family: "modern", Board: DavidGoliathBoard, rules: DAVID_GOLIATH_RULES },
   { id: "cards-cobras", family: "modern", Board: CobrasBoard, rules: COBRAS_RULES },
+  { id: "tigre-euphrate-cartes", family: "modern", Board: TigreEuphrateCartesBoard, rules: TIGRE_EUPHRATE_CARTES_RULES },
 ];
 
 export function gameUi(id: string): GameUi | undefined {

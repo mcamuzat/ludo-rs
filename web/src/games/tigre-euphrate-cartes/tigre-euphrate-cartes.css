@@ -1,0 +1,46 @@
+.tigre-euphrate-cartes { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+
+.tc-Black { background: #2b2a2e; }
+.tc-Red { background: #c8372d; }
+.tc-Blue { background: #2463c9; }
+.tc-Green { background: #2f9a48; }
+
+.tc-table { display: grid; grid-template-columns: repeat(15, minmax(0, 1fr)); gap: 3px; width: min(100%, 760px); padding: 8px; border-radius: 14px; box-sizing: border-box; }
+.tc-cell { min-width: 0; }
+.tc-card { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 5 / 7; padding: 0; border-radius: 5px; border: 1.5px solid #fff9; color: #fffc; font: 700 clamp(0.6rem, 2.4vw, 1rem) var(--f-display); box-sizing: border-box; }
+button.tc-card { cursor: pointer; }
+.tc-card.tc-Black { border-color: #d8d2c4; }
+.tc-treasure { border: 2px solid #f1d36b; }
+.tc-treasure .tc-mark { color: #f1d36b; }
+.tc-exchanged { border: 2px dashed #f1d36b; }
+.tc-ship { background: linear-gradient(135deg, #2463c9 50%, var(--ship) 50%); }
+.tc-ship-Black { --ship: #2b2a2e; }
+.tc-ship-Red { --ship: #c8372d; }
+.tc-ship-Green { --ship: #2f9a48; }
+.tc-facedown { background: repeating-linear-gradient(45deg, #6b5d43, #6b5d43 4px, #8b7f6a 4px, #8b7f6a 8px); }
+.tc-empty { background: transparent; border: 1.5px dashed var(--brass); }
+.tc-card.target { outline: 3px solid var(--brass); outline-offset: 1px; }
+.tc-card.target:hover { filter: brightness(1.15); }
+.tc-mark { position: absolute; top: 6%; left: 0; right: 0; text-align: center; line-height: 1.2; pointer-events: none; text-shadow: 0 1px 2px #0008; }
+.tc-leader { position: absolute; bottom: 7%; left: 50%; transform: translateX(-50%); width: 62%; aspect-ratio: 1; border-radius: 50%; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; color: #fff; font-size: clamp(0.5rem, 1.9vw, 0.85rem); box-shadow: 0 1px 3px #0009; pointer-events: none; }
+.tc-leader.selected { border-color: var(--brass); border-width: 3px; }
+
+.tc-players { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; }
+.tc-players li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; padding: 3px 8px; border-radius: 8px; border: 1px solid transparent; }
+.tc-players li.active { border-color: var(--brass); }
+.tc-glyph { font-size: 1.2rem; }
+.tc-name { font-weight: 700; }
+.tc-meta { color: var(--table-muted); font-size: 0.85rem; }
+.tc-scores { display: inline-flex; gap: 3px; }
+.tc-score { min-width: 22px; padding: 1px 5px; border-radius: 6px; color: #fff; font: 700 0.85rem var(--f-display); text-align: center; }
+.tc-treasure-count { background: #b8962e; }
+
+.tc-hand, .tc-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
+.tc-label { color: var(--table-muted); font-size: 0.85rem; }
+.tc-pick { width: 36px; height: 52px; border-radius: 6px; border: 2px solid #fff; color: #fff; font: 800 1rem var(--f-display); padding: 0; text-shadow: 0 1px 2px #0008; }
+.tc-pick.selected, .tc-actions .selected { outline: 3px solid var(--brass); outline-offset: 2px; }
+.tc-leader-pick { color: #fff; border: 2px solid #fff; text-shadow: 0 1px 2px #0008; }
+.tc-panel { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.tc-final { border-collapse: collapse; }
+.tc-final th, .tc-final td { padding: 4px 10px; text-align: left; }
+.tc-final th { color: var(--table-muted); font-weight: 600; font-size: 0.85rem; }

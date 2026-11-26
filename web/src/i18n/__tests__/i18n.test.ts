@@ -42,7 +42,7 @@ describe("language", () => {
     expect(gameName({ id: "yavalath", name: "Yavalath" })).toBe("Yavalath");
   });
 
-  it("has an English name for the six games that differ", () => {
+  it("has an English name for the seven games that differ", () => {
     expect(Object.keys(en.gameNames).sort()).toEqual([
       "cards-president",
       "cryptide",
@@ -50,6 +50,7 @@ describe("language", () => {
       "pairs-continuous",
       "riichi",
       "tigre-euphrate",
+      "tigre-euphrate-cartes",
     ]);
   });
 
