@@ -354,6 +354,7 @@ dependencies = [
  "serde_json",
  "siberian-dice",
  "tigre-euphrate",
+ "tigre-euphrate-cartes",
  "twixt",
  "volltreffer",
  "wu-hsing",
@@ -750,6 +751,17 @@ dependencies = [
 
 [[package]]
 name = "tigre-euphrate"
+version = "0.1.0"
+dependencies = [
+ "ludo-core",
+ "rand 0.8.8",
+ "rand_chacha",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "tigre-euphrate-cartes"
 version = "0.1.0"
 dependencies = [
  "ludo-core",
